@@ -22,15 +22,31 @@
   top:100px;
 }
 
+
+/* Text background opacity inspiration: 
+   https://css-tricks.com/design-considerations-text-images/ */
+
 .jumbotron h1 {
   color: #fff;
   font-size: 48px;  
   font-weight: bold;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 8px;
+  margin: 0;
+
 }
 
 .jumbotron p {
   font-size: 20px;
   color: #fff;
+  position: absolute;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 8px;
+  margin: 0;
 }
 
 /* Table style adopted from http://www.w3schools.com/css/css_table.asp */
