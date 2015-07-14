@@ -55,3 +55,9 @@
     background-color: #2e648d;
     color: #ffffff;
 }
+
+#main h1 {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-size: 35px;
+  color: #000;
+}
