@@ -4,6 +4,9 @@
   <head>
     <link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">
     <link rel="stylesheet" href="main.css">  
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.5.0.min.js"></script>
   </head>
 
   <body>
@@ -26,53 +29,78 @@
     </div>
 
     <!-- Determine how to handle adding multiple paddlers with submit button --> 
-    <form name="paddlerform" action="http://www.exampleformhandlerdomain.com/myformhandler.cgi" method="POST"> 
+  
     <div align="center">
     <br><br>
 
     Paddler's Name:<br>
-    <input type="text" name="paddlername" value="Enter the paddler's name">
+    <input type="text" name="paddlername" placeholder="Enter the paddler's name">
     <br><br>
 
     Paddler's Weight:<br>
-    <input type="text" name="weight" value="Enter the paddler's weight">
+    <input type="text" name="weight" placeholder="Enter the paddler's weight">
     <br><br>
 
     Paddler's Gender:<br>
-    <select name="genderdropdown">
+    <select name="gender">
     <option value="Male">Male</option>
     <option value="Female">Female</option>
     </select>
     <br><br>
 
     Paddler's Side:<br>
-    <select name="sidedropdown">
+    <select name="side">
     <option value="Left">Left</option>
     <option value="Right">Right</option>
     </select>
     <br><br>
 
     Paddler's Section:<br>
-    <select name="sectiondropdown">
-    <option value="Rocket">Rocket</option>
-    <option value="Engine">Engine</option>
+    <select name="section">
+	<option value="Any">Any</option>
     <option value="Box">Box</option>
-    <option value="Any">Any</option>
+    <option value="Engine">Engine</option>
+	<option value="Rocket">Rocket</option>
     </select>
     <br><br>
 
-    Paddler's Boat Color:<br>
-    <select name="colordropdown">
+    Paddler's Boat:<br>
+    <select name="boat">
     <option value="White">White</option>
     <option value="Blue">Blue</option>
     </select>
     <br><br>
 
 
-    <br><input type="submit" value="Add paddler to roster"><br>
+    <br><button onclick="addPaddler()">Add paddler to roster</button><br>
     </div>
-    </form>
 
+
+	<script type="text/javascript">		
+	Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
+		function addPaddler(){
+			var Paddler = Parse.Object.extend("Paddler");
+			var paddler = new Paddler();
+			
+			paddler.set("Name", document.getElementsByName("paddlername")[0].value);
+			paddler.set("Weight", parseInt(document.getElementsByName("weight")[0].value));			
+			paddler.set("Side", document.getElementsByName("side")[0].value);
+			paddler.set("Section", document.getElementsByName("section")[0].value);
+			paddler.set("Boat", document.getElementsByName("boat")[0].value);
+			paddler.set("Gender", document.getElementsByName("gender")[0].value);
+			
+			paddler.save(null, {
+				success: function(paddler) {
+					alert("Paddler added");
+				},
+				error: function(paddler, error) {
+					alert("Something went wrong");
+				}
+			});
+		}
+	</script>
+	
+	
   </body>
 
 </html>
