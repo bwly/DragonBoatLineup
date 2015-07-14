@@ -24,7 +24,55 @@
         <p>Easily create a lineup for your dragon boat meet.</p>
       </div>
     </div>
-    
+
+    <!-- Determine how to handle adding multiple paddlers with submit button --> 
+    <form name="paddlerform" action="http://www.exampleformhandlerdomain.com/myformhandler.cgi" method="POST"> 
+    <div align="center">
+    <br><br>
+
+    Paddler's Name:<br>
+    <input type="text" name="paddlername" value="Enter the paddler's name">
+    <br><br>
+
+    Paddler's Weight:<br>
+    <input type="text" name="weight" value="Enter the paddler's weight">
+    <br><br>
+
+    Paddler's Gender:<br>
+    <select name="genderdropdown">
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    </select>
+    <br><br>
+
+    Paddler's Side:<br>
+    <select name="sidedropdown">
+    <option value="Left">Left</option>
+    <option value="Right">Right</option>
+    </select>
+    <br><br>
+
+    Paddler's Section:<br>
+    <select name="sectiondropdown">
+    <option value="Rocket">Rocket</option>
+    <option value="Engine">Engine</option>
+    <option value="Box">Box</option>
+    <option value="Any">Any</option>
+    </select>
+    <br><br>
+
+    Paddler's Boat Color:<br>
+    <select name="colordropdown">
+    <option value="White">White</option>
+    <option value="Blue">Blue</option>
+    </select>
+    <br><br>
+
+
+    <br><input type="submit" value="Add paddler to roster"><br>
+    </div>
+    </form>
+
   </body>
 
 </html>
