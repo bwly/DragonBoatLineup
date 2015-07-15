@@ -78,6 +78,164 @@
   color: #000;
 }
 
-.roster, .dragList {
-	float:right;
+
+
+#left1 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right1 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left2 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right2 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left3 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right3 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left4 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right4 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left5 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right5 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left6 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right6 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left7 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right7 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left8 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right8 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left9 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right9 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+}
+
+#left10 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
+    clear: left;
+}
+#right10 {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+    float:left;
 }
