@@ -1,2 +1,2 @@
 # DragonBoatLineup
-A tool that generates the lineup for a dragon boat event
+A tool to help you generate the lineup for a dragon boat event
