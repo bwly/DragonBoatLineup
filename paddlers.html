@@ -64,7 +64,8 @@
 					cell4.innerHTML = object.get('Section');
 
 					// Delete button
-					cell5.innerHTML = "<button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+					cell5.innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+					
 				}
 				
 				
@@ -96,6 +97,7 @@
 		
 		// Handles adding a paddler to the roster
 		function addPaddler(){
+		
 			if(!isInt(document.getElementById("weightEntry").value)){
 				alert("Enter an integer for the weight field!");
 				return;
@@ -119,7 +121,7 @@
 					myTable.rows[myTable.rows.length-1].cells[1].innerHTML = parseInt(document.getElementById("weightEntry").value);
 					myTable.rows[myTable.rows.length-1].cells[2].innerHTML = document.getElementById("sideEntry").value;
 					myTable.rows[myTable.rows.length-1].cells[3].innerHTML = document.getElementById("sectionEntry").value;
-					myTable.rows[myTable.rows.length-1].cells[4].innerHTML = "<button id='" + paddler.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+					myTable.rows[myTable.rows.length-1].cells[4].innerHTML = "<button id='" + paddler.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + paddler.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 					
 					// Creates a new row for adding paddlers
 					var row = myTable.insertRow(-1);
@@ -144,9 +146,8 @@
 				
 		}
     
-		// Handles deleting a paddler from the roster when the delete button is clicked for that row
-		function deletePaddler(event){
-
+		// TODO: Handle multiple edits at once.  Currently probably cannot do that
+		function editPaddler(event) {
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
 			query.equalTo("objectId", event);
@@ -155,12 +156,164 @@
 			success: function(results) {
 
 				var myTable = document.getElementById("paddlers");
-				var looping = true;
+	
 				var rowNumber = 0;
-				while(looping){
+				while(true){
+					if(myTable.rows[rowNumber].cells[0].id == results[0].id){
+					
+						// Changes all of the row's information into input fields
+						myTable.rows[rowNumber].cells[0].innerHTML = "<input type='text' id='nameEdit' value='" + myTable.rows[rowNumber].cells[0].innerHTML + "'>";
+						myTable.rows[rowNumber].cells[1].innerHTML = "<input type='text' id='weightEdit' value='" + myTable.rows[rowNumber].cells[1].innerHTML + "'>";
+						
+						// if else statements are used to make sure that the old value shows up in the dropdown menu
+						if(myTable.rows[rowNumber].cells[2].innerHTML == "Any"){
+							myTable.rows[rowNumber].cells[2].innerHTML = "<select id='sideEdit'><option selected value='Any'>Any</option><option value='Left'>Left</option><option value='Right'>Right</option></select>";
+						}
+						else if(myTable.rows[rowNumber].cells[2].innerHTML == "Left"){
+							myTable.rows[rowNumber].cells[2].innerHTML = "<select id='sideEdit'><option value='Any'>Any</option><option selected value='Left'>Left</option><option value='Right'>Right</option></select>";
+						}
+						else {
+							myTable.rows[rowNumber].cells[2].innerHTML = "<select id='sideEdit'><option value='Any'>Any</option><option value='Left'>Left</option><option selected value='Right'>Right</option></select>";
+						}
+						
+						// handles dropdown menus again
+						if(myTable.rows[rowNumber].cells[3].innerHTML == "Any"){
+							myTable.rows[rowNumber].cells[3].innerHTML = "<select id='sectionEdit'></option><option selected value='Any'>Any</option><option value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+						}
+						else if(myTable.rows[rowNumber].cells[3].innerHTML == "Box"){
+							myTable.rows[rowNumber].cells[3].innerHTML = "<select id='sectionEdit'></option><option value='Any'>Any</option><option selected value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+						}
+						else if(myTable.rows[rowNumber].cells[3].innerHTML == "Engine"){
+							myTable.rows[rowNumber].cells[3].innerHTML = "<select id='sectionEdit'></option><option value='Any'>Any</option><option value='Box'>Box</option><option selected value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+						}
+						else{
+							myTable.rows[rowNumber].cells[3].innerHTML = "<select id='sectionEdit'></option><option value='Any'>Any</option><option value='Box'>Box</option><option value='Engine'>Engine</option><option selected value='Rocket'>Rocket</option></select>";
+						}
+						
+						
+						
+						myTable.rows[rowNumber].cells[4].innerHTML = "<button id='" + results[0].id + "' onclick='updatePaddler(this.id)'>Done</button> <button id='" + results[0].id + "' onclick='undoEdit(this.id)'>Cancel</button>";
+						
+						
+						break;
+					}
+					rowNumber++;
+				}				
+			},
+			error: function(error){
+				alert("Error");
+			}
+		});
+		}
+	
+		function updatePaddler(event){
+			var Paddler = Parse.Object.extend("Paddler");
+			var query = new Parse.Query(Paddler);
+			query.equalTo("objectId", event);
+
+			query.find({
+			success: function(results) {
+
+				var myTable = document.getElementById("paddlers");
+	
+				var rowNumber = 0;
+				
+				while(true){
+					if(myTable.rows[rowNumber].cells[0].id == results[0].id){
+
+			
+						// Saves all information from the edit
+						results[0].set("Name", document.getElementById("nameEdit").value);
+						results[0].set("Weight", parseInt(document.getElementById("weightEdit").value));
+						results[0].set("Side", document.getElementById("sideEdit").value);
+						results[0].set("Section", document.getElementById("sectionEdit").value);
+						
+						results[0].save(null, {
+							success: function(results2) {
+							
+								// Changes the table to contain the new information
+								myTable.rows[rowNumber].cells[0].innerHTML = document.getElementById("nameEdit").value;
+								myTable.rows[rowNumber].cells[1].innerHTML = parseInt(document.getElementById("weightEdit").value);
+								myTable.rows[rowNumber].cells[2].innerHTML = document.getElementById("sideEdit").value;
+								myTable.rows[rowNumber].cells[3].innerHTML = document.getElementById("sectionEdit").value;	
+								myTable.rows[rowNumber].cells[4].innerHTML = "<button id='" + results[0].id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + results[0].id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+
+
+							},
+							error: function(results2, error) {
+								alert(error.message);
+							}
+						});
+						break;
+					}
+					rowNumber++;
+				}				
+			},
+			error: function(error){
+				alert("Error");
+			}
+		});
+		
+		}
+	
+		function undoEdit(event){
+			var Paddler = Parse.Object.extend("Paddler");
+			var query = new Parse.Query(Paddler);
+			query.equalTo("objectId", event);
+			
+			query.find({
+				success: function(results) {
+					var myTable = document.getElementById("paddlers");
+					
+					// Adds paddlers to the table 	
+					var rowNumber = 0;
+					
+					while(true){
+						if(myTable.rows[rowNumber].cells[0].id == results[0].id){
+							
+							var object = results[0];
+							
+							myTable.rows[rowNumber].cells[0].innerHTML = object.get('Name');	
+							myTable.rows[rowNumber].cells[1].innerHTML = object.get('Weight');
+							myTable.rows[rowNumber].cells[2].innerHTML  = object.get('Side');
+							myTable.rows[rowNumber].cells[3].innerHTML  = object.get('Section');
+
+							// Edit and Delete buttons
+							myTable.rows[rowNumber].cells[4].innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+							break;
+						}
+						rowNumber++;
+					}		
+				},
+				error: function(error){
+					alert("Error");
+				}
+			});
+		}
+	
+		// Handles deleting a paddler from the roster when the delete button is clicked for that row
+		function deletePaddler(event){
+			// Allows the user to confirm the deletion of an entry
+			var confirmed = confirm("Are you sure you want to delete this entry?");
+			if(!confirmed){
+				return;
+			}
+			
+			
+			var Paddler = Parse.Object.extend("Paddler");
+			var query = new Parse.Query(Paddler);
+			query.equalTo("objectId", event);
+
+			query.find({
+			success: function(results) {
+
+				var myTable = document.getElementById("paddlers");
+	
+				var rowNumber = 0;
+				while(true){
 					if(myTable.rows[rowNumber].cells[0].id == results[0].id){
 						myTable.deleteRow(rowNumber);
-						looping=false;
+						break;
 					}
 					rowNumber++;
 				}
