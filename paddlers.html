@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
 
+
+  <link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">
   <link rel="stylesheet" href="main.css">  
 
   <title>Roster Editor</title>
@@ -15,11 +17,23 @@
 </head>
 
 <body>
+
+	<div class="nav2">
+      <div class="container2">
+        <ul class="pull-left">
+          <li><a href="index.html">Main</a></li>
+          <li><a href="builder.html">Build</a></li>
+        </ul>
+      </div>
+    </div>
+
   
+<div id="roster_wrapper">
+
   <div id="main">
 
 		<h1>Roster Editor</h1>
-		<h3>Edit your roster. Once you're finished here, press the build button to view a graphical representation.</h3>
+		<h3>Edit your roster. Once you're finished here, press build to view a graphical representation.</h3>
 		<div id="info">
 			<table id="paddlers" style="width:50%">
 				<tr>
@@ -355,13 +369,15 @@
 		}
   </script>
 
+</div>
+
 <br>
 
-<div id="build_button">
+<!--<div id="build_button">
 <form action="builder.html">
     <input type="submit" value="Build">
 </form>
-</div>
+</div>-->
 
 </body>
 
