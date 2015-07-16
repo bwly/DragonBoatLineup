@@ -91,6 +91,7 @@
     float:left;
     clear: left;
 }
+
 #right1 {
     width: 80px;
     height: 30px;
@@ -107,6 +108,7 @@
     float:left;
     clear: left;
 }
+
 #right2 {
     width: 80px;
     height: 30px;
@@ -123,6 +125,7 @@
     float:left;
     clear: left;
 }
+
 #right3 {
     width: 80px;
     height: 30px;
@@ -139,6 +142,7 @@
     float:left;
     clear: left;
 }
+
 #right4 {
     width: 80px;
     height: 30px;
@@ -155,6 +159,7 @@
     float:left;
     clear: left;
 }
+
 #right5 {
     width: 80px;
     height: 30px;
@@ -171,6 +176,7 @@
     float:left;
     clear: left;
 }
+
 #right6 {
     width: 80px;
     height: 30px;
@@ -187,6 +193,7 @@
     float:left;
     clear: left;
 }
+
 #right7 {
     width: 80px;
     height: 30px;
@@ -203,6 +210,7 @@
     float:left;
     clear: left;
 }
+
 #right8 {
     width: 80px;
     height: 30px;
@@ -219,6 +227,7 @@
     float:left;
     clear: left;
 }
+
 #right9 {
     width: 80px;
     height: 30px;
@@ -242,4 +251,25 @@
     padding: 10px;
     border: 1px solid #aaaaaa;
     float:left;
+}
+
+.explanation {
+  background-color: #efefef;
+  border-bottom:1px solid #dbdbdb;
+}
+
+.explanation h2 {
+  font-size: 20px;
+  color: #fff;
+  position: absolute;
+  left: 105px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 8px;
+  margin: 0;
+  top:375px;
+}
+
+#build_button {
+  width: 50%;
+  margin: 0 auto;
 }
