@@ -102,8 +102,8 @@
 				return;
 			}
 			
-			if(!isInt(document.getElementById("weightEntry").value)){
-				alert("Enter an integer for the weight field!");
+			if(!isInt(document.getElementById("weightEntry").value) || document.getElementById("weightEntry").value < 0){
+				alert("Enter a positive integer for the weight field!");
 				return;
 			}
 			
@@ -150,8 +150,17 @@
 				
 		}
     
+	
+		var editing = false;
 		// TODO: Handle multiple edits at once.  Currently probably cannot do that
 		function editPaddler(event) {
+			if(editing){
+				alert("Finish up your other edit first!");
+				return;
+			}
+			else{
+				editing = true;
+			}
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
 			query.equalTo("objectId", event);
@@ -257,6 +266,7 @@
 				alert("Error");
 			}
 		});
+			editing = false;
 		
 		}
 	
@@ -293,6 +303,8 @@
 					alert("Error");
 				}
 			});
+			
+			editing = false;
 		}
 	
 		// Handles deleting a paddler from the roster when the delete button is clicked for that row
