@@ -5,7 +5,7 @@
 
   <link rel="stylesheet" href="main.css">  
 
-  <title>My Parse App</title>
+  <title>Roster Editor</title>
   <meta name="description" content="My Parse App">
   <meta name="viewport" content="width=device-width">
 
@@ -18,7 +18,8 @@
   
   <div id="main">
 
-		<h1>Roster</h1>
+		<h1>Roster Editor</h1>
+		<h3>Add, delete, or edit your roster here!</h3>
 		<div id="info">
 			<table id="paddlers" style="width:50%">
 				<tr>
@@ -26,9 +27,6 @@
 					<th>Weight</th>
 					<th>Side</th>
 					<th>Section</th>
-					<th>Boat</th>
-					<th>Gender</th>
-
 				</tr>
 			</table>
 		</div>
@@ -48,7 +46,7 @@
 				
 				// Adds paddlers to the table 
 				for (var i = 0; i < results.length; i++) {
-					var row = myTable.insertRow(-1)
+					var row = myTable.insertRow(-1);
 					
 					
 					var object = results[i];
@@ -58,43 +56,111 @@
 					var cell3 = row.insertCell(2);
 					var cell4 = row.insertCell(3);
 					var cell5 = row.insertCell(4);
-					var cell6 = row.insertCell(5);
-					var cell7 = row.insertCell(6);
 					
 					cell1.innerHTML = object.get('Name');	
 					cell1.id = object.id;	
 					cell2.innerHTML = object.get('Weight');
 					cell3.innerHTML = object.get('Side');
 					cell4.innerHTML = object.get('Section');
-					cell5.innerHTML = object.get('Boat');
-					cell6.innerHTML = object.get('Gender');
-					
 
-					cell7.innerHTML = "<button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
-
-					
+					// Delete button
+					cell5.innerHTML = "<button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 				}
+				
+				
+				// Creates a row for adding paddlers
+				var row = myTable.insertRow(-1);
+				var cell1 = row.insertCell(0);
+				var cell2 = row.insertCell(1);
+				var cell3 = row.insertCell(2);
+				var cell4 = row.insertCell(3);
+				var cell5 = row.insertCell(4);
+		
+				// Fills the new row with values
+				cell1.innerHTML = "<input type='text' id='nameEntry' placeholder='Name'>";
+				cell2.innerHTML = "<input type='text' id='weightEntry' placeholder='Weight'>";
+				cell3.innerHTML = "<select id='sideEntry'><option value='Any'>Any</option><option value='Left'>Left</option><option value='Right'>Right</option></select>";
+				cell4.innerHTML = "<select id='sectionEntry'><option value='Any'>Any</option><option value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+				cell5.innerHTML = "<button onclick='addPaddler()'>Add</button>";
 			},
 			error: function(error){
 				alert("Error");
 			}
 		});
+		
+		// Function from http://stackoverflow.com/questions/3885817/how-to-check-that-a-number-is-float-or-integer
+		function isInt(value) {
+			var er = /^-?[0-9]+$/;
+			return er.test(value);
+		}
+		
+		// Handles adding a paddler to the roster
+		function addPaddler(){
+			if(!isInt(document.getElementById("weightEntry").value)){
+				alert("Enter an integer for the weight field!");
+				return;
+			}
+			
+			var Paddler = Parse.Object.extend("Paddler");
+			var paddler = new Paddler();
+			
+			paddler.set("Name", document.getElementById("nameEntry").value);
+			paddler.set("Weight", parseInt(document.getElementById("weightEntry").value));
+			paddler.set("Side", document.getElementById("sideEntry").value);
+			paddler.set("Section", document.getElementById("sectionEntry").value);
+			
+			paddler.save(null, {
+				success: function(results) {
+				
+					// Changes the table to contain the new information
+					var myTable = document.getElementById("paddlers");
+					myTable.rows[myTable.rows.length-1].cells[0].innerHTML = document.getElementById("nameEntry").value;
+					myTable.rows[myTable.rows.length-1].cells[0].id = paddler.id;
+					myTable.rows[myTable.rows.length-1].cells[1].innerHTML = parseInt(document.getElementById("weightEntry").value);
+					myTable.rows[myTable.rows.length-1].cells[2].innerHTML = document.getElementById("sideEntry").value;
+					myTable.rows[myTable.rows.length-1].cells[3].innerHTML = document.getElementById("sectionEntry").value;
+					myTable.rows[myTable.rows.length-1].cells[4].innerHTML = "<button id='" + paddler.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+					
+					// Creates a new row for adding paddlers
+					var row = myTable.insertRow(-1);
+					var cell1 = row.insertCell(0);
+					var cell2 = row.insertCell(1);
+					var cell3 = row.insertCell(2);
+					var cell4 = row.insertCell(3);
+					var cell5 = row.insertCell(4);
+
+					// Gives values to the new row
+					cell1.innerHTML = "<input type='text' id='nameEntry' placeholder='Name'>";
+					cell2.innerHTML = "<input type='text' id='weightEntry' placeholder='Weight'>";
+					cell3.innerHTML = "<select id='sideEntry'><option value='Any'>Any</option><option value='Left'>Left</option><option value='Right'>Right</option></select>";
+					cell4.innerHTML = "<select id='sectionEntry'><option value='Any'>Any</option><option value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+					cell5.innerHTML = "<button onclick='addPaddler()'>Add</button>";
+				},
+				error: function(results, error) {
+					alert(error.message);
+				}
+			});
+			
+				
+		}
     
+		// Handles deleting a paddler from the roster when the delete button is clicked for that row
 		function deletePaddler(event){
+
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
 			query.equalTo("objectId", event);
-			
+
 			query.find({
 			success: function(results) {
-			
+
 				var myTable = document.getElementById("paddlers");
 				var looping = true;
 				var rowNumber = 0;
 				while(looping){
 					if(myTable.rows[rowNumber].cells[0].id == results[0].id){
 						myTable.deleteRow(rowNumber);
-						break;
+						looping=false;
 					}
 					rowNumber++;
 				}
