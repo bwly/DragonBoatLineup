@@ -10,6 +10,23 @@
   display: inline;
 }
 
+.nav2 a {
+  color: #5a5a5a;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 14px 10px;
+  text-transform: uppercase;
+}
+
+.nav2 li {
+  display: inline;
+}
+
+.container2 {
+  padding-top:50px;
+  padding-left:5px;
+}
+
 .jumbotron {
   background-image:url(img/dragon-boat-racing.jpg);
   height: 500px;
@@ -78,10 +95,19 @@
   color: #000;
 }
 
-#roster {
-  border: 1px solid #aaaaaa;
-  display:table;
-  padding: 10px;
+#header h1 {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-size: 35px;
+  color: #000;
+}
+
+#header h2 {
+  font-size: 25px;
+}
+
+#roster_wrapper, #builder_wrapper {
+  padding: 50px;
+
 }
 
 #wrapper {
@@ -89,7 +115,7 @@
   padding-left: 100px;
 }
 
-#left1 {
+#left1, #left2, #left3, #left4, #left5, #left6, #left7, #left8, #left9, #left10 {
     width: 80px;
     height: 30px;
     padding: 10px;
@@ -98,160 +124,7 @@
     clear: left;
 }
 
-#right1 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left2 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right2 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left3 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right3 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left4 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right4 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left5 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right5 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left6 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right6 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left7 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right7 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left8 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right8 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left9 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right9 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-}
-
-#left10 {
-    width: 80px;
-    height: 30px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
-    float:left;
-    clear: left;
-}
-
-#right10 {
+#right1, #right2, #right3, #right4, #right5, #right6, #right7, #right8, #right9, #right10 {
     width: 80px;
     height: 30px;
     padding: 10px;
@@ -273,9 +146,4 @@
   padding: 4px 8px;
   margin: 0;
   top:375px;
-}
-
-#build_button {
-  width: 50%;
-  margin: 0 auto;
 }
