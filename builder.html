@@ -34,7 +34,7 @@
 
  	<p id="demo"></p>
 
-	<div id="roster">
+	<div id="roster" class="droptarget">
 		<table id="paddlers" style="width:10%; float:left">
 		</table>
 
@@ -94,12 +94,41 @@
   
 
   <script type="text/javascript">
+  Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
+
+		var Paddler = Parse.Object.extend("Paddler");
+		var query = new Parse.Query(Paddler);
+		query.find({
+			success: function(results) {
+				var myTable = document.getElementById("paddlers");
+				
+				// Adds paddlers to the table 
+				for (var i = 0; i < results.length; i++) {
+					var row = myTable.insertRow(-1);
+					var object = results[i];
+					
+					var cell1 = row.insertCell(0);
+					
+					cell1.innerHTML = object.get('Name');
+					cell1.draggable = true;
+					cell1.id = object.id;
+
+
+				}
+			},
+			error: function(error){
+				alert("Error");
+			}
+		});
+  
+  
+	var dragId;
+	var dragOrigin;
+	
 	document.addEventListener("dragstart", function(event) {
 		// The dataTransfer.setData() method sets the data type and the value of the dragged data
-		event.dataTransfer.setData("Text", event.target.id);
-		
-		// Output some text when starting to drag the p element
-		document.getElementById("demo").innerHTML = "TEXT HERE";
+		dragId = event.target.id;
+		dragOrigin = document.getElementById(dragId).parentElement;
 		
 		// Change the opacity of the draggable element
 		event.target.style.opacity = "0.4";
@@ -108,13 +137,13 @@
 	
 	// While dragging the p element, change the color of the output text
 	document.addEventListener("drag", function(event) {
-		document.getElementById("demo").style.color = "red";
+
 	});
 	
 	// Output some text when finished dragging the p element and reset the opacity
 	document.addEventListener("dragend", function(event) {
-		document.getElementById("demo").innerHTML = "Finished dragging the p element.";
 		event.target.style.opacity = "1";
+		
 	});
 
 	/* Events fired on the drop target */
@@ -145,56 +174,60 @@
 	   The dragged data is the id of the dragged element ("drag1")
 	   Append the dragged element into the drop element
 	*/
+	// TODO: Handle dropping in place where it came from, dropping in new place
 	document.addEventListener("drop", function(event) {
 		event.preventDefault();
 
 		if ( event.target.className == "droptarget" ) {
-			document.getElementById("demo").style.color = "";
-			if(event.target.innerHTML != ""){
-				var newCell = document.getElementById("paddlers").insertRow(-1).insertCell(0);
-				newCell.innerHTML = event.target.innerHTML;
-				newCell.draggable = true;
-				newCell.id = event.target.innerHTML;
-				event.target.innerHTML = "";
-			}
-			event.target.style.border = "";
-			var data = event.dataTransfer.getData("Text");
-			event.target.appendChild(document.getElementById(data));
+			var query = new Parse.Query(Paddler);
+			query.equalTo("objectId", dragId);
+			query.find({
+				success: function(results) {
+				
+					// Handles a drop into the roster
+					if( event.target.id == "roster"){
+						dragOrigin.removeChild(document.getElementById(dragId));
+						var myTable = document.getElementById("paddlers");
+						
+						
+					
+						var newCell = myTable.insertRow(-1).insertCell(0);
+						newCell.draggable = true;
+						newCell.id = dragId;	
+						newCell.innerHTML = results[0].get("Name");
+						event.target.style.border = "";
+					}
+					
+
+					else{
+						dragOrigin.removeChild(document.getElementById(dragId));
+						event.target.style.border = "";
+						
+						if(event.target.innerHTML != ""){
+;
+							var myTable = document.getElementById("paddlers");
+							var newCell = myTable.insertRow(-1).insertCell(0);
+							newCell.draggable = true;
+							newCell.id = event.target.children[0].id;
+							newCell.innerHTML = event.target.innerHTML;
+						}
+						
+						
+						event.target.innerHTML = "<div id='" + results[0].id + "' draggable='true'>" + results[0].get('Name') + "</div>";		
+					}
+				},
+				error: function(error){
+					alert("Error");
+				}
+			});
 		}
 	});
 	
-	Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
-
-		var Paddler = Parse.Object.extend("Paddler");
-		var query = new Parse.Query(Paddler);
-		query.find({
-			success: function(results) {
-				var myTable = document.getElementById("paddlers");
-				
-				// Adds paddlers to the table 
-				for (var i = 0; i < results.length; i++) {
-					var row = myTable.insertRow(-1);
-					var object = results[i];
-					
-					var cell1 = row.insertCell(0);
-					
-					cell1.innerHTML = object.get('Name');
-					cell1.draggable = true;
-					cell1.id = object.get('Name');
-
-
-				}
-			},
-			error: function(error){
-				alert("Error");
-			}
-		});
+	
 		
 
 	
   </script>
-
-</div>
 
 </body>
 
