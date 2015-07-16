@@ -18,7 +18,7 @@
   
   <div id="main">
 
-		<h1>Paddler Chart</h1>
+		<h1>Roster</h1>
 		<div id="info">
 			<table id="paddlers" style="width:50%">
 				<tr>
@@ -49,6 +49,8 @@
 				// Adds paddlers to the table 
 				for (var i = 0; i < results.length; i++) {
 					var row = myTable.insertRow(-1)
+					
+					
 					var object = results[i];
 					
 					var cell1 = row.insertCell(0);
@@ -57,13 +59,19 @@
 					var cell4 = row.insertCell(3);
 					var cell5 = row.insertCell(4);
 					var cell6 = row.insertCell(5);
+					var cell7 = row.insertCell(6);
 					
-					cell1.innerHTML = object.get('Name');
+					cell1.innerHTML = object.get('Name');	
+					cell1.id = object.id;	
 					cell2.innerHTML = object.get('Weight');
 					cell3.innerHTML = object.get('Side');
 					cell4.innerHTML = object.get('Section');
 					cell5.innerHTML = object.get('Boat');
 					cell6.innerHTML = object.get('Gender');
+					
+
+					cell7.innerHTML = "<button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+
 					
 				}
 			},
@@ -72,7 +80,44 @@
 			}
 		});
     
-	
+		function deletePaddler(event){
+			var Paddler = Parse.Object.extend("Paddler");
+			var query = new Parse.Query(Paddler);
+			query.equalTo("objectId", event);
+			
+			query.find({
+			success: function(results) {
+			
+				var myTable = document.getElementById("paddlers");
+				var looping = true;
+				var rowNumber = 0;
+				while(looping){
+					if(myTable.rows[rowNumber].cells[0].id == results[0].id){
+						myTable.deleteRow(rowNumber);
+						break;
+					}
+					rowNumber++;
+				}
+
+				results[0].destroy({
+					success: function(myObject) {
+						//alert("Deleted");
+					},
+					error: function(myObject, error) {
+						alert("Error!");
+					}
+				});
+				
+			},
+			error: function(error){
+				alert("Error");
+			}
+		});
+		
+
+			
+		
+		}
   </script>
 
 </body>
