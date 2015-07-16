@@ -97,7 +97,11 @@
 		
 		// Handles adding a paddler to the roster
 		function addPaddler(){
-		
+			if(document.getElementById("nameEntry").value == ""){
+				alert("Add a name for this entry!");
+				return;
+			}
+			
 			if(!isInt(document.getElementById("weightEntry").value)){
 				alert("Enter an integer for the weight field!");
 				return;
