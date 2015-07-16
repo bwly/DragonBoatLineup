@@ -78,6 +78,13 @@
   color: #000;
 }
 
+
+#roster {
+  border: 1px solid #aaaaaa;
+  display:table;
+  padding: 10px;
+}
+
 #wrapper {
   float:left;
   padding-left: 100px;
