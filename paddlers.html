@@ -53,6 +53,7 @@
 
 		var Paddler = Parse.Object.extend("Paddler");
 		var query = new Parse.Query(Paddler);
+		query.equalTo("Owner", Parse.User.current().getUsername());
 		query.find({
 			success: function(results) {
 				var myTable = document.getElementById("paddlers");
@@ -123,7 +124,7 @@
 			paddler.set("Name", document.getElementById("nameEntry").value);
 			paddler.set("Weight", parseInt(document.getElementById("weightEntry").value));
 			paddler.set("Side", document.getElementById("sideEntry").value);
-
+			paddler.set("Owner", Parse.User.current().getUsername());
 			
 			paddler.save(null, {
 				success: function(results) {

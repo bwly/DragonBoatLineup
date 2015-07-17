@@ -83,11 +83,13 @@
 
 			user.signUp(null, {
 			  success: function(user) {
-			    alert("Successful signup with: " + document.getElementById("username").value + " and " + document.getElementById("password").value);
-
+			   
 			  	Parse.User.logIn(document.getElementById("username").value, document.getElementById("password").value, {
 				  success: function(user) {
-				    alert("Logged in")
+				    document.getElementsByClassName("signUp")[0].style.display = "none";
+					document.getElementsByClassName("logIn")[0].style.display = "none";
+					document.getElementsByClassName("loggedIn")[0].style.display = "block";
+					document.getElementById("loginText").innerHTML = "Logged in as: " + Parse.User.current().getUsername();
 				  },
 				  error: function(user, error) {
 				    alert("Could not log in");

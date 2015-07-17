@@ -107,6 +107,7 @@
 
 		var Paddler = Parse.Object.extend("Paddler");
 		var query = new Parse.Query(Paddler);
+		query.equalTo("Owner", Parse.User.current().getUsername());
 		query.find({
 			success: function(results) {
 				var myTable = document.getElementById("paddlers");
