@@ -27,6 +27,18 @@
   padding-left:5px;
 }
 
+.nav3 a {
+  color: #5a5a5a;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 14px 10px;
+  text-transform: uppercase;
+}
+
+.nav3 li {
+  display: inline;
+}
+
 .jumbotron {
   background-image:url(img/dragon-boat-racing.jpg);
   height: 500px;
@@ -113,26 +125,27 @@
 #roster {
   border: 1px solid #aaaaaa;
   display:table;
-  padding: 100px;
+  padding: 100px; 
+  margin-right: 150px;
 }
 
 #wrapper {
   float:left;
-  
 }
 
 #left1, #left2, #left3, #left4, #left5, #left6, #left7, #left8, #left9, #left10 {
-    width: 80px;
-    height: 30px;
+    width: 140px;
+    height: 55px;
     padding: 10px;
     border: 1px solid #aaaaaa;
     float:left;
     clear: left;
+    margin-left:150px;
 }
 
 #right1, #right2, #right3, #right4, #right5, #right6, #right7, #right8, #right9, #right10 {
-    width: 80px;
-    height: 30px;
+    width: 140px;
+    height: 55px;
     padding: 10px;
     border: 1px solid #aaaaaa;
     float:left;
