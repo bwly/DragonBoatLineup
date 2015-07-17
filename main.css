@@ -39,6 +39,12 @@
   display: inline;
 }
 
+.signUp, .logIn {
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+}
+
 .jumbotron {
   background-image:url(img/dragon-boat-racing.jpg);
   height: 500px;

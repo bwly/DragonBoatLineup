@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+
+  <head>
+    <link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">
+    <link rel="stylesheet" href="main.css">  
+	
+	<script type="text/javascript" src="sorting_functions.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.5.0.min.js"></script>
+  </head>
+
+  <body>
+
+    <div class="nav">
+      <div class="container">
+        <ul class="pull-left">
+          <li><a href="index.html">Main</a></li>
+          <li><a href="signup.html">Sign Up or Log In</a></li>
+          <li><a href="paddlers.html">Roster Editor</a></li>
+		  <li><a href="builder.html">Lineup Builder</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="signUp">
+    	<h1>Sign up</h1>
+    	<input type='text' id='username' placeholder='Username'>
+    	<br>
+    	<input type='password' id='password' placeholder='Password'>
+    	<br>
+    	<input type='password' id='password2' placeholder='Confirm password'>
+    	<br>
+    	<button onclick='submitSignUp()'>Sign up</button>
+    </div>
+
+    <div class="logIn">
+    	<h1>Log in</h1>
+    	<input type='text' id='loginUsername' placeholder='Username'>
+    	<br>
+    	<input type='password' id='loginPassword' placeholder='Password'>
+    	<br>
+    	<button onclick='submitLogIn()'>Log In</button>
+    </div>
+
+    <div class = "loggedIn">
+    	<h1 id='loginText'></h1>
+    	<button onclick="logOut()">Log Out</button>
+    </div>
+
+	<script type="text/javascript">		
+		Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
+		
+
+		var currentUser = Parse.User.current();
+
+		
+
+		if (currentUser) {
+			document.getElementsByClassName("signUp")[0].style.display = "none";
+			document.getElementsByClassName("logIn")[0].style.display = "none";
+			document.getElementsByClassName("loggedIn")[0].style.display = "block";
+			document.getElementById("loginText").innerHTML = "Logged in as: " + Parse.User.current().getUsername();
+		} else {
+		   	document.getElementsByClassName("signUp")[0].style.display = "block";
+			document.getElementsByClassName("logIn")[0].style.display = "block";
+			document.getElementsByClassName("loggedIn")[0].style.display = "none";
+		}
+
+
+		function submitSignUp(){
+			// Checks that the password has been confirmed
+			if(document.getElementById("password").value != document.getElementById("password2").value){
+				alert("Passwords do not match.  Try again.");
+				document.getElementById("password").value = "";
+				document.getElementById("password2").value = "";
+				return;
+			}
+
+			var user = new Parse.User();
+			user.set("username", document.getElementById("username").value);
+			user.set("password", document.getElementById("password").value);
+
+			user.signUp(null, {
+			  success: function(user) {
+			    alert("Successful signup with: " + document.getElementById("username").value + " and " + document.getElementById("password").value);
+
+			  	Parse.User.logIn(document.getElementById("username").value, document.getElementById("password").value, {
+				  success: function(user) {
+				    alert("Logged in")
+				  },
+				  error: function(user, error) {
+				    alert("Could not log in");
+				  }
+				});
+
+			  },
+			  error: function(user, error) {
+			    // Show the error message somewhere and let the user try again.
+			    alert("Error: " + error.code + " " + error.message);
+			  }
+
+
+			});
+		}
+
+
+		function submitLogIn(){
+			
+			Parse.User.logIn(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value, {
+			  	success: function(user) {
+			    	document.getElementsByClassName("signUp")[0].style.display = "none";
+					document.getElementsByClassName("logIn")[0].style.display = "none";
+					document.getElementsByClassName("loggedIn")[0].style.display = "block";
+					document.getElementById("loginText").innerHTML = "Logged in as: " + Parse.User.current().getUsername();
+			  },
+			  error: function(user, error) {
+			  	alert("Error: " + error.code + " " + error.message);
+			  }
+			});
+
+		}
+
+		function logOut(){
+			Parse.User.logOut();			
+			document.getElementsByClassName("signUp")[0].style.display = "block";
+			document.getElementsByClassName("logIn")[0].style.display = "block";
+			document.getElementsByClassName("loggedIn")[0].style.display = "none";
+		}
+
+	</script>
+	
+	
+  </body>
+
+</html>
