@@ -297,20 +297,20 @@
 		
 		if(leftWeight > rightWeight){
 			difference = leftWeight - rightWeight;
-			output = "Left heavy by " + difference + " pounds";
+			output = "left heavy by " + difference + " pounds";
 
 		}
 		else if(leftWeight < rightWeight){
 			difference = rightWeight - leftWeight;
-			output = "Right heavy by " + difference + " pounds";
+			output = "right heavy by " + difference + " pounds";
 		}
 		else{
-			output = "Perfectly Balanced";
+			output = "perfectly balanced";
 
 		}
 		
 
-		document.getElementById("balance").innerHTML = "Boat is: " + output;
+		document.getElementById("balance").innerHTML = "Boat is " + output;
 	}
 	
   </script>

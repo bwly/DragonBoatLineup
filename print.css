@@ -1,1 +1,34 @@
-/* TODO: Make printer-friendly style */
+.container2 {
+  display: none;
+}
+
+.nav3 a {
+  display: none;
+}
+
+.nav3 li {
+  display: none;
+}
+
+#header h1 {
+  display: none;
+}
+
+#header h2 {
+  display: none;
+}
+
+table#paddlers {
+  display:none;
+}
+
+#left1, #left2, #left3, #left4, #left5, #left6, #left7, #left8, #left9, #left10 {
+    width: 140px;
+    height: 55px;
+    border: 1px solid #aaaaaa;
+}
+
+#right1, #right2, #right3, #right4, #right5, #right6, #right7, #right8, #right9, #right10 {
+    width: 140px;
+    height: 55px;
+}
