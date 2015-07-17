@@ -117,7 +117,10 @@
 					document.getElementById("loginText").innerHTML = "Logged in as: " + Parse.User.current().getUsername();
 			  },
 			  error: function(user, error) {
-			  	alert("Error: " + error.code + " " + error.message);
+				if(error.code == 101) {
+			    	alert("Invalid login credentials.  (Both username and password are case sensitive.)");
+			    }
+			  	
 			  }
 			});
 
