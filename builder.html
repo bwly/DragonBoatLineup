@@ -11,6 +11,9 @@
   <script type="text/javascript" src="sorting_functions.js"></script>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.5.0.min.js"></script>
+  
+
+
   </head>
 
 <body>
@@ -43,54 +46,58 @@
 <div id="wrapper">
 
 <!-- row 1 -->
-<div id="left1" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right1" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left1" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right1" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 <!-- row 2 -->
-<div id="left2" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right2" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left2" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right2" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 <!-- row 3 -->
-<div id="left3" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right3" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left3" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right3" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 
 <!-- row 4 -->
-<div id="left4" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right4" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left4" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right4" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 
 <!-- row 5 -->
-<div id="left5" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right5" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left5" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right5" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 
 <!-- row 6 -->
-<div id="left6" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right6" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left6" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right6" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 
 <!-- row 7 -->
-<div id="left7" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right7" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left7" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right7" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 
 <!-- row 8 -->
-<div id="left8" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right8" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left8" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right8" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 
 <!-- row 9 -->
-<div id="left9" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right9" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left9" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right9" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
 
 <!-- row 10 -->
-<div id="left10" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right10" class="droptarget" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="left10" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div id="right10" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 
   
 </div>
+</div>
+
+<div id="balancer">
+	<p id="balance"></p>
 </div>
 
   <script type="text/javascript">
@@ -120,7 +127,8 @@
 				alert("Error");
 			}
 		});
-  
+  	
+  		getBalance();
   
 	var dragId;
 	var dragOrigin;
@@ -150,7 +158,7 @@
 
 	// When the draggable p element enters the droptarget, change the DIVS's border style
 	document.addEventListener("dragenter", function(event) {
-		if ( event.target.className == "droptarget" ) {
+		if ( event.target.className == "droptarget" || event.target.className == "rightSide" || event.target.className == "leftSide") {
 			event.target.style.border = "3px dotted red";
 		}
 	});
@@ -163,7 +171,7 @@
 
 	// When the draggable p element leaves the droptarget, reset the DIVS's border style
 	document.addEventListener("dragleave", function(event) {
-		if ( event.target.className == "droptarget" ) {
+		if ( event.target.className == "droptarget" || event.target.className == "rightSide" || event.target.className == "leftSide") {
 			event.target.style.border = "";
 		}
 	});
@@ -178,7 +186,7 @@
 	document.addEventListener("drop", function(event) {
 		event.preventDefault();
 
-		if ( event.target.className == "droptarget" ) {
+		if ( event.target.className == "droptarget" || event.target.className == "rightSide" || event.target.className == "leftSide") {
 			var query = new Parse.Query(Paddler);
 			query.equalTo("objectId", dragId);
 			query.find({
@@ -200,32 +208,108 @@
 					
 
 					else{
+						// Handle drop into boat
+
 						dragOrigin.removeChild(document.getElementById(dragId));
 						event.target.style.border = "";
 						
 						if(event.target.innerHTML != ""){
-;
 							var myTable = document.getElementById("paddlers");
 							var newCell = myTable.insertRow(-1).insertCell(0);
 							newCell.draggable = true;
 							newCell.id = event.target.children[0].id;
 							newCell.innerHTML = event.target.innerHTML;
+
+							// Subtracts the weight of the overwritten paddler from the boat
+							if(event.target.className == "rightSide"){
+
+								var query2 = new Parse.Query(Paddler);
+								query2.equalTo("objectId", event.target.children[0].id);
+
+								query2.find({
+									success: function(results2) {
+										rightWeight -= results2[0].get("Weight");
+										getBalance();
+										
+									},
+									error: function(error2){
+										alert("Error");
+									}
+								});
+							} 
+							else if(event.target.className == "leftSide"){
+								var query2 = new Parse.Query(Paddler);
+								query2.equalTo("objectId", event.target.children[0].id);
+								query2.find({
+									success: function(results2) {
+										leftWeight -= results2[0].get("Weight");
+										getBalance();
+									},
+									error: function(error2){
+										alert("Error");
+									}
+								});
+							}
+
 						}
 						
 						
 						event.target.innerHTML = "<div id='" + results[0].id + "' draggable='true'>" + results[0].get('Name') + "</div>";		
 					}
+
+					
+					// Adds paddler to right or left arrays if in the boat
+					if(event.target.className == "rightSide"){
+						rightWeight += results[0].get("Weight");
+					} 
+					else if(event.target.className == "leftSide"){
+						leftWeight += results[0].get("Weight");
+					}
+
+					// Subtracts the weight from the position that the paddler moved from
+					if(dragOrigin.className == "rightSide"){
+						rightWeight -= results[0].get("Weight");
+					}
+					else if(dragOrigin.className == "leftSide"){
+						leftWeight -= results[0].get("Weight");
+					}
+					getBalance();
+					
 				},
 				error: function(error){
 					alert("Error");
 				}
 			});
 		}
+		
 	});
 	
-	
+
+	var leftWeight = 0;
+	var rightWeight = 0;
+
+  // This determines whether the boat is right or left heavy, and returns the string that gives that information
+  	function getBalance(){
+		var output;
+		var difference;
+		
+		if(leftWeight > rightWeight){
+			difference = leftWeight - rightWeight;
+			output = "Left heavy by " + difference + " pounds";
+
+		}
+		else if(leftWeight < rightWeight){
+			difference = rightWeight - leftWeight;
+			output = "Right heavy by " + difference + " pounds";
+		}
+		else{
+			output = "Perfectly Balanced";
+
+		}
 		
 
+		document.getElementById("balance").innerHTML = "Boat is: " + output;
+	}
 	
   </script>
 
