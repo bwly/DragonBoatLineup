@@ -113,12 +113,12 @@
 #roster {
   border: 1px solid #aaaaaa;
   display:table;
-  padding: 10px;
+  padding: 100px;
 }
 
 #wrapper {
   float:left;
-  padding-left: 100px;
+  
 }
 
 #left1, #left2, #left3, #left4, #left5, #left6, #left7, #left8, #left9, #left10 {
