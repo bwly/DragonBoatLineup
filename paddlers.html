@@ -22,7 +22,8 @@
       <div class="container2">
         <ul class="pull-left">
           <li><a href="index.html">Main</a></li>
-          <li><a href="builder.html">Build</a></li>
+          <li><a href="signup.html">Sign Up or Log In</a></li>
+          <li><a href="builder.html">Lineup Builder</a></li>
         </ul>
       </div>
     </div>
@@ -46,60 +47,74 @@
 		
   </div>
 
+  <div id="logInFirst">
+  	<h1>Sign up or log in to use the roster editor.</h1>
+  </div>
   
 
   <script type="text/javascript">
 	Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
 
-		var Paddler = Parse.Object.extend("Paddler");
-		var query = new Parse.Query(Paddler);
-		query.equalTo("Owner", Parse.User.current().getUsername());
-		query.find({
-			success: function(results) {
-				var myTable = document.getElementById("paddlers");
-				
-				// Adds paddlers to the table 
-				for (var i = 0; i < results.length; i++) {
+		var currentUser = Parse.User.current();
+
+		
+
+		if (currentUser) {
+			document.getElementById("logInFirst").style.display = "none";
+			var Paddler = Parse.Object.extend("Paddler");
+			var query = new Parse.Query(Paddler);
+			query.equalTo("Owner", Parse.User.current().getUsername());
+			query.find({
+				success: function(results) {
+					var myTable = document.getElementById("paddlers");
+					
+					// Adds paddlers to the table 
+					for (var i = 0; i < results.length; i++) {
+						var row = myTable.insertRow(-1);
+						
+						
+						var object = results[i];
+						
+						var cell1 = row.insertCell(0);
+						var cell2 = row.insertCell(1);
+						var cell3 = row.insertCell(2);
+						var cell4 = row.insertCell(3);
+						
+						cell1.innerHTML = object.get('Name');	
+						cell1.id = object.id;	
+						cell2.innerHTML = object.get('Weight');
+						cell3.innerHTML = object.get('Side');
+
+						// Delete button
+						cell4.innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+						
+					}
+					
+					
+					// Creates a row for adding paddlers
 					var row = myTable.insertRow(-1);
-					
-					
-					var object = results[i];
-					
 					var cell1 = row.insertCell(0);
 					var cell2 = row.insertCell(1);
 					var cell3 = row.insertCell(2);
 					var cell4 = row.insertCell(3);
-					
-					cell1.innerHTML = object.get('Name');	
-					cell1.id = object.id;	
-					cell2.innerHTML = object.get('Weight');
-					cell3.innerHTML = object.get('Side');
 
-					// Delete button
-					cell4.innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
-					
+			
+					// Fills the new row with values
+					cell1.innerHTML = "<input type='text' id='nameEntry' placeholder='Name'>";
+					cell2.innerHTML = "<input type='text' id='weightEntry' placeholder='Weight'>";
+					cell3.innerHTML = "<select id='sideEntry'><option value='Any'>Any</option><option value='Left'>Left</option><option value='Right'>Right</option></select>";
+					cell4.innerHTML = "<button onclick='addPaddler()'>Add</button>";
+				},
+				error: function(error){
+					alert("Error");
 				}
-				
-				
-				// Creates a row for adding paddlers
-				var row = myTable.insertRow(-1);
-				var cell1 = row.insertCell(0);
-				var cell2 = row.insertCell(1);
-				var cell3 = row.insertCell(2);
-				var cell4 = row.insertCell(3);
+			});
+		}
+		else{
+			document.getElementById("main").style.display = "none";
+			
 
-		
-				// Fills the new row with values
-				cell1.innerHTML = "<input type='text' id='nameEntry' placeholder='Name'>";
-				cell2.innerHTML = "<input type='text' id='weightEntry' placeholder='Weight'>";
-				cell3.innerHTML = "<select id='sideEntry'><option value='Any'>Any</option><option value='Left'>Left</option><option value='Right'>Right</option></select>";
-				cell4.innerHTML = "<button onclick='addPaddler()'>Add</button>";
-			},
-			error: function(error){
-				alert("Error");
-			}
-		});
-		
+		}
 		// Function from http://stackoverflow.com/questions/3885817/how-to-check-that-a-number-is-float-or-integer
 		function isInt(value) {
 			var er = /^-?[0-9]+$/;

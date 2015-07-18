@@ -131,7 +131,8 @@
 #roster {
   border: 1px solid #aaaaaa;
   display:table;
-  padding: 100px; 
+  float:left;
+  padding: 10px; 
   margin-right: 150px;
 }
 

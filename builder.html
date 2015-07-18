@@ -23,119 +23,144 @@
       <div class="container2">
         <ul class="pull-left">
           <li><a href="index.html">Main</a></li>
+          <li><a href="signup.html">Sign Up or Log In</a></li>
           <li><a href="paddlers.html">Roster Editor</a></li>
           <li><a href="javascript:window.print()">Print</a></li>
         </ul>
       </div>
     </div>
 
+
+  
     <div id="builder_wrapper">
 
-	<div id="header">
- 		<h1>Builder</h1>
- 		<h2>Control the layout of your boat here.</h2>
- 	</div>
+		<div id="header">
+	 		<h1>Builder</h1>
+	 		<h2>Control the layout of your boat here.</h2>
+	 	</div>
 
- 	<div id="balancer">
-	<p id="balance"></p>
+	 	<div id="balancer">			
+			<p id="balance"></p>
+		</div>
+
+ 	
+
+		<div id="roster" class="droptarget">
+			<p style="float:top">Drag names here to put them back into the roster</p>
+			<table id="paddlers" style="width:50%;">
+			</table>
+		</div>
+			<div id="wrapper">
+
+				<!-- row 1 -->
+				<div id="left1" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right1" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+				<!-- row 2 -->
+				<div id="left2" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right2" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+				<!-- row 3 -->
+				<div id="left3" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right3" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+
+				<!-- row 4 -->
+				<div id="left4" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right4" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+
+				<!-- row 5 -->
+				<div id="left5" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right5" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+
+				<!-- row 6 -->
+				<div id="left6" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right6" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+
+				<!-- row 7 -->
+				<div id="left7" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right7" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+
+				<!-- row 8 -->
+				<div id="left8" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right8" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+
+				<!-- row 9 -->
+				<div id="left9" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right9" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+
+				<!-- row 10 -->
+				<div id="left10" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+				<div id="right10" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+			</div>
+		
+
+
+		<div id="logInFirst">
+			<h1>Sign up or log in to use the lineup builder.</h1>
+		</div>
+
 	</div>
 
- 	<p id="demo"></p>
+  	<script type="text/javascript">
+    	Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
+		var currentuser = Parse.User.current();
 
-	<div id="roster" class="droptarget">
-		<table id="paddlers" style="width:10%; float:left">
-		</table>
-
-	
-
-<div id="wrapper">
-
-<!-- row 1 -->
-<div id="left1" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right1" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-<!-- row 2 -->
-<div id="left2" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right2" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-<!-- row 3 -->
-<div id="left3" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right3" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+		var dragId;
+		var dragOrigin;
+		var leftWeight = 0;
+		var rightWeight = 0;
+  		
+  		if(currentuser){
+		  	document.getElementById("header").style.display = "block";
+		  	document.getElementById("balancer").style.display = "block";
+		  	document.getElementById("roster").style.display = "block";
+		  	document.getElementById("wrapper").style.display = "block";
+		    document.getElementById("logInFirst").style.display = "none";
 
 
-<!-- row 4 -->
-<div id="left4" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right4" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-
-<!-- row 5 -->
-<div id="left5" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right5" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-
-<!-- row 6 -->
-<div id="left6" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right6" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-
-<!-- row 7 -->
-<div id="left7" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right7" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-
-<!-- row 8 -->
-<div id="left8" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right8" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-
-<!-- row 9 -->
-<div id="left9" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right9" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-
-<!-- row 10 -->
-<div id="left10" class="leftSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-<div id="right10" class="rightSide" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-
-  
-</div>
-</div>
-
-
-  <script type="text/javascript">
-  Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
-
-		var Paddler = Parse.Object.extend("Paddler");
-		var query = new Parse.Query(Paddler);
-		query.equalTo("Owner", Parse.User.current().getUsername());
-		query.find({
-			success: function(results) {
-				var myTable = document.getElementById("paddlers");
-				
-				// Adds paddlers to the table 
-				for (var i = 0; i < results.length; i++) {
-					var row = myTable.insertRow(-1);
-					var object = results[i];
+			var Paddler = Parse.Object.extend("Paddler");
+			var query = new Parse.Query(Paddler);
+			query.equalTo("Owner", Parse.User.current().getUsername());
+			query.find({
+				success: function(results) {
+					var myTable = document.getElementById("paddlers");
 					
-					var cell1 = row.insertCell(0);
-					
-					cell1.innerHTML = object.get('Name');
-					cell1.draggable = true;
-					cell1.id = object.id;
+					// Adds paddlers to the table 
+					for (var i = 0; i < results.length; i++) {
+						var row = myTable.insertRow(-1);
+						var object = results[i];
+						
+						var cell1 = row.insertCell(0);
+						
+						cell1.innerHTML = object.get('Name') + ", " + object.get('Weight') + "lbs";
+						cell1.draggable = true;
+						cell1.id = object.id;
 
 
+					}
+				},
+				error: function(error){
+					alert("Error");
 				}
-			},
-			error: function(error){
-				alert("Error");
-			}
-		});
+			});
   	
-  		getBalance();
+  			getBalance();
   
-	var dragId;
-	var dragOrigin;
-	
+		}
+		else{
+			document.getElementById("header").style.display = "none";
+		  	document.getElementById("balancer").style.display = "none";
+		  	document.getElementById("roster").style.display = "none";
+		  	document.getElementById("wrapper").style.display = "none";
+		    document.getElementById("logInFirst").style.display = "block";
+		}
 	document.addEventListener("dragstart", function(event) {
 		// The dataTransfer.setData() method sets the data type and the value of the dragged data
 		dragId = event.target.id;
@@ -205,7 +230,7 @@
 						var newCell = myTable.insertRow(-1).insertCell(0);
 						newCell.draggable = true;
 						newCell.id = dragId;	
-						newCell.innerHTML = results[0].get("Name");
+						newCell.innerHTML = results[0].get('Name') + ', ' + results[0].get('Weight') + "lbs";
 						event.target.style.border = "";
 					}
 					
@@ -257,7 +282,7 @@
 						}
 						
 						
-						event.target.innerHTML = "<div id='" + results[0].id + "' draggable='true'>" + results[0].get('Name') + "</div>";		
+						event.target.innerHTML = "<div id='" + results[0].id + "' draggable='true'>" + results[0].get('Name') + ", " + results[0].get('Weight') + "lbs</div>";		
 					}
 
 					
@@ -288,8 +313,6 @@
 	});
 	
 
-	var leftWeight = 0;
-	var rightWeight = 0;
 
   // This determines whether the boat is right or left heavy, and returns the string that gives that information
   	function getBalance(){
