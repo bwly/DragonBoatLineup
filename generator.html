@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<script type="text/javascript" src="ExcelPlus/sheetjs.all.min.js"></script>
+	<script type="text/javascript" src="ExcelPlus/excelplus-2.2.min.js"></script>
+
+	<meta charset="utf-8">
+
+	<link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">
+	<link rel="stylesheet" href="main.css">
+	<link rel="stylesheet" type="text/css" href="print.css" media="print"> 
+	  
+	<meta name="viewport" content="width=device-width">
+
+	<script type="text/javascript" src="sorting_functions.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.5.0.min.js"></script>
+</head>
+<body>
+	<h1>Lineup Generator</h1>
+	<h3>Upload your .xlsx spreadsheet here.</h3>
+
+	<!-- "Choose File" button and output div -->
+	<object id="file-object"></object>
+	<div id="result"></div>
+
+
+<!--Credits to http://aymkdn.github.io/ExcelPlus/ for the ExcelPlus library -->
+<script>
+	
+	var ep = new ExcelPlus();
+	ep.openLocal({
+		"flashPath":"/ExcelPlus/sfwobject/",
+		"labelButton":"Open an Excel file"
+	},function() {
+		// format of a = [row][column]
+		var a = ep.selectSheet(1).readAll();
+		
+
+		var fridayOutput = "Friday Paddlers:\n";
+		var saturdayOutput = "Saturday Paddlers:\n";
+		var sundayOutput = "Sunday Paddlers:\n"
+		var nameCol = 0;
+		//var html = "<table>";
+		for (var row = 0; row < a.length; row++) {
+			for(var col = 0; col < a[row].length; col++){
+				if(a[row][col] == "Your Name"){
+					nameCol = col;
+				}
+
+
+				if(a[row][col] == "Will you be attending Friday's practice?"){
+					
+					var fridayRow = 1;
+					
+					for(var fridayRow = 1; fridayRow < a.length; fridayRow++){
+						if(a[fridayRow][col] == "Yes!" || a[fridayRow][col] == "Yes, and I can drive."){
+							fridayOutput += (a[fridayRow][nameCol] + "\n");
+						}
+					}
+					document.getElementById("result").innerHTML += fridayOutput + "<br>";
+
+				}
+				else if(a[row][col] == "Will you be attending Saturday's practice?"){
+					for(var saturdayRow = 1; saturdayRow < a.length; saturdayRow++){
+						if(a[saturdayRow][col] == "Yes!" || a[saturdayRow][col] == "Yes, and I can drive."){
+							saturdayOutput += (a[saturdayRow][nameCol] + "\n");
+						}
+					}
+					document.getElementById("result").innerHTML += saturdayOutput + "<br>";
+
+				}
+				else if(a[row][col] == "Will you be attending Sunday's practice?"){
+					for(var sundayRow = 1; sundayRow < a.length; sundayRow++){
+						if(a[sundayRow][col] == "Yes!" || a[sundayRow][col] == "Yes, and I can drive."){
+							sundayOutput += (a[sundayRow][nameCol] + "\n");
+						}
+					}
+					document.getElementById("result").innerHTML += sundayOutput + "<br>";
+
+				}
+			}
+		}
+
+
+
+		document.querySelector("#result").insertAdjacentHTML('beforeend', html);
+	});
+
+
+</script>
+
+
+
+</body>
+
+</html>
