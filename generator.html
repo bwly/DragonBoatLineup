@@ -21,30 +21,130 @@
 	<script type="text/javascript" src="redips-drag-min.js"></script> 
 	<script type="text/javascript" src="header.js"></script>
 </head>
-<body onload="REDIPS.drag.init()">
+<body onload="REDIPS.drag.init(); REDIPS.drag.dropMode = 'single';">
 	<h1>Lineup Generator</h1>
 	<h3>Upload your .xlsx spreadsheet here.</h3>
 
 	<!-- "Choose File" button and output div -->
 	<object id="file-object"></object>
 	<div id="result"></div>
-
+	<div id="unknown"></div>
 	<br>
 
 	
-	<div id="redips-drag">
+	<div id="redips-drag" style="width:100%;">
 		
 		<!-- Roster table -->
-		<h1>Roster</h1>
-		<table id="roster">
-			<colgroup>
-				<col width="100"/>
-			</colgroup>
+		<div style="float:left;">
+			<h2 id="rosterTitle">Roster from spreadsheet will load here.</h2>
+			<table id="roster">
+				<colgroup>
+					<col width="100"/>
+				</colgroup>
 
-			<tbody id="rosterBody"></tbody>
-		</table>
+				<tbody id="rosterBody"></tbody>
+			</table>
+		</div>
+
+
+		<!-- Boat table -->
+		<div style="float:left; padding-left:100px;">
+			<h1>Boat</h1>
+			<table id="boat">
+				<colgroup>
+					<col width="100"/>
+					<col width="100"/>
+				</colgroup>
+
+				<tbody id="boatBody">
+					<tr>
+						<td>
+						</td>
+						<td>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+						<td>
+							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Full roster table -->
+		<div style="float:left; padding-left:100px;">
+			<h1>Full Roster</h1>
+			<table id="fullRoster">
+				<colgroup>
+					<col width="100"/>
+				</colgroup>
+
+				<tbody id="fullRosterBody"></tbody>
+			</table>
+		</div>
+
+
 	</div>
-
 
 <!--Credits to http://aymkdn.github.io/ExcelPlus/ for the ExcelPlus library -->
 <script>
@@ -53,6 +153,29 @@
 
 
 if(currentuser){
+	var Paddler = Parse.Object.extend("Paddler");
+
+	var fullQuery = new Parse.Query(Paddler);	
+			
+
+			fullQuery.equalTo("Owner", Parse.User.current().getUsername());
+			fullQuery.find({
+				success: function(results) {					
+					for(var i = 0; i < results.length; i++){
+						var table = document.getElementById("fullRosterBody");
+						var row = table.insertRow(-1);
+						var cell = row.insertCell(0).innerHTML = '<div class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+						
+					}
+					REDIPS.drag.init();
+				},
+				error: function(error) {
+					alert("error");
+				}
+			});
+
+
+
 	var ep = new ExcelPlus();
 	ep.openLocal({
 		"flashPath":"/ExcelPlus/sfwobject/",
@@ -121,56 +244,110 @@ if(currentuser){
 		}
 
 	
-		// Puts names of paddlers attending practice for each day on the screen
-		//document.querySelector("#result").insertAdjacentHTML('beforeend', html);
-		
-		var Paddler = Parse.Object.extend("Paddler");
-		var query = new Parse.Query(Paddler);
+friday();
 
-		query.containedIn("Name", fridayArray);
-		query.equalTo("Owner", Parse.User.current().getUsername());
-		query.find({
-			success: function(results) {
-				for(var i = 0; i < results.length; i++){
 
-					var table = document.getElementById("rosterBody");
-					var row = table.insertRow(-1);
-					var cell = row.insertCell(0).innerHTML = '<div class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-					
-				}
-
-				REDIPS.drag.init();
-			},
-			error: function(error) {
-				alert("error");
+		// Friday roster filler
+		function friday() {
+			var query = new Parse.Query(Paddler);	
+			
+			// Copies friday array into tmp
+			var tmp = [];
+			for(var a = 0; a < fridayArray.length; a++){
+				tmp[a] = fridayArray[a];
 			}
-		});
+
+			query.containedIn("Name", tmp);
+			query.equalTo("Owner", Parse.User.current().getUsername());
+			query.find({
+				success: function(results) {
+					document.getElementById("rosterTitle").innerHTML = "Friday Roster";
+					for(var i = 0; i < results.length; i++){
+						tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
+
+						var table = document.getElementById("rosterBody");
+						var row = table.insertRow(-1);
+						var cell = row.insertCell(0).innerHTML = '<div class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+						
+					}
+					
+
+					document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
+					REDIPS.drag.init();
+				},
+				error: function(error) {
+					alert("error");
+				}
+			});
+		}
+
+				// Friday roster filler
+		function saturday() {
+			var query = new Parse.Query(Paddler);	
+			
+			// Copies friday array into tmp
+			var tmp = [];
+			for(var a = 0; a < saturdayArray.length; a++){
+				tmp[a] = saturdayArray[a];
+			}
+
+			query.containedIn("Name", tmp);
+			query.equalTo("Owner", Parse.User.current().getUsername());
+			query.find({
+				success: function(results) {
+					document.getElementById("rosterTitle").innerHTML = "Saturday Roster";
+					for(var i = 0; i < results.length; i++){
+						tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
+
+						var table = document.getElementById("rosterBody");
+						var row = table.insertRow(-1);
+						var cell = row.insertCell(0).innerHTML = '<div class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+						
+					}
+					REDIPS.drag.init();
+
+					document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
+				},
+				error: function(error) {
+					alert("error");
+				}
+			});
+		}
+
+				// Friday roster filler
+		function sunday() {
+			var query = new Parse.Query(Paddler);	
+			
+			// Copies friday array into tmp
+			var tmp = [];
+			for(var a = 0; a < sundayArray.length; a++){
+				tmp[a] = sundayArray[a];
+			}
+
+			query.containedIn("Name", tmp);
+			query.equalTo("Owner", Parse.User.current().getUsername());
+			query.find({
+				success: function(results) {
+					document.getElementById("rosterTitle").innerHTML = "Sunday Roster";
+					for(var i = 0; i < results.length; i++){
+						tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
+
+						var table = document.getElementById("rosterBody");
+						var row = table.insertRow(-1);
+						var cell = row.insertCell(0).innerHTML = '<div class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+						
+					}
+					REDIPS.drag.init();
+
+					document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
+				},
+				error: function(error) {
+					alert("error");
+				}
+			});
+		}
 
 	});
-}
-
-
-// appendRow and createCell functions found at  http://www.redips.net/javascript/adding-table-rows-and-columns/
-
-// append row to the HTML table
-function appendRow() {
-    var tbl = document.getElementById('my-table'), // table reference
-        row = tbl.insertRow(tbl.rows.length),      // append table row
-        i;
-    // insert table cells to the new row
-    for (i = 0; i < tbl.rows[0].cells.length; i++) {
-        createCell(row.insertCell(i), i, 'row');
-    }
-}
- 
-// create DIV element and append to the table cell
-function createCell(cell, text, style) {
-    var div = document.createElement('div'), // create DIV element
-        txt = document.createTextNode(text); // create text node
-    div.appendChild(txt);                    // append text node to the DIV
-    div.setAttribute('class', style);        // set DIV class attribute
-    div.setAttribute('className', style);    // set DIV class attribute for IE (?!)
-    cell.appendChild(div);                   // append DIV to the table cell
 }
 
 </script>

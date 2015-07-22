@@ -17,12 +17,14 @@ body{
 	display: table;
 }
 
+
 /* table */
 div#redips-drag table {
 	background-color: #eee;
 	border-collapse: collapse;
 	margin: 7px;	
 }
+
 
 /* table cells */
 div#redips-drag td{
@@ -32,6 +34,7 @@ div#redips-drag td{
 	font-size: 10pt;
 	padding: 2px;
 }
+
 
 /* drag object (DIV inside table cell) */
 .redips-drag {
