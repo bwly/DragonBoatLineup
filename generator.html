@@ -10,14 +10,18 @@
 	<link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">
 	<link rel="stylesheet" href="main.css">
 	<link rel="stylesheet" type="text/css" href="print.css" media="print"> 
-	  
+	<link rel="stylesheet" href="drag-css.css" type="text/css" media="screen" />
 	<meta name="viewport" content="width=device-width">
 
 	<script type="text/javascript" src="sorting_functions.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.5.0.min.js"></script>
+
+	<!-- Drag and drop library. Credits to http://www.redips.net/javascript/drag-and-drop-table-content/ -->
+	<script type="text/javascript" src="redips-drag-min.js"></script> 
+	<script type="text/javascript" src="header.js"></script>
 </head>
-<body>
+<body onload="REDIPS.drag.init()">
 	<h1>Lineup Generator</h1>
 	<h3>Upload your .xlsx spreadsheet here.</h3>
 
@@ -25,10 +29,30 @@
 	<object id="file-object"></object>
 	<div id="result"></div>
 
+	<br>
+
+	
+	<div id="redips-drag">
+		
+		<!-- Roster table -->
+		<h1>Roster</h1>
+		<table id="roster">
+			<colgroup>
+				<col width="100"/>
+			</colgroup>
+
+			<tbody id="rosterBody"></tbody>
+		</table>
+	</div>
+
 
 <!--Credits to http://aymkdn.github.io/ExcelPlus/ for the ExcelPlus library -->
 <script>
-	
+	Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
+	var currentuser = Parse.User.current();
+
+
+if(currentuser){
 	var ep = new ExcelPlus();
 	ep.openLocal({
 		"flashPath":"/ExcelPlus/sfwobject/",
@@ -39,8 +63,12 @@
 		
 
 		var fridayOutput = "Friday Paddlers:\n";
+		var fridayArray = [];
 		var saturdayOutput = "Saturday Paddlers:\n";
+		var saturdayArray = [];
 		var sundayOutput = "Sunday Paddlers:\n"
+		var sundayArray = [];
+
 		var nameCol = 0;
 		//var html = "<table>";
 		for (var row = 0; row < a.length; row++) {
@@ -56,38 +84,94 @@
 					
 					for(var fridayRow = 1; fridayRow < a.length; fridayRow++){
 						if(a[fridayRow][col] == "Yes!" || a[fridayRow][col] == "Yes, and I can drive."){
-							fridayOutput += (a[fridayRow][nameCol] + "\n");
+							fridayOutput += (a[fridayRow][nameCol] + ", ");
+							fridayArray.push(a[fridayRow][nameCol]);
 						}
 					}
-					document.getElementById("result").innerHTML += fridayOutput + "<br>";
+
+					// The slice removes the comma and space after the last name
+					document.getElementById("result").innerHTML += fridayOutput.slice(0,fridayOutput.length-2) + "<br>";
 
 				}
 				else if(a[row][col] == "Will you be attending Saturday's practice?"){
 					for(var saturdayRow = 1; saturdayRow < a.length; saturdayRow++){
 						if(a[saturdayRow][col] == "Yes!" || a[saturdayRow][col] == "Yes, and I can drive."){
-							saturdayOutput += (a[saturdayRow][nameCol] + "\n");
+							saturdayOutput += (a[saturdayRow][nameCol] + ", ");
+							saturdayArray.push(a[saturdayRow][nameCol]);
 						}
 					}
-					document.getElementById("result").innerHTML += saturdayOutput + "<br>";
+
+					// The slice removes the comma and space after the last name
+					document.getElementById("result").innerHTML += saturdayOutput.slice(0,saturdayOutput.length-2) + "<br>";
 
 				}
 				else if(a[row][col] == "Will you be attending Sunday's practice?"){
 					for(var sundayRow = 1; sundayRow < a.length; sundayRow++){
 						if(a[sundayRow][col] == "Yes!" || a[sundayRow][col] == "Yes, and I can drive."){
-							sundayOutput += (a[sundayRow][nameCol] + "\n");
+							sundayOutput += (a[sundayRow][nameCol] + ", ");
+							sundayArray.push(a[sundayRow][nameCol]);
 						}
 					}
-					document.getElementById("result").innerHTML += sundayOutput + "<br>";
+
+					// The slice removes the comma and space after the last name
+					document.getElementById("result").innerHTML += sundayOutput.slice(0,sundayOutput.length-2) + "<br>";
 
 				}
 			}
 		}
 
+	
+		// Puts names of paddlers attending practice for each day on the screen
+		//document.querySelector("#result").insertAdjacentHTML('beforeend', html);
+		
+		var Paddler = Parse.Object.extend("Paddler");
+		var query = new Parse.Query(Paddler);
 
+		query.containedIn("Name", fridayArray);
+		query.equalTo("Owner", Parse.User.current().getUsername());
+		query.find({
+			success: function(results) {
+				for(var i = 0; i < results.length; i++){
 
-		document.querySelector("#result").insertAdjacentHTML('beforeend', html);
+					var table = document.getElementById("rosterBody");
+					var row = table.insertRow(-1);
+					var cell = row.insertCell(0).innerHTML = '<div class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+					
+				}
+
+				REDIPS.drag.init();
+			},
+			error: function(error) {
+				alert("error");
+			}
+		});
+
 	});
+}
 
+
+// appendRow and createCell functions found at  http://www.redips.net/javascript/adding-table-rows-and-columns/
+
+// append row to the HTML table
+function appendRow() {
+    var tbl = document.getElementById('my-table'), // table reference
+        row = tbl.insertRow(tbl.rows.length),      // append table row
+        i;
+    // insert table cells to the new row
+    for (i = 0; i < tbl.rows[0].cells.length; i++) {
+        createCell(row.insertCell(i), i, 'row');
+    }
+}
+ 
+// create DIV element and append to the table cell
+function createCell(cell, text, style) {
+    var div = document.createElement('div'), // create DIV element
+        txt = document.createTextNode(text); // create text node
+    div.appendChild(txt);                    // append text node to the DIV
+    div.setAttribute('class', style);        // set DIV class attribute
+    div.setAttribute('className', style);    // set DIV class attribute for IE (?!)
+    cell.appendChild(div);                   // append DIV to the table cell
+}
 
 </script>
 
