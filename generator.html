@@ -22,17 +22,36 @@
 	<script type="text/javascript" src="header.js"></script>
 </head>
 <body onload="REDIPS.drag.init(); REDIPS.drag.dropMode = 'single';">
+	<!-- Title -->
 	<h1>Lineup Generator</h1>
-	<h3>Upload your .xlsx spreadsheet here.</h3>
+	
+	<!--Prompt-->
+	<div id="step1">
+		<h3>1. Upload your .xlsx spreadsheet here or .</h3>
 
-	<!-- "Choose File" button and output div -->
-	<object id="file-object"></object>
-	<div id="result"></div>
+		<!-- "Choose File" button -->
+		<object id="file-object"></object>
+	</div>
+
+
+	
+
+	<!-- Buttons for choosing the day that the lineup is for -->
+	<div id="step2" style="display:none";>
+		<h4>Info read from spreadsheet:</h4>
+		<div id="result"></div>
+		<br>
+
+		<h3 id="step2">2. Choose the day that you are making a lineup for.</h3>
+		<button onclick="friday();">Friday</button>
+		<button onclick="saturday();">Saturday</button>
+		<button onclick="sunday();">Sunday</button>
+	</div>
 	<div id="unknown"></div>
 	<br>
 
 	
-	<div id="redips-drag" style="width:100%;">
+	<div id="redips-drag" style="width:100%; ">
 		
 		<!-- Roster table -->
 		<div style="float:left;">
@@ -58,74 +77,44 @@
 
 				<tbody id="boatBody">
 					<tr>
-						<td>
-						</td>
-						<td>
-						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
+						<td></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
-						<td>
-							<div class="redips-drag" style="border-style: solid; cursor: move;"></div>
-						</td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
 					</tr>
 				</tbody>
 			</table>
@@ -151,104 +140,113 @@
 	Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
 	var currentuser = Parse.User.current();
 
-
-if(currentuser){
+	var fridayOutput = "Friday Paddlers:\n";
+	var fridayArray = [];
+	var saturdayOutput = "Saturday Paddlers:\n";
+	var saturdayArray = [];
+	var sundayOutput = "Sunday Paddlers:\n"
+	var sundayArray = [];
 	var Paddler = Parse.Object.extend("Paddler");
 
-	var fullQuery = new Parse.Query(Paddler);	
+	if(currentuser){
+		// Fills in the full roster
+		var fullQuery = new Parse.Query(Paddler);	
+				fullQuery.equalTo("Owner", Parse.User.current().getUsername());
+				fullQuery.find({
+					success: function(results) {					
+						for(var i = 0; i < results.length; i++){
+							var table = document.getElementById("fullRosterBody");
+							var row = table.insertRow(-1);
+							var cell = row.insertCell(0).innerHTML = '<div id="'+ results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+							
+						}
+						REDIPS.drag.init();
+					},
+					error: function(error) {
+						alert("error");
+					}
+				});
+
+
+
+		var ep = new ExcelPlus();
+		ep.openLocal({
+			"flashPath":"/ExcelPlus/sfwobject/",
+			"labelButton":"Open an Excel file"
+		},function() {
+			// format of a = [row][column]
+			var a = ep.selectSheet(1).readAll();
 			
 
-			fullQuery.equalTo("Owner", Parse.User.current().getUsername());
-			fullQuery.find({
-				success: function(results) {					
-					for(var i = 0; i < results.length; i++){
-						var table = document.getElementById("fullRosterBody");
-						var row = table.insertRow(-1);
-						var cell = row.insertCell(0).innerHTML = '<div class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+
+			var nameCol = 0;
+			for (var row = 0; row < a.length; row++) {
+				for(var col = 0; col < a[row].length; col++){
+					if(a[row][col] == "Your Name"){
+						nameCol = col;
+					}
+
+
+					if(a[row][col] == "Will you be attending Friday's practice?"){
 						
-					}
-					REDIPS.drag.init();
-				},
-				error: function(error) {
-					alert("error");
-				}
-			});
-
-
-
-	var ep = new ExcelPlus();
-	ep.openLocal({
-		"flashPath":"/ExcelPlus/sfwobject/",
-		"labelButton":"Open an Excel file"
-	},function() {
-		// format of a = [row][column]
-		var a = ep.selectSheet(1).readAll();
-		
-
-		var fridayOutput = "Friday Paddlers:\n";
-		var fridayArray = [];
-		var saturdayOutput = "Saturday Paddlers:\n";
-		var saturdayArray = [];
-		var sundayOutput = "Sunday Paddlers:\n"
-		var sundayArray = [];
-
-		var nameCol = 0;
-		//var html = "<table>";
-		for (var row = 0; row < a.length; row++) {
-			for(var col = 0; col < a[row].length; col++){
-				if(a[row][col] == "Your Name"){
-					nameCol = col;
-				}
-
-
-				if(a[row][col] == "Will you be attending Friday's practice?"){
-					
-					var fridayRow = 1;
-					
-					for(var fridayRow = 1; fridayRow < a.length; fridayRow++){
-						if(a[fridayRow][col] == "Yes!" || a[fridayRow][col] == "Yes, and I can drive."){
-							fridayOutput += (a[fridayRow][nameCol] + ", ");
-							fridayArray.push(a[fridayRow][nameCol]);
+						var fridayRow = 1;
+						
+						for(var fridayRow = 1; fridayRow < a.length; fridayRow++){
+							if(a[fridayRow][col] == "Yes!" || a[fridayRow][col] == "Yes, and I can drive."){
+								fridayOutput += (a[fridayRow][nameCol] + ", ");
+								fridayArray.push(a[fridayRow][nameCol]);
+							}
 						}
+
+						// The slice removes the comma and space after the last name
+						document.getElementById("result").innerHTML += fridayOutput.slice(0,fridayOutput.length-2) + "<br>";
+
 					}
-
-					// The slice removes the comma and space after the last name
-					document.getElementById("result").innerHTML += fridayOutput.slice(0,fridayOutput.length-2) + "<br>";
-
-				}
-				else if(a[row][col] == "Will you be attending Saturday's practice?"){
-					for(var saturdayRow = 1; saturdayRow < a.length; saturdayRow++){
-						if(a[saturdayRow][col] == "Yes!" || a[saturdayRow][col] == "Yes, and I can drive."){
-							saturdayOutput += (a[saturdayRow][nameCol] + ", ");
-							saturdayArray.push(a[saturdayRow][nameCol]);
+					else if(a[row][col] == "Will you be attending Saturday's practice?"){
+						for(var saturdayRow = 1; saturdayRow < a.length; saturdayRow++){
+							if(a[saturdayRow][col] == "Yes!" || a[saturdayRow][col] == "Yes, and I can drive."){
+								saturdayOutput += (a[saturdayRow][nameCol] + ", ");
+								saturdayArray.push(a[saturdayRow][nameCol]);
+							}
 						}
+
+						// The slice removes the comma and space after the last name
+						document.getElementById("result").innerHTML += saturdayOutput.slice(0,saturdayOutput.length-2) + "<br>";
+
 					}
-
-					// The slice removes the comma and space after the last name
-					document.getElementById("result").innerHTML += saturdayOutput.slice(0,saturdayOutput.length-2) + "<br>";
-
-				}
-				else if(a[row][col] == "Will you be attending Sunday's practice?"){
-					for(var sundayRow = 1; sundayRow < a.length; sundayRow++){
-						if(a[sundayRow][col] == "Yes!" || a[sundayRow][col] == "Yes, and I can drive."){
-							sundayOutput += (a[sundayRow][nameCol] + ", ");
-							sundayArray.push(a[sundayRow][nameCol]);
+					else if(a[row][col] == "Will you be attending Sunday's practice?"){
+						for(var sundayRow = 1; sundayRow < a.length; sundayRow++){
+							if(a[sundayRow][col] == "Yes!" || a[sundayRow][col] == "Yes, and I can drive."){
+								sundayOutput += (a[sundayRow][nameCol] + ", ");
+								sundayArray.push(a[sundayRow][nameCol]);
+							}
 						}
-					}
 
-					// The slice removes the comma and space after the last name
-					document.getElementById("result").innerHTML += sundayOutput.slice(0,sundayOutput.length-2) + "<br>";
+						// The slice removes the comma and space after the last name
+						document.getElementById("result").innerHTML += sundayOutput.slice(0,sundayOutput.length-2) + "<br>";
+
+					}
 
 				}
 			}
-		}
 
-	
-friday();
+			// Shows step 2 and hides step 1 material
+			document.getElementById("step2").style.display = "block";
+			document.getElementById("step1").style.display = "none";	
+			document.getElementById("file-object").style.display = "none";
+		});
+
+
+	}
 
 
 		// Friday roster filler
 		function friday() {
+
+			// Clears roster if day is switched
+			document.getElementById("rosterBody").innerHTML = "";
+			
+
 			var query = new Parse.Query(Paddler);	
 			
 			// Copies friday array into tmp
@@ -279,10 +277,14 @@ friday();
 					alert("error");
 				}
 			});
+
 		}
 
 				// Friday roster filler
 		function saturday() {
+			// Clears roster if day is switched
+			document.getElementById("rosterBody").innerHTML = "";
+
 			var query = new Parse.Query(Paddler);	
 			
 			// Copies friday array into tmp
@@ -316,6 +318,9 @@ friday();
 
 				// Friday roster filler
 		function sunday() {
+			// Clears roster if day is switched
+			document.getElementById("rosterBody").innerHTML = "";
+
 			var query = new Parse.Query(Paddler);	
 			
 			// Copies friday array into tmp
@@ -347,9 +352,11 @@ friday();
 			});
 		}
 
-	});
-}
 
+	function autofill(){
+
+
+	}
 </script>
 
 
