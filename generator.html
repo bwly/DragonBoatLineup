@@ -161,15 +161,18 @@
 	var saturdayArray = [];
 	var sundayOutput = "Sunday Paddlers:\n"
 	var sundayArray = [];
+	var leftArray =  [0,0,0,0,0,0,0,0,0,0];
+	var rightArray = [0,0,0,0,0,0,0,0,0,0];
 	var Paddler = Parse.Object.extend("Paddler");
 	var leftWeight = 0;
 	var rightWeight = 0;
+	var balanceWeight = 0;
 
 	if(currentuser){
 
-		var idDictionary
+		
 
-		// Fills in the full roster
+		// Fills in the full roster;
 		var fullQuery = new Parse.Query(Paddler);	
 				fullQuery.equalTo("Owner", Parse.User.current().getUsername());
 				fullQuery.find({
@@ -410,10 +413,12 @@
 						
 						// Adds right or left weight depending on drop position
 						if(position[2] == 0){
+							leftArray[position[1]] = weight;
 							leftWeight += weight;
 						}
 						// Otherwise dropped into right side
 						else{
+							rightArray[position[1]] = weight;
 							rightWeight += weight;
 						}
 					}	
@@ -421,14 +426,30 @@
 					else if(position[2] != position[5]){
 
 						if(position[2] == 0){
+							leftArray[position[1]] = weight;
+							rightArray[position[4]] = 0;
 							leftWeight += weight;
 							rightWeight -= weight;
 						}
 						
 						else{
+							rightArray[position[1]] = weight;
+							leftArray[position[4]] = 0;
 							rightWeight += weight;
 							leftWeight -= weight; 
 						}
+					}
+					else if(position[2] == position[5]){
+						// Moved to same column
+						if(position[2] == 0){
+							leftArray[position[1]] = weight;
+							leftArray[position[4]] = 0;
+						}
+						else{
+							rightArray[position[1]] = weight;
+							rightArray[position[4]] = 0;
+						}
+
 					}
 				}
 				else {
@@ -437,22 +458,29 @@
 						// Remove weight of that person
 						if(position[5] == 0){
 							leftWeight -= weight;
+							leftArray[position[1]] = 0;
 						}
 						else{
 							rightWeight -= weight;
+							rightArray[position[1]] = 0;
 						}
 					}
 				}
 
-				if(leftWeight > rightWeight){
-					document.getElementById("balance").innerHTML = "Weight is: " + (leftWeight-rightWeight) + " lbs left-heavy";
+				balanceWeight = leftWeight - rightWeight;
+
+				if(balanceWeight > 0){
+					document.getElementById("balance").innerHTML = "Weight is: " + (balanceWeight) + " lbs left-heavy";
 				}
-				else if(leftWeight < rightWeight){
-					document.getElementById("balance").innerHTML = "Weight is: " + (rightWeight-leftWeight) + " lbs right-heavy";
+				else if(balanceWeight < 0){
+					document.getElementById("balance").innerHTML = "Weight is: " + (-balanceWeight) + " lbs right-heavy";
 				}
 				else{
 					document.getElementById("balance").innerHTML = "Weight is: Balanced";	
 				}
+
+			//	alert(leftArray.toString());
+			//	alert(rightArray.toString());
 			},
 			error: function(error) {
 
@@ -481,12 +509,84 @@
 		var query = new Parse.Query(Paddler);
 
 		query.containedIn("Name", nameArray);
-		
+		query.ascending("Weight");
 		query.find({
 			success: function (results){
 				// results is the list of paddlers that were in the roster
-				for(var i = 0; i < 10; i++){
-					document.getElementById("boatBody").rows[i].cells[0].innerHTML = '<div id="' + results[i].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+				
+				
+				// Temporarily set to 10, may change this to allow for both 20man and 10man boats
+				var boxRows = 3;
+				var engineRows = 7;
+				var rocketRows = 10;
+				var boatRows = 10;
+				// This loop finds box rows that have only one person 
+				// sitting in them already and fills 
+				// the empty spot with someone of similar weight
+				for(var i = 0; i < boatRows; i++){
+					// For each row, find out if anyone is already filled in. 
+					// If so, check if they have a partner, and if not, find someone with the
+					// closest weight, and put them there
+					var row = document.getElementById("boatBody").rows[i].cells;
+
+
+					//document.getElementById("boatBody").rows[i].cells[0].innerHTML = '<div id="' + results[i].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+
+					// If left side is empty
+					if(row[0].innerHTML == ""){
+//						alert("A");
+						// If right side is not empty
+						if(row[1].innerHTML != ""){
+							// Match weight of other person in row
+//alert("B");
+							// The default weight difference is 30.
+							var closest = 200;
+							var index = -1;
+							for(var j = 0; j < results.length; j++){
+					//			alert("C");
+								if(Math.abs(rightArray[i] - results[j].get("Weight")) < closest){
+					//				alert("D");
+									if(results[j].get("Side") == "Left"){
+									//	alert("Candidate: " + results[j].get("Name"));
+										closest = Math.abs(rightArray[i] - results[j].get("Weight"));
+										index = j;
+									}
+									else{
+
+									}
+								}
+							}
+							document.getElementById("boatBody").rows[i].cells[0].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
+
+							leftWeight += results[index].get("Weight");
+							leftArray[i] = results[index].get("Weight");
+						
+							results.splice(index, 1);
+						
+
+// TODO: Paddler on left side, spot open to their right
+// Balance indicator for autofill
+// Entire row is empty
+// Remove names from roster as they fill into the boat
+// Balance front and back / 
+// Try to distribute weight, heavy people in the middle, etc.
+
+
+							// gets the weight of the person in this row on the right side
+							//alert(rightArray[i]);
+							
+
+							//weightQuery.equalTo("objectId"
+							//alert("Add paddler to box, left side of row " + (i+1));
+						}
+					}
+					else{
+						if(row[1].innerHTML == ""){
+							// Match weight of other person in row
+							alert("Add paddler to box, right side of row " + (i+1));
+						}
+					}
+						
 				}
 
 
