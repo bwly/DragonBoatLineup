@@ -2,26 +2,37 @@
 <html>
 <head>
 	
-	<script type="text/javascript" src="ExcelPlus/sheetjs.all.min.js"></script>
-	<script type="text/javascript" src="ExcelPlus/excelplus-2.2.min.js"></script>
+	<script type="text/javascript" src="../ExcelPlus/sheetjs.all.min.js"></script>
+	<script type="text/javascript" src="../ExcelPlus/excelplus-2.2.min.js"></script>
 
 	<meta charset="utf-8">
 
 	<link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">
-	<link rel="stylesheet" href="main.css">
-	<link rel="stylesheet" type="text/css" href="print.css" media="print"> 
-	<link rel="stylesheet" href="drag-css.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="../css/main.css">
+	<link rel="stylesheet" href="../css/print.css" type="text/css" media="print"> 
+	<link rel="stylesheet" href="../css/drag-css.css" type="text/css" media="screen" />
 	<meta name="viewport" content="width=device-width">
 
-	<script type="text/javascript" src="sorting_functions.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.5.0.min.js"></script>
 
 	<!-- Drag and drop library. Credits to http://www.redips.net/javascript/drag-and-drop-table-content/ -->
-	<script type="text/javascript" src="redips-drag-min.js"></script> 
-	<script type="text/javascript" src="header.js"></script>
+	<script type="text/javascript"  src="../js/redips-drag-min.js"></script> 
+	<script type="text/javascript" src="../js/header.js"></script>
 </head>
 <body onload="REDIPS.drag.init(); REDIPS.drag.dropMode = 'single';">
+	
+    <div class="nav">
+      <div class="container">
+        <ul class="pull-left">
+          <li><a href="../html/index.html">Main</a></li>
+          <li><a href="../html/signup.html">Sign Up or Log In</a></li>
+		  <li><a href="../html/paddlers.html">Lineup Builder</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="main">
 	<!-- Title -->
 	<h1>Lineup Generator</h1>
 	
@@ -59,7 +70,7 @@
 	<button id = "fillButton" onclick="autofill()" style="display:none;">Autofill</button>
 
 
-
+</div>
 
 
 
@@ -603,7 +614,7 @@
 							for(var k = 0; k < results.length; k++){
 								if(results[k].get("Section") == "Box"){
 									if(results[k].get("Side") == "Left"){
-										alert("Putting " +)
+										alert("Putting ");
 										boxL.push(results[k]);
 									}
 									else{
