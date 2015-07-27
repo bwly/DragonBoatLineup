@@ -467,17 +467,9 @@
 					}
 				}
 
-				balanceWeight = leftWeight - rightWeight;
+				
 
-				if(balanceWeight > 0){
-					document.getElementById("balance").innerHTML = "Weight is: " + (balanceWeight) + " lbs left-heavy";
-				}
-				else if(balanceWeight < 0){
-					document.getElementById("balance").innerHTML = "Weight is: " + (-balanceWeight) + " lbs right-heavy";
-				}
-				else{
-					document.getElementById("balance").innerHTML = "Weight is: Balanced";	
-				}
+				getBalance();
 
 			//	alert(leftArray.toString());
 			//	alert(rightArray.toString());
@@ -490,6 +482,18 @@
 
 	}
 		
+		function getBalance(){
+			balanceWeight = leftWeight - rightWeight;
+				if(balanceWeight > 0){
+					document.getElementById("balance").innerHTML = "Weight is: " + (balanceWeight) + " lbs left-heavy";
+				}
+				else if(balanceWeight < 0){
+					document.getElementById("balance").innerHTML = "Weight is: " + (-balanceWeight) + " lbs right-heavy";
+				}
+				else{
+					document.getElementById("balance").innerHTML = "Weight is: Balanced";	
+				}
+		}
 
 
 	function autofill(){
@@ -534,25 +538,17 @@
 
 					// If left side is empty
 					if(row[0].innerHTML == ""){
-//						alert("A");
 						// If right side is not empty
 						if(row[1].innerHTML != ""){
 							// Match weight of other person in row
-//alert("B");
 							// The default weight difference is 30.
 							var closest = 200;
 							var index = -1;
 							for(var j = 0; j < results.length; j++){
-					//			alert("C");
 								if(Math.abs(rightArray[i] - results[j].get("Weight")) < closest){
-					//				alert("D");
 									if(results[j].get("Side") == "Left"){
-									//	alert("Candidate: " + results[j].get("Name"));
 										closest = Math.abs(rightArray[i] - results[j].get("Weight"));
 										index = j;
-									}
-									else{
-
 									}
 								}
 							}
@@ -563,32 +559,88 @@
 						
 							results.splice(index, 1);
 						
-
-// TODO: Paddler on left side, spot open to their right
-// Balance indicator for autofill
+							getBalance();
 // Entire row is empty
 // Remove names from roster as they fill into the boat
 // Balance front and back / 
 // Try to distribute weight, heavy people in the middle, etc.
-
-
-							// gets the weight of the person in this row on the right side
-							//alert(rightArray[i]);
-							
-
-							//weightQuery.equalTo("objectId"
-							//alert("Add paddler to box, left side of row " + (i+1));
 						}
 					}
 					else{
 						if(row[1].innerHTML == ""){
+							var closest = 200;
+							var index = -1;
+							for(var j = 0; j < results.length; j++){
+								if(Math.abs(leftArray[i] - results[j].get("Weight")) < closest){
+									if(results[j].get("Side") == "Right"){
+										closest = Math.abs(leftArray[i] - results[j].get("Weight"));
+										index = j;
+									}
+								}
+							}
+							document.getElementById("boatBody").rows[i].cells[1].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
+
+							rightWeight += results[index].get("Weight");
+							rightArray[i] = results[index].get("Weight");
+						
+							results.splice(index, 1);
 							// Match weight of other person in row
-							alert("Add paddler to box, right side of row " + (i+1));
+							getBalance();	
 						}
 					}
 						
 				}
 
+				// Fills in the rest of the empty rows
+				for(var j = 0; j < boatRows; j++){
+
+					var row = document.getElementById("boatBody").rows[j].cells;
+					
+					if(row[0].innerHTML == "" && row[1].innerHTML == ""){
+						if(j < boxRows){
+							var boxL = [];
+							var boxR = [];
+							for(var k = 0; k < results.length; k++){
+								if(results[k].get("Section") == "Box"){
+									if(results[k].get("Side") == "Left"){
+										alert("Putting " +)
+										boxL.push(results[k]);
+									}
+									else{
+										boxR.push(results[k]);
+									}
+								
+								}
+							}
+
+							var closest = 200;
+							var indexL = -1;
+							var indexR = -1;
+							for(var k = 0; k < boxL.length; k++){
+								for(var l = 0; l < boxR.length; l++){
+									if(Math.abs(boxL[k].get("Weight") - boxR[l].get("Weight")) < closest){
+										closest = Math.abs(boxL[k].get("Weight") - boxR[l].get("Weight"));
+										indexL = k;
+										indexR = l;
+									}
+								}
+							}
+
+							if(indexL != -1){
+								row[0].innerHTML = '<div id="' + results[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[indexL].get("Name") + '</div>';
+								results.splice(indexL, 1);
+								if(indexL < indexR){
+									indexR--;
+								}
+							}
+
+							if(indexR != -1){
+								row[1].innerHTML = '<div id="' + results[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[indexR].get("Name") + '</div>';	
+								results.splice(indexR, 1);
+							}
+						}
+					}
+				}
 
 
 
