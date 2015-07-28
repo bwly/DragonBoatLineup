@@ -68,7 +68,7 @@
 
 	<div id ="balance">Weight is: Balanced</div>
 	<button id = "fillButton" onclick="autofill()" style="display:none;">Autofill</button>
-
+	<button id = "helpButton" onclick="getSuggestion()">Get suggestions</button>
 
 </div>
 
@@ -216,7 +216,7 @@
 			var nameCol = 0;
 			for (var row = 0; row < a.length; row++) {
 				for(var col = 0; col < a[row].length; col++){
-					if(a[row][col] == "Your Name"){
+					if(a[row][col] == "Your name (including last initial):"){
 						nameCol = col;
 					}
 
@@ -400,14 +400,9 @@
 	// Handles changes to people in the boat
 	REDIPS.drag.event.dropped = function(target) {
 
-		// Id of the dragged person
-		//alert(REDIPS.drag.obj.getAttribute('id'));
 
 		// Location of the target cell / source cell
 		var position = REDIPS.drag.getPosition();
-
-		//alert("Table: " + position[0] + ", Row: " + position[1] + ", Column: " + position[2]);
-		//alert("Source Table: " + position[3] + ", Source Row: " + position[4] + ", Source Column: " + position[5]);
 
 		var weightQuery = new Parse.Query(Paddler);
 				
@@ -481,9 +476,6 @@
 				
 
 				getBalance();
-
-			//	alert(leftArray.toString());
-			//	alert(rightArray.toString());
 			},
 			error: function(error) {
 
@@ -493,19 +485,121 @@
 
 	}
 		
-		function getBalance(){
-			balanceWeight = leftWeight - rightWeight;
-				if(balanceWeight > 0){
-					document.getElementById("balance").innerHTML = "Weight is: " + (balanceWeight) + " lbs left-heavy";
-				}
-				else if(balanceWeight < 0){
-					document.getElementById("balance").innerHTML = "Weight is: " + (-balanceWeight) + " lbs right-heavy";
-				}
-				else{
-					document.getElementById("balance").innerHTML = "Weight is: Balanced";	
-				}
+	function getBalance(){
+		balanceWeight = leftWeight - rightWeight;
+			if(balanceWeight > 0){
+				document.getElementById("balance").innerHTML = "Weight is: " + (balanceWeight) + " lbs left-heavy";
+			}
+			else if(balanceWeight < 0){
+				document.getElementById("balance").innerHTML = "Weight is: " + (-balanceWeight) + " lbs right-heavy";
+			}
+			else{
+				document.getElementById("balance").innerHTML = "Weight is: Balanced";	
+			}
+	}
+
+	function getSuggestion(){
+
+		
+		if(balanceWeight == 0){
+			alert("Cannot be more balanced.");
+			return;
+		}
+		var boatRows = 10;
+		var bTable = document.getElementById("boatBody");
+		var lNames = [];
+		var rNames = [];
+
+		for(var i = 0; i < boatRows; i++){
+			// Fills nameArray with names of people in the boat
+			if(bTable.rows[i].cells[0].innerText.slice(0, -1) != ""){
+				lNames.push(bTable.rows[i].cells[0].innerText.slice(0, -1));
+			}
+
+			if(bTable.rows[i].cells[1].innerText.slice(0, -1) != ""){
+				rNames.push(bTable.rows[i].cells[1].innerText.slice(0, -1));
+			}
+			
 		}
 
+
+		var lQuery = new Parse.Query(Paddler);
+		lQuery.containedIn("Name", lNames);
+
+		lQuery.find({
+			success:function(lResults){
+				var rQuery = new Parse.Query(Paddler);
+				rQuery.containedIn("Name", rNames);
+				rQuery.find({
+					success:function(rResults){
+						// lResults is the list of paddlers on the left side of the boat
+						// rResults is the list of paddlers on the right side of the boat
+
+
+
+						var lIndex = -1;
+						var rIndex = -1;
+						var closest = Math.abs(balanceWeight);
+
+						// This loop finds the paddlers that, when moved, will make the boat the most balanced
+						for(var i = 0; i < lResults.length; i++){
+							for(var j = 0; j < rResults.length; j++){
+								//alert("Comparing " + lResults[i].get("Name") + " and " + rResults[j].get("Name"));
+								if(Math.abs(balanceWeight - ((lResults[i].get("Weight") - rResults[j].get("Weight")) * 2)) < closest){
+									lIndex = i;
+									rIndex = j;
+									closest = Math.abs(balanceWeight - ((lResults[i].get("Weight") - rResults[j].get("Weight")) * 2));
+								}
+							}
+						}
+
+						// Checks if moving someone to an open spot on the left side will be the best option
+						if(lResults.length < boatRows){
+							for(var i = 0; i < rResults.length; i++){
+								if(Math.abs(balanceWeight + (rResults[i].get("Weight") * 2)) < closest ){
+									closest = Math.abs(balanceWeight + (rResults[i].get("Weight") * 2));
+									rIndex = i;
+									lIndex = -1;
+								}
+							}
+						}
+
+						// Checks if moving someone to an open spot on the right side will be the best option
+						if(rResults.length < boatRows){
+							for(var i = 0; i < lResults.length; i++){
+								if(Math.abs(balanceWeight - (lResults[i].get("Weight") * 2)) < closest ){
+									closest = Math.abs(balanceWeight + (lResults[i].get("Weight") * 2));
+									lIndex = i;
+									rIndex = -1;
+								}
+							}
+						}
+
+						if(lIndex == -1 && rIndex != -1){
+							alert("Switch " + rResults[rIndex].get("Name") + " to the left side.");
+						}
+						else if(rIndex == -1 && lIndex != -1){
+							alert("Switch " + lResults[lIndex].get("Name") + " to the right side.");
+						}
+						else if(rIndex == -1 && lIndex == -1){
+							alert("Cannot be more balanced.");
+						}
+						else{
+							alert("Switch " + lResults[lIndex].get("Name") + " and " + rResults[rIndex].get("Name"));
+						}
+					},
+					error: function(error){
+						alert("Error");
+					}
+				});
+			},
+			error: function (error){
+				alert("Error");
+			}
+
+		});
+
+	}
 
 	function autofill(){
 		var rTable = document.getElementById("rosterBody");
@@ -538,14 +632,13 @@
 				// This loop finds box rows that have only one person 
 				// sitting in them already and fills 
 				// the empty spot with someone of similar weight
-				for(var i = 0; i < boatRows; i++){
+			/*	for(var i = 0; i < boatRows; i++){
 					// For each row, find out if anyone is already filled in. 
 					// If so, check if they have a partner, and if not, find someone with the
 					// closest weight, and put them there
-					var row = document.getElementById("boatBody").rows[i].cells;
+					var row = bTable.rows[i].cells;
 
 
-					//document.getElementById("boatBody").rows[i].cells[0].innerHTML = '<div id="' + results[i].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
 
 					// If left side is empty
 					if(row[0].innerHTML == ""){
@@ -563,7 +656,7 @@
 									}
 								}
 							}
-							document.getElementById("boatBody").rows[i].cells[0].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
+							bTable.rows[i].cells[0].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
 
 							leftWeight += results[index].get("Weight");
 							leftArray[i] = results[index].get("Weight");
@@ -571,10 +664,6 @@
 							results.splice(index, 1);
 						
 							getBalance();
-// Entire row is empty
-// Remove names from roster as they fill into the boat
-// Balance front and back / 
-// Try to distribute weight, heavy people in the middle, etc.
 						}
 					}
 					else{
@@ -589,7 +678,7 @@
 									}
 								}
 							}
-							document.getElementById("boatBody").rows[i].cells[1].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
+							bTable.rows[i].cells[1].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
 
 							rightWeight += results[index].get("Weight");
 							rightArray[i] = results[index].get("Weight");
@@ -600,21 +689,23 @@
 						}
 					}
 						
-				}
+				}*/
 
 				// Fills in the rest of the empty rows
 				for(var j = 0; j < boatRows; j++){
 
-					var row = document.getElementById("boatBody").rows[j].cells;
+					var row = bTable.rows[j].cells;
 					
+					// Checks that row is empty
 					if(row[0].innerHTML == "" && row[1].innerHTML == ""){
+						
+						// Fills box rows with box paddlers if true
 						if(j < boxRows){
 							var boxL = [];
 							var boxR = [];
 							for(var k = 0; k < results.length; k++){
 								if(results[k].get("Section") == "Box"){
 									if(results[k].get("Side") == "Left"){
-										alert("Putting ");
 										boxL.push(results[k]);
 									}
 									else{
@@ -638,17 +729,165 @@
 							}
 
 							if(indexL != -1){
-								row[0].innerHTML = '<div id="' + results[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[indexL].get("Name") + '</div>';
-								results.splice(indexL, 1);
-								if(indexL < indexR){
-									indexR--;
+								row[0].innerHTML = '<div id="' + boxL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + boxL[indexL].get("Name") + '</div>';
+							
+								leftWeight += boxL[indexL].get("Weight");
+								leftArray[i] = boxL[indexL].get("Weight");
+														
+
+
+								for(var r = 0; r < results.length; r++){
+									if(boxL[indexL].get("Name") == results[r].get("Name")){
+										results.splice(r, 1);		
+									}
 								}
+								
 							}
 
 							if(indexR != -1){
-								row[1].innerHTML = '<div id="' + results[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[indexR].get("Name") + '</div>';	
-								results.splice(indexR, 1);
+								row[1].innerHTML = '<div id="' + boxR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + boxR[indexR].get("Name") + '</div>';	
+
+								rightWeight += boxR[indexR].get("Weight");
+								rightArray[i] = boxR[indexR].get("Weight");
+								
+								for(var r = 0; r < results.length; r++){
+									if(boxR[indexR].get("Name") == results[r].get("Name")){
+										results.splice(r, 1);		
+									}
+								}
 							}
+						}
+
+						// Fills engine rows with engine paddlers if true
+						else if(j < engineRows){
+							var engineL = [];
+							var engineR = [];
+							for(var k = 0; k < results.length; k++){
+								if(results[k].get("Section") == "Engine"){
+									if(results[k].get("Side") == "Left"){
+										engineL.push(results[k]);
+									}
+									else{
+										engineR.push(results[k]);
+									}
+								
+								}
+							}
+
+							var closest = 200;
+							var indexL = -1;
+							var indexR = -1;
+							for(var k = 0; k < engineL.length; k++){
+								for(var l = 0; l < engineR.length; l++){
+									if(Math.abs(engineL[k].get("Weight") - engineR[l].get("Weight")) < closest){
+										closest = Math.abs(engineL[k].get("Weight") - engineR[l].get("Weight"));
+										indexL = k;
+										indexR = l;
+									}
+								}
+							}
+
+							if(indexL != -1){
+								row[0].innerHTML = '<div id="' + engineL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + engineL[indexL].get("Name") + '</div>';
+							
+								leftWeight += engineL[indexL].get("Weight");
+								leftArray[i] = engineL[indexL].get("Weight");
+														
+
+
+								for(var r = 0; r < results.length; r++){
+									if(engineL[indexL].get("Name") == results[r].get("Name")){
+										results.splice(r, 1);		
+									}
+								}
+								
+							}
+
+							if(indexR != -1){
+								row[1].innerHTML = '<div id="' + engineR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + engineR[indexR].get("Name") + '</div>';	
+
+								rightWeight += engineR[indexR].get("Weight");
+								rightArray[i] = engineR[indexR].get("Weight");
+								
+								for(var r = 0; r < results.length; r++){
+									if(engineR[indexR].get("Name") == results[r].get("Name")){
+										results.splice(r, 1);		
+									}
+								}
+							}
+						}
+
+						// Fills rocket rows with rocket paddlers if true
+						else if(j < rocketRows){
+							var rocketL = [];
+							var rocketR = [];
+							for(var k = 0; k < results.length; k++){
+								if(results[k].get("Section") == "Rocket"){
+									if(results[k].get("Side") == "Left"){
+										rocketL.push(results[k]);
+									}
+									else{
+										rocketR.push(results[k]);
+									}
+								
+								}
+							}
+
+							var closest = 200;
+							var indexL = -1;
+							var indexR = -1;
+							for(var k = 0; k < rocketL.length; k++){
+								for(var l = 0; l < rocketR.length; l++){
+									if(Math.abs(rocketL[k].get("Weight") - rocketR[l].get("Weight")) < closest){
+										closest = Math.abs(rocketL[k].get("Weight") - rocketR[l].get("Weight"));
+										indexL = k;
+										indexR = l;
+									}
+								}
+							}
+
+							if(indexL != -1){
+								row[0].innerHTML = '<div id="' + rocketL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + rocketL[indexL].get("Name") + '</div>';
+							
+								leftWeight += rocketL[indexL].get("Weight");
+								leftArray[i] = rocketL[indexL].get("Weight");
+														
+
+
+								for(var r = 0; r < results.length; r++){
+									if(rocketL[indexL].get("Name") == results[r].get("Name")){
+										results.splice(r, 1);		
+									}
+								}
+								
+							}
+
+							if(indexR != -1){
+								row[1].innerHTML = '<div id="' + rocketR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + rocketR[indexR].get("Name") + '</div>';	
+
+								rightWeight += rocketR[indexR].get("Weight");
+								rightArray[i] = rocketR[indexR].get("Weight");
+								
+								for(var r = 0; r < results.length; r++){
+									if(rocketR[indexR].get("Name") == results[r].get("Name")){
+										results.splice(r, 1);		
+									}
+								}
+							}
+						}
+					}
+				}
+
+
+				names = [];
+				for(var s = 0; s < results.length; s++){
+					names.push(results[s].get("Name"));
+				}
+				// Removes people from roster if they were put in the boat
+				for(var s = 0; s < names.length; s++){
+					for(var r = 0; r < rTable.rows.length; r++){
+						if(names.indexOf(rTable.rows[r].cells[0].innerText.slice(0,-1)) == -1){
+							rTable.rows[r].cells[0].innerHTML = "";
 						}
 					}
 				}
@@ -656,6 +895,8 @@
 
 
 
+
+				getBalance();
 				REDIPS.drag.init();
 			},
 			error: function (error){
