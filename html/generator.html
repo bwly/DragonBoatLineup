@@ -405,7 +405,7 @@
 		var position = REDIPS.drag.getPosition();
 
 		var weightQuery = new Parse.Query(Paddler);
-				
+		weightQuery.equalTo("Owner", Parse.User.current().getUsername());
 		weightQuery.equalTo("objectId", REDIPS.drag.obj.getAttribute('id'));
 		weightQuery.find({
 			success: function(results) {
@@ -525,11 +525,12 @@
 
 		var lQuery = new Parse.Query(Paddler);
 		lQuery.containedIn("Name", lNames);
-
+		lQuery.equalTo("Owner", Parse.User.current().getUsername());
 		lQuery.find({
 			success:function(lResults){
 				var rQuery = new Parse.Query(Paddler);
 				rQuery.containedIn("Name", rNames);
+				rQuery.equalTo("Owner", Parse.User.current().getUsername());
 				rQuery.find({
 					success:function(rResults){
 						// lResults is the list of paddlers on the left side of the boat
@@ -618,6 +619,7 @@
 		var query = new Parse.Query(Paddler);
 
 		query.containedIn("Name", nameArray);
+		query.equalTo("Owner", Parse.User.current().getUsername());
 		query.ascending("Weight");
 		query.find({
 			success: function (results){
@@ -632,7 +634,7 @@
 				// This loop finds box rows that have only one person 
 				// sitting in them already and fills 
 				// the empty spot with someone of similar weight
-			/*	for(var i = 0; i < boatRows; i++){
+				for(var i = 0; i < boatRows; i++){
 					// For each row, find out if anyone is already filled in. 
 					// If so, check if they have a partner, and if not, find someone with the
 					// closest weight, and put them there
@@ -689,7 +691,7 @@
 						}
 					}
 						
-				}*/
+				}
 
 				// Fills in the rest of the empty rows
 				for(var j = 0; j < boatRows; j++){
@@ -728,6 +730,9 @@
 								}
 							}
 
+
+
+
 							if(indexL != -1){
 								row[0].innerHTML = '<div id="' + boxL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + boxL[indexL].get("Name") + '</div>';
 							
@@ -752,7 +757,7 @@
 								
 								for(var r = 0; r < results.length; r++){
 									if(boxR[indexR].get("Name") == results[r].get("Name")){
-										results.splice(r, 1);		
+										results.splice(r, 1);	
 									}
 								}
 							}
