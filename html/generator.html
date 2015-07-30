@@ -66,10 +66,11 @@
 		<br>		
 	</div>	
 
-	<div id ="balance">Weight is: Balanced</div>
+	
 	<button id = "fillButton" onclick="autofill()" style="display:none;">Autofill</button>
 	<button id = "helpButton" onclick="getSuggestion()">Get suggestions</button>
-
+	<button id = "tenButton" onclick="addTenMan()">Add 10Man</button>
+	<button id = "twentyButton" onclick="addTwentyMan()">Add 20Man</button>
 </div>
 
 
@@ -91,60 +92,67 @@
 			</table>
 		</div>
 
+		<!-- Boat tables -->
+		<div id="boatDiv">
+			
+			<div style="float:left; padding-left:100px;">
+				<h1>Boat 1</h1>
+				<table id="boat">
+					<colgroup>
+						<col width="100"/>
+						<col width="100"/>
+					</colgroup>
 
-		<!-- Boat table -->
-		<div style="float:left; padding-left:100px;">
-			<h1>Boat</h1>
-			<table id="boat">
-				<colgroup>
-					<col width="100"/>
-					<col width="100"/>
-				</colgroup>
-
-				<tbody id="boatBody">
-					<tr>
-						<td class="A"></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
+					<tbody id="boatBody ">
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+				<button>Clear</button>
+				<button>Get suggestions</button>
+				<div id ="balance">Weight is: Balanced</div>
+			</div>
 		</div>
+
+
 
 		<!-- Full roster table -->
 		<div style="float:left; padding-left:100px;">
@@ -1061,6 +1069,105 @@
 
 		});
 	}
+
+	function addTwentyMan(){
+		numBoats = "5";
+		document.getElementById("boatDiv").innerHTML += 
+			'<div style="float:left; padding-left:100px;">'
+			+'	<h1>Boat 1</h1>'
+			+'	<table id="boat' + numBoats + '">'
+			+'		<colgroup>'
+			+'			<col width="100"/>'
+			+'			<col width="100"/>'
+			+'			</colgroup>'
+			+'		<tbody id="boatBody' + numBoats + '">'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'		</tbody>'
+			+'	</table>'
+			+'	<button id = "clear' + numBoats + '">Clear</button>'
+			+'	<button id = "help' + numBoats + '">Get suggestions</button>'
+			+'</div>';
+			REDIPS.drag.init();
+	}
+
+		function addTenMan(){
+		document.getElementById("boatDiv").innerHTML += 
+			'<div style="float:left; padding-left:100px;">'
+			+'	<h1>Boat 1</h1>'
+			+'	<table id="boat1">'
+			+'		<colgroup>'
+			+'			<col width="100"/>'
+			+'			<col width="100"/>'
+			+'			</colgroup>'
+			+'		<tbody id="boatBody1">'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'			<tr>'
+			+'				<td></td>'
+			+'				<td></td>'
+			+'			</tr>'
+			+'		</tbody>'
+			+'	</table>'
+			+'	<button>Clear</button>'
+			+'	<button>Get suggestions</button>'
+			+'</div>';
+			REDIPS.drag.init();
+	}
+
+	
 </script>
 
 
