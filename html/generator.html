@@ -1060,6 +1060,59 @@
 		});
 	}
 
+	function clearBoat(boatNumber){
+		var boatRows = 10;
+		var bTable = document.getElementById("boatBody" + boatNumber);
+		var fTable = document.getElementById("fullRosterBody");
+		// For each row
+		//	for each column
+		//    if FULL roster contains name in cell, add cell to daily roster
+		//    else clear cell
+
+		var fullRosterNames = [];
+
+		for(var i = 0; i < fTable.rows.length; i++){
+			fullRosterNames.push(fTable.rows[i].cells[0].innerText);
+		}
+
+		for(var i = 0; i < boatRows; i++){
+			for(var j = 0; j < 2; j++){
+				if(bTable.rows[i].cells[j].innerText == ""){
+					//Found empty cell, continue to next slot in boat
+					continue;
+				}
+
+				if(fullRosterNames.indexOf(bTable.rows[i].cells[j].innerText) != -1) {
+					// Returning person to daily roster
+					var rTable = document.getElementById("rosterBody");
+					for(var k = 0; k < rTable.rows.length; k++){
+						if(rTable.rows[k].cells[0].innerText == ""){
+							rTable.rows[k].cells[0].innerHTML = bTable.rows[i].cells[j].innerHTML;
+							bTable.rows[i].cells[j].innerHTML = "";
+						}
+					}
+					
+				}
+				else{
+					// Returning person to full roster
+					fTable.rows[fullRosterNames.indexOf("")].cells[0].innerHTML = bTable.rows[i].cells[j].innerHTML;
+					fullRosterNames[fullRosterNames.indexOf("")] = bTable.rows[i].cells[j].innerText;
+					bTable.rows[i].cells[j].innerHTML = "";
+				}
+			}
+		}
+
+		leftWeight[boatNumber] = 0;
+		leftArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
+		rightWeight[boatNumber] = 0;
+		leftArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
+		document.getElementById("balance" + boatNumber).innerHTML = "Weight is: Balanced";	
+		balanceWeight[boatNumber] = 0;
+		REDIPS.drag.init();
+
+
+	}
+
 	function addTwentyMan(){
 		
 		document.getElementById("boatDiv").innerHTML += 
@@ -1113,7 +1166,7 @@
 			+'			</tr>'
 			+'		</tbody>'
 			+'	</table>'
-			+'	<button id = "clear' + numBoats + '">Clear</button>'
+			+'	<button id = "clear' + numBoats + '" onclick="clearBoat(' + numBoats + ')">Clear</button>'
 			+'	<button id = "help' + numBoats + '" onclick="getSuggestion(' + numBoats + ')">Get suggestions</button>'
 			+'  <button id = "fill' + numBoats + '" onclick="autofill(' + numBoats + ')">Autofill</button>'
 			+'  <div id = "balance' + numBoats + '"></div>'
