@@ -19,6 +19,9 @@
 	<!-- Drag and drop library. Credits to http://www.redips.net/javascript/drag-and-drop-table-content/ -->
 	<script type="text/javascript"  src="../js/redips-drag-min.js"></script> 
 	<script type="text/javascript" src="../js/header.js"></script>
+
+	<!-- Function library -->
+	<script type="text/javascript" src="../js/functions.js"></script>
 </head>
 <body onload="REDIPS.drag.init(); REDIPS.drag.dropMode = 'single';">
 	
@@ -67,10 +70,10 @@
 	</div>	
 
 	
-	<button id = "fillButton" onclick="autofill()" style="display:none;">Autofill</button>
-	<button id = "helpButton" onclick="getSuggestion()">Get suggestions</button>
+
 	<button id = "tenButton" onclick="addTenMan()">Add 10Man</button>
 	<button id = "twentyButton" onclick="addTwentyMan()">Add 20Man</button>
+	<button onclick="REDIPS.drag.init();">Refresh</button>
 </div>
 
 
@@ -130,12 +133,9 @@
 	var rightWeight = [];
 	var balanceWeight = [];
 	var numBoats = 0;
-	var tableCount = 0;
+	var tableCount = 1;
 
 	if(currentuser){
-
-		
-
 		// Fills in the full roster;
 		var fullQuery = new Parse.Query(Paddler);	
 				fullQuery.equalTo("Owner", Parse.User.current().getUsername());
@@ -221,139 +221,31 @@
 			document.getElementById("step2").style.display = "block";
 			document.getElementById("step1").style.display = "none";	
 			document.getElementById("file-object").style.display = "none";
+			REDIPS.drag.init();
 		});
 
 
 	}
 
 
-		// Friday roster filler
-		function friday() {
-
-			// Clears roster if day is switched
-			document.getElementById("rosterBody").innerHTML = "";
-			
-
-			var query = new Parse.Query(Paddler);	
-			
-			// Copies friday array into tmp
-			var tmp = [];
-			for(var a = 0; a < fridayArray.length; a++){
-				tmp[a] = fridayArray[a];
-			}
-
-			query.containedIn("Name", tmp);
-			query.equalTo("Owner", Parse.User.current().getUsername());
-			query.find({
-				success: function(results) {
-					document.getElementById("rosterTitle").innerHTML = "Friday Roster";
-					for(var i = 0; i < results.length; i++){
-						tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
-
-						var table = document.getElementById("rosterBody");
-						var row = table.insertRow(-1);
-						var cell = row.insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-						
-					}
-					
-
-					document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
-					document.getElementById("step2").style.display = "none";
-					document.getElementById("step3").style.display = "block";
-					document.getElementById("fillButton").style.display = "block";
-					REDIPS.drag.init();
-				},
-				error: function(error) {
-					alert("error");
-				}
-			});
-
-		}
-
-				// Friday roster filler
-		function saturday() {
-			// Clears roster if day is switched
-			document.getElementById("rosterBody").innerHTML = "";
-
-			var query = new Parse.Query(Paddler);	
-			
-			// Copies friday array into tmp
-			var tmp = [];
-			for(var a = 0; a < saturdayArray.length; a++){
-				tmp[a] = saturdayArray[a];
-			}
-
-			query.containedIn("Name", tmp);
-			query.equalTo("Owner", Parse.User.current().getUsername());
-			query.find({
-				success: function(results) {
-					document.getElementById("rosterTitle").innerHTML = "Saturday Roster";
-					for(var i = 0; i < results.length; i++){
-						tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
-
-						var table = document.getElementById("rosterBody");
-						var row = table.insertRow(-1);
-						var cell = row.insertCell(0).innerHTML = '<div id="' + results[i].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-						
-					}
-					document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
-					document.getElementById("step2").style.display = "none";
-					document.getElementById("step3").style.display = "block";
-					document.getElementById("fillButton").style.display = "block";
-					REDIPS.drag.init();
-
-					
-				},
-				error: function(error) {
-					alert("error");
-				}
-			});
-		}
-
-				// Friday roster filler
-		function sunday() {
-			// Clears roster if day is switched
-			document.getElementById("rosterBody").innerHTML = "";
-
-			var query = new Parse.Query(Paddler);	
-			
-			// Copies friday array into tmp
-			var tmp = [];
-			for(var a = 0; a < sundayArray.length; a++){
-				tmp[a] = sundayArray[a];
-			}
-
-			query.containedIn("Name", tmp);
-			query.equalTo("Owner", Parse.User.current().getUsername());
-			query.find({
-				success: function(results) {
-					document.getElementById("rosterTitle").innerHTML = "Sunday Roster";
-					for(var i = 0; i < results.length; i++){
-						tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
-
-						var table = document.getElementById("rosterBody");
-						var row = table.insertRow(-1);
-						var cell = row.insertCell(0).innerHTML = '<div id="' + results[i].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-						
-					}
-					document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
-					document.getElementById("step2").style.display = "none";
-					document.getElementById("step3").style.display = "block";
-					document.getElementById("fillButton").style.display = "block";
-					REDIPS.drag.init();
-
-					
-				},
-				error: function(error) {
-					alert("error");
-				}
-			});
-		}
+		
 
 	// Handles changes to people in the boat
 	REDIPS.drag.event.dropped = function(target) {
+		// Drop from daily roster to boat
+		// Drop from full roster to boat
+		// Drop from boat to boat
+		// Drop from daily roster to full roster (don't allow)
+		// Drop from full roster to daily roster (don't allow)
+		// Drop from boat to full roster (check if name is already in there, if so, don't allow)
+		// Drop from boat to daily roster (check if name is already in there, if so, don't allow)
 
-
+	 	// pos[0] - target table index
+	    // pos[1] - target row index
+	    // pos[2] - target cell (column) index
+	    // pos[3] - source table index
+	    // pos[4] - source row index
+	    // pos[5] - source cell (column) index
 		// Location of the target cell / source cell
 		var position = REDIPS.drag.getPosition();
 		var boatNumber = position[0] - 1;
@@ -367,97 +259,52 @@
 
 		weightQuery.find({
 			success: function(results) {
-
+				// Results[0] is the dragged / dropped paddler
 				var weight = results[0].get("Weight");
-
-				// If dropped into boat
-				if(position[0] > 0 && position[0] <= tableCount){		
-					alert("Moved into a boat");
-					// If person was dragged from a different table
-					if(position[3] != position[0]){
-						
-						// Adds right or left weight depending on drop position
-						if(position[2] == 0){
-							leftArray[boatNumber][position[1]] = weight;
-							leftWeight[boatNumber] += weight;
-						}
-						// Otherwise dropped into right side
-						else{
-							rightArray[boatNumber][position[1]] = weight;
-							rightWeight[boatNumber] += weight;
-						}
-					}	
-					// If person was dragged from a different column in the boat
-					else if(position[2] != position[5]){
-
-						if(position[2] == 0){
-							leftArray[boatNumber][position[1]] = weight;
-							rightArray[boatNumber][position[4]] = 0;
-							leftWeight[boatNumber] += weight;
-							rightWeight[boatNumber] -= weight;
-						}
-						
-						else{
-							rightArray[boatNumber][position[1]] = weight;
-							leftArray[boatNumber][position[4]] = 0;
-							rightWeight[boatNumber] += weight;
-							leftWeight[boatNumber] -= weight; 
-						}
-					}
-					else if(position[2] == position[5]){
-						// Moved to same column
-						if(position[2] == 0){
-							leftArray[boatNumber][position[1]] = weight;
-							leftArray[boatNumber][position[4]] = 0;
-						}
-						else{
-							rightArray[boatNumber][position[1]] = weight;
-							rightArray[boatNumber][position[4]] = 0;
-						}
-
-					}
+				if(position[0] == 0){
+					// Dropped into daily roster
+					dailyDrop(results[0], weight, position, rightArray, rightWeight, leftArray, leftWeight);
+					return;
 				}
-				else {
-					// If source table was the boat
-					if(position[3] == position[0]){
-						// Remove weight of that person
-						if(position[5] == 0){
-							leftWeight[boatNumber] -= weight;
-							leftArray[boatNumber][position[1]] = 0;
+				else if(position[0] == tableCount){
+					fullDrop(results[0], weight, position, rightArray, rightWeight, leftArray, leftWeight);
+					return;
+				}
+				else{
+					if(position[0] == position[3]){
+						// Dropped into the same boat
+						sameBoatDrop(results[0], weight, position, rightArray, rightWeight, leftArray, leftWeight);
+					}
+					else{
+						if(position[3] == tableCount || position[3] == 0){
+							// From full roster or daily roster to boat
+
+							// Adds right or left weight depending on drop position
+							if(position[2] == 0){
+								leftArray[boatNumber][position[1]] = weight;
+								leftWeight[boatNumber] += weight;
+							}
+							// Otherwise dropped into right side
+							else{
+								rightArray[boatNumber][position[1]] = weight;
+								rightWeight[boatNumber] += weight;
+							}
+							getBalance(boatNumber);
+							return;
 						}
 						else{
-							rightWeight[boatNumber] -= weight;
-							rightArray[boatNumber][position[1]] = 0;
+							boatToBoat(results[0], weight, position, rightArray, rightWeight, leftArray, leftWeight);
 						}
 					}
 				}
-
-				
-				getBalance(boatNumber);
-
-				alert("Second getbalance");
-				//getBalance();
 			},
 			error: function(error) {
-
+				alert("Error");
 			}
 		});
-
-
 	}
 		
-	function getBalance(boatNumber){
-		balanceWeight[boatNumber] = leftWeight[boatNumber] - rightWeight[boatNumber];
-			if(balanceWeight[boatNumber] > 0){
-				document.getElementById("balance" + boatNumber).innerHTML = "Weight is: " + (balanceWeight[boatNumber]) + " lbs left-heavy";
-			}
-			else if(balanceWeight[boatNumber] < 0){
-				document.getElementById("balance" + boatNumber).innerHTML = "Weight is: " + (-balanceWeight[boatNumber]) + " lbs right-heavy";
-			}
-			else{
-				document.getElementById("balance" + boatNumber).innerHTML = "Weight is: Balanced";	
-			}
-	}
+	
 
 	function getSuggestion(boatNumber){
 
@@ -467,7 +314,8 @@
 			return;
 		}
 
-		var boatRows = 10;
+		
+		var boatRows = leftArray[boatNumber].length;
 		var bTable = document.getElementById("boatBody" + boatNumber);
 		var lNames = [];
 		var rNames = [];
@@ -592,11 +440,22 @@
 				// results is the list of paddlers that were in the roster
 				
 				
-				// Temporarily set to 10, may change this to allow for both 20man and 10man boats
-				var boxRows = 3;
-				var engineRows = 7;
-				var rocketRows = 10;
-				var boatRows = 10;
+	
+				var boatRows = leftArray[boatNumber].length;
+				var boxRows;
+				var engineRows;
+				var rocketRows;
+				
+				if(boatRows = 10){
+					boxRows = 3;
+					engineRows = 7;
+					rocketRows = 10;
+				}
+				else {
+					boxRows = 2;
+					engineRows = 3;
+					rocketRows = 5;
+				}
 				// This loop finds box rows that have only one person 
 				// sitting in them already and fills 
 				// the empty spot with someone of similar weight
@@ -1060,131 +919,8 @@
 		});
 	}
 
-	function clearBoat(boatNumber){
-		var boatRows = 10;
-		var bTable = document.getElementById("boatBody" + boatNumber);
-		var fTable = document.getElementById("fullRosterBody");
-		// For each row
-		//	for each column
-		//    if FULL roster contains name in cell, add cell to daily roster
-		//    else clear cell
+	
 
-		var fullRosterNames = [];
-
-		for(var i = 0; i < fTable.rows.length; i++){
-			fullRosterNames.push(fTable.rows[i].cells[0].innerText);
-		}
-
-		for(var i = 0; i < boatRows; i++){
-			for(var j = 0; j < 2; j++){
-				if(bTable.rows[i].cells[j].innerText == ""){
-					//Found empty cell, continue to next slot in boat
-					continue;
-				}
-
-				if(fullRosterNames.indexOf(bTable.rows[i].cells[j].innerText) != -1) {
-					// Returning person to daily roster
-					var rTable = document.getElementById("rosterBody");
-					for(var k = 0; k < rTable.rows.length; k++){
-						if(rTable.rows[k].cells[0].innerText == ""){
-							rTable.rows[k].cells[0].innerHTML = bTable.rows[i].cells[j].innerHTML;
-							bTable.rows[i].cells[j].innerHTML = "";
-						}
-					}
-					
-				}
-				else{
-					// Returning person to full roster
-					fTable.rows[fullRosterNames.indexOf("")].cells[0].innerHTML = bTable.rows[i].cells[j].innerHTML;
-					fullRosterNames[fullRosterNames.indexOf("")] = bTable.rows[i].cells[j].innerText;
-					bTable.rows[i].cells[j].innerHTML = "";
-				}
-			}
-		}
-
-		leftWeight[boatNumber] = 0;
-		leftArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
-		rightWeight[boatNumber] = 0;
-		leftArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
-		document.getElementById("balance" + boatNumber).innerHTML = "Weight is: Balanced";	
-		balanceWeight[boatNumber] = 0;
-		REDIPS.drag.init();
-
-
-	}
-
-	function addTwentyMan(){
-		
-		document.getElementById("boatDiv").innerHTML += 
-			'<div style="float:left; padding-left:100px;">'
-			+'	<h1>Boat ' + numBoats + '</h1>'
-			+'	<table id="boat' + numBoats + '">'
-			+'		<colgroup>'
-			+'			<col width="100"/>'
-			+'			<col width="100"/>'
-			+'			</colgroup>'
-			+'		<tbody id="boatBody' + numBoats + '">'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'			<tr>'
-			+'				<td></td>'
-			+'				<td></td>'
-			+'			</tr>'
-			+'		</tbody>'
-			+'	</table>'
-			+'	<button id = "clear' + numBoats + '" onclick="clearBoat(' + numBoats + ')">Clear</button>'
-			+'	<button id = "help' + numBoats + '" onclick="getSuggestion(' + numBoats + ')">Get suggestions</button>'
-			+'  <button id = "fill' + numBoats + '" onclick="autofill(' + numBoats + ')">Autofill</button>'
-			+'  <div id = "balance' + numBoats + '"></div>'
-			+'</div>';
-			
-
-			leftWeight[numBoats] = 0;
-			rightWeight[numBoats] = 0;
-			leftArray[numBoats] = [0,0,0,0,0,0,0,0,0,0];
-			rightArray[numBoats] = [0,0,0,0,0,0,0,0,0,0];
-			numBoats++;
-			tableCount++;
-			REDIPS.drag.init();
-	}
-
-	function addTenMan(){
-
-	}
 
 	
 </script>
