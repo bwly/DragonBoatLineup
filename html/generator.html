@@ -267,6 +267,7 @@
 					return;
 				}
 				else if(position[0] == tableCount){
+					// Dropped into full roster
 					fullDrop(results[0], weight, position, rightArray, rightWeight, leftArray, leftWeight);
 					return;
 				}
@@ -528,182 +529,18 @@
 						
 						// Fills box rows with box paddlers if true
 						if(j < boxRows){
-							var boxL = [];
-							var boxR = [];
-							for(var k = 0; k < results.length; k++){
-								if(results[k].get("Section") == "Box"){
-									if(results[k].get("Side") == "Left"){
-										boxL.push(results[k]);
-									}
-									else{
-										boxR.push(results[k]);
-									}
-								
-								}
-							}
-
-							var closest = 200;
-							var indexL = -1;
-							var indexR = -1;
-							for(var k = 0; k < boxL.length; k++){
-								for(var l = 0; l < boxR.length; l++){
-									if(Math.abs(boxL[k].get("Weight") - boxR[l].get("Weight")) < closest){
-										closest = Math.abs(boxL[k].get("Weight") - boxR[l].get("Weight"));
-										indexL = k;
-										indexR = l;
-									}
-								}
-							}
-
-
-
-
-							if(indexL != -1){
-								row[0].innerHTML = '<div id="' + boxL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + boxL[indexL].get("Name") + '</div>';
-							
-								leftWeight[boatNumber] += boxL[indexL].get("Weight");
-								leftArray[boatNumber][j] = boxL[indexL].get("Weight");
-														
-
-
-								for(var r = 0; r < results.length; r++){
-									if(boxL[indexL].get("Name") == results[r].get("Name")){
-										results.splice(r, 1);		
-									}
-								}
-								
-							}
-
-							if(indexR != -1){
-								row[1].innerHTML = '<div id="' + boxR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + boxR[indexR].get("Name") + '</div>';	
-
-								rightWeight[boatNumber] += boxR[indexR].get("Weight");
-								rightArray[boatNumber][j] = boxR[indexR].get("Weight");
-								
-								for(var r = 0; r < results.length; r++){
-									if(boxR[indexR].get("Name") == results[r].get("Name")){
-										results.splice(r, 1);	
-									}
-								}
-							}
+							//alert(j);
+							fillSection("Box", results, j, leftArray, leftWeight, rightArray, rightWeight, boatNumber);
 						}
 
 						// Fills engine rows with engine paddlers if true
 						else if(j < engineRows){
-							var engineL = [];
-							var engineR = [];
-							for(var k = 0; k < results.length; k++){
-								if(results[k].get("Section") == "Engine"){
-									if(results[k].get("Side") == "Left"){
-										engineL.push(results[k]);
-									}
-									else{
-										engineR.push(results[k]);
-									}
-								
-								}
-							}
-
-							var closest = 200;
-							var indexL = -1;
-							var indexR = -1;
-							for(var k = 0; k < engineL.length; k++){
-								for(var l = 0; l < engineR.length; l++){
-									if(Math.abs(engineL[k].get("Weight") - engineR[l].get("Weight")) < closest){
-										closest = Math.abs(engineL[k].get("Weight") - engineR[l].get("Weight"));
-										indexL = k;
-										indexR = l;
-									}
-								}
-							}
-
-							if(indexL != -1){
-								row[0].innerHTML = '<div id="' + engineL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + engineL[indexL].get("Name") + '</div>';
-							
-								leftWeight[boatNumber] += engineL[indexL].get("Weight");
-								leftArray[boatNumber][j] = engineL[indexL].get("Weight");
-														
-
-
-								for(var r = 0; r < results.length; r++){
-									if(engineL[indexL].get("Name") == results[r].get("Name")){
-										results.splice(r, 1);		
-									}
-								}
-								
-							}
-
-							if(indexR != -1){
-								row[1].innerHTML = '<div id="' + engineR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + engineR[indexR].get("Name") + '</div>';	
-
-								rightWeight[boatNumber] += engineR[indexR].get("Weight");
-								rightArray[boatNumber][j] = engineR[indexR].get("Weight");
-								
-								for(var r = 0; r < results.length; r++){
-									if(engineR[indexR].get("Name") == results[r].get("Name")){
-										results.splice(r, 1);		
-									}
-								}
-							}
+							fillSection("Engine", results, j, leftArray, leftWeight, rightArray, rightWeight, boatNumber);
 						}
 
 						// Fills rocket rows with rocket paddlers if true
 						else if(j < rocketRows){
-							var rocketL = [];
-							var rocketR = [];
-							for(var k = 0; k < results.length; k++){
-								if(results[k].get("Section") == "Rocket"){
-									if(results[k].get("Side") == "Left"){
-										rocketL.push(results[k]);
-									}
-									else{
-										rocketR.push(results[k]);
-									}
-								
-								}
-							}
-
-							var closest = 200;
-							var indexL = -1;
-							var indexR = -1;
-							for(var k = 0; k < rocketL.length; k++){
-								for(var l = 0; l < rocketR.length; l++){
-									if(Math.abs(rocketL[k].get("Weight") - rocketR[l].get("Weight")) < closest){
-										closest = Math.abs(rocketL[k].get("Weight") - rocketR[l].get("Weight"));
-										indexL = k;
-										indexR = l;
-									}
-								}
-							}
-
-							if(indexL != -1){
-								row[0].innerHTML = '<div id="' + rocketL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + rocketL[indexL].get("Name") + '</div>';
-							
-								leftWeight[boatNumber] += rocketL[indexL].get("Weight");
-								leftArray[boatNumber][j] = rocketL[indexL].get("Weight");
-														
-
-
-								for(var r = 0; r < results.length; r++){
-									if(rocketL[indexL].get("Name") == results[r].get("Name")){
-										results.splice(r, 1);		
-									}
-								}
-								
-							}
-
-							if(indexR != -1){
-								row[1].innerHTML = '<div id="' + rocketR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + rocketR[indexR].get("Name") + '</div>';	
-
-								rightWeight[boatNumber] += rocketR[indexR].get("Weight");
-								rightArray[boatNumber][j] = rocketR[indexR].get("Weight");
-								
-								for(var r = 0; r < results.length; r++){
-									if(rocketR[indexR].get("Name") == results[r].get("Name")){
-										results.splice(r, 1);		
-									}
-								}
-							}
+							fillSection("Rocket", results, j, leftArray, leftWeight, rightArray, rightWeight, boatNumber);
 						}
 					}
 				}
@@ -924,9 +761,5 @@
 
 	
 </script>
-
-
-
 </body>
-
 </html>

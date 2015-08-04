@@ -425,3 +425,65 @@ function fullDrop(result, weight, position, rightArray, rightWeight, leftArray, 
 		getBalance(sourceBoat);
 	}
 }
+
+// section is either "Box", "Engine", or "Rocket"
+function fillSection(section, results, rowIndex, leftArray, leftWeight, rightArray, rightWeight, boatNumber){
+	var bTable = document.getElementById("boatBody" + boatNumber);
+	var row = bTable.rows[rowIndex].cells;
+	var L = [];
+	var R = [];
+
+	for(var k = 0; k < results.length; k++){
+		if(results[k].get("Section") == section){
+			if(results[k].get("Side") == "Left"){
+				L.push(results[k]);
+			}
+			else{
+				R.push(results[k]);
+			}
+		
+		}
+	}
+
+	var closest = 200;
+	var indexL = -1;
+	var indexR = -1;
+	for(var k = 0; k < L.length; k++){
+		for(var l = 0; l < R.length; l++){
+			if(Math.abs(L[k].get("Weight") - R[l].get("Weight")) < closest){
+				closest = Math.abs(L[k].get("Weight") - R[l].get("Weight"));
+				indexL = k;
+				indexR = l;
+			}
+		}
+	}
+
+
+
+	if(indexL != -1){
+		row[0].innerHTML = '<div id="' + L[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + L[indexL].get("Name") + '</div>';
+
+		leftWeight[boatNumber] += L[indexL].get("Weight");
+		leftArray[boatNumber][rowIndex] = L[indexL].get("Weight");
+
+		for(var r = 0; r < results.length; r++){
+			if(L[indexL].get("Name") == results[r].get("Name")){
+				results.splice(r, 1);		
+			}
+		}
+		
+	}
+
+	if(indexR != -1){
+		row[1].innerHTML = '<div id="' + R[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + R[indexR].get("Name") + '</div>';	
+
+		rightWeight[boatNumber] += R[indexR].get("Weight");
+		rightArray[boatNumber][rowIndex] = R[indexR].get("Weight");
+		
+		for(var r = 0; r < results.length; r++){
+			if(R[indexR].get("Name") == results[r].get("Name")){
+				results.splice(r, 1);	
+			}
+		}
+	}
+}
