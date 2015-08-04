@@ -214,7 +214,6 @@ function friday(drag) {
 			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
 			document.getElementById("step2").style.display = "none";
 			document.getElementById("step3").style.display = "block";
-			document.getElementById("fillButton").style.display = "block";
 			drag.init();
 		},
 		error: function(error) {
@@ -250,11 +249,12 @@ function saturday(drag) {
 				var cell = row.insertCell(0).innerHTML = '<div id="' + results[i].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
 				
 			}
+			
 			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
 			document.getElementById("step2").style.display = "none";
 			document.getElementById("step3").style.display = "block";
-			document.getElementById("fillButton").style.display = "block";
 			drag.init();
+
 		},
 		error: function(error) {
 			alert("error");
@@ -291,7 +291,6 @@ function sunday(drag) {
 			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
 			document.getElementById("step2").style.display = "none";
 			document.getElementById("step3").style.display = "block";
-			document.getElementById("fillButton").style.display = "block";
 			drag.init();
 		},
 		error: function(error) {
