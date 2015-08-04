@@ -73,7 +73,6 @@
 
 	<button id = "tenButton" onclick="addTenMan()">Add 10Man</button>
 	<button id = "twentyButton" onclick="addTwentyMan()">Add 20Man</button>
-	<button onclick="REDIPS.drag.init();">Refresh</button>
 </div>
 
 
@@ -322,7 +321,7 @@
 		var rNames = [];
 
 		for(var i = 0; i < boatRows; i++){
-			// Fills nameArray with names of people in the boat
+			// Fills arrays with names of people in the boat
 			if(bTable.rows[i].cells[0].innerText.slice(0, -1) != ""){
 				lNames.push(bTable.rows[i].cells[0].innerText.slice(0, -1));
 			}
@@ -331,90 +330,167 @@
 				rNames.push(bTable.rows[i].cells[1].innerText.slice(0, -1));
 			}
 		}
-			
+		
+		var dNames = [];
+		var dTable = document.getElementById("rosterBody");
+		for(var i = 0; i < dTable.rows.length; i++){
+			if(dTable.rows[i].cells[0].innerText != ""){
+				dNames.push(dTable.rows[i].cells[0].innerText.slice(0, -1));
+			}
+		}
 
+		var dQuery = new Parse.Query(Paddler);
+		dQuery.containedIn("Name", dNames);
+		dQuery.equalTo("Owner", Parse.User.current().getUsername());
+		dQuery.find({
+			success: function(dResults){
+				// dResults is the list of people in the daily roster
 
-		var lQuery = new Parse.Query(Paddler);
-		lQuery.containedIn("Name", lNames);
-		lQuery.equalTo("Owner", Parse.User.current().getUsername());
-		lQuery.find({
-			success:function(lResults){
-				var rQuery = new Parse.Query(Paddler);
-				rQuery.containedIn("Name", rNames);
-				rQuery.equalTo("Owner", Parse.User.current().getUsername());
-				rQuery.find({
-					success:function(rResults){
-						// lResults is the list of paddlers on the left side of the boat
-						// rResults is the list of paddlers on the right side of the boat
+				var lQuery = new Parse.Query(Paddler);
+				lQuery.containedIn("Name", lNames);
+				lQuery.equalTo("Owner", Parse.User.current().getUsername());
+				lQuery.find({
+					success:function(lResults){
+						var rQuery = new Parse.Query(Paddler);
+						rQuery.containedIn("Name", rNames);
+						rQuery.equalTo("Owner", Parse.User.current().getUsername());
+						rQuery.find({
+							success:function(rResults){
+								// lResults is the list of paddlers on the left side of the boat
+								// rResults is the list of paddlers on the right side of the boat
+								
+								var spareLeft = [];
+								var spareRight = [];
 
-
-
-						var lIndex1 = -1;
-						var rIndex1 = -1;
-
-						var closest = Math.abs(balanceWeight[boatNumber]);
-
-						// This loop finds the paddlers that, when moved, will make the boat the most balanced
-						for(var i = 0; i < lResults.length; i++){
-							for(var j = 0; j < rResults.length; j++){
-								//alert("Comparing " + lResults[i].get("Name") + " and " + rResults[j].get("Name"));
-								if(Math.abs(balanceWeight[boatNumber] - ((lResults[i].get("Weight") - rResults[j].get("Weight")) * 2)) < closest){
-									lIndex1 = i;
-									rIndex1 = j;
-
-
-
-
-									closest = Math.abs(balanceWeight[boatNumber] - ((lResults[i].get("Weight") - rResults[j].get("Weight")) * 2));
+								for(var i = 0; i < dResults.length; i++){
+									if(dResults[i].get("Side") == "Left"){
+										spareLeft.push(dResults[i]);
+									}								
+									else{
+										spareRight.push(dResults[i]);
+									}
 								}
-							}
-						}
 
-						// Checks if moving someone to an open spot on the left side will be the best option
-						if(lResults.length < boatRows){
-							for(var i = 0; i < rResults.length; i++){
-								if(Math.abs(balanceWeight[boatNumber] + (rResults[i].get("Weight") * 2)) < closest ){
-									closest = Math.abs(balanceWeight[boatNumber] + (rResults[i].get("Weight") * 2));
-									rIndex1 = i;
-									lIndex1 = -1;
+								
+
+						
+
+
+
+								var lIndex1 = -1;
+								var rIndex1 = -1;
+								var closest = Math.abs(balanceWeight[boatNumber]);
+								var subLeft = false;
+								var subRight = false;
+								var dIndex = -1;
+
+								var closestSub = closest;
+								// left heavy = balanceweight is positive
+								for(var i = 0; i < lResults.length; i++){
+									for(var j = 0; j < spareLeft.length; j++){
+										if(Math.abs(balanceWeight[boatNumber] - (lResults[i].get("Weight") - spareLeft[j].get("Weight"))) < closestSub){
+											dIndex = dResults.indexOf(spareLeft[j]);
+											if(dIndex == -1){
+												alert(spareLeft[j].get("Name"));
+											}
+											subLeft = true;
+											closestSub = Math.abs(balanceWeight[boatNumber] - (lResults[i].get("Weight") - spareLeft[j].get("Weight")));
+											lIndex = i;
+										}
+									}
 								}
-							}
-						}
 
-						// Checks if moving someone to an open spot on the right side will be the best option
-						if(rResults.length < boatRows){
-							for(var i = 0; i < lResults.length; i++){
-								if(Math.abs(balanceWeight[boatNumber] - (lResults[i].get("Weight") * 2)) < closest ){
-									closest = Math.abs(balanceWeight[boatNumber] + (lResults[i].get("Weight") * 2));
-									lIndex1 = i;
-									rIndex1 = -1;
+								// right heavy = balanceweight is negative
+								// need to find a spareRight that is less than the rResult
+								for(var i = 0; i < rResults.length; i++){
+									for(var j = 0; j < spareRight.length; j++){
+										if(Math.abs(balanceWeight[boatNumber] + (rResults[i].get("Weight") - spareRight[j].get("Weight"))) < closestSub){
+											dIndex = dResults.indexOf(spareRight[j]);
+											subRight = true;
+
+											// Reset this to false in case this sub is better
+											subLeft = false;
+
+											closestSub = Math.abs(balanceWeight[boatNumber] + (rResults[i].get("Weight") - spareRight[j].get("Weight")));
+											rIndex = i;
+										}
+									}
 								}
-							}
-						}
 
-						if(lIndex1 == -1 && rIndex1 != -1){
-							alert("Switch " + rResults[rIndex1].get("Name") + " to the left side.");
-						}
-						else if(rIndex1 == -1 && lIndex1 != -1){
-							alert("Switch " + lResults[lIndex1].get("Name") + " to the right side.");
-						}
-						else if(rIndex1 == -1 && lIndex1 == -1){
-							alert("Cannot be more balanced.");
-						}
-						else{
-							alert("Switch " + lResults[lIndex1].get("Name") + " and " + rResults[rIndex1].get("Name"));
-						}
+								if(!subRight && !subLeft){
+									// This loop finds the paddlers that, when switched to the other side, will make the boat the most balanced
+									for(var i = 0; i < lResults.length; i++){
+										for(var j = 0; j < rResults.length; j++){
+											if(Math.abs(balanceWeight[boatNumber] - ((lResults[i].get("Weight") - rResults[j].get("Weight")) * 2)) < closest){
+												lIndex1 = i;
+												rIndex1 = j;
+
+												closest = Math.abs(balanceWeight[boatNumber] - ((lResults[i].get("Weight") - rResults[j].get("Weight")) * 2));
+											}
+										}
+									}
+
+									// Checks if moving someone to an open spot on the left side will be the best option
+									if(lResults.length < boatRows){
+										for(var i = 0; i < rResults.length; i++){
+											if(Math.abs(balanceWeight[boatNumber] + (rResults[i].get("Weight") * 2)) < closest ){
+												closest = Math.abs(balanceWeight[boatNumber] + (rResults[i].get("Weight") * 2));
+												rIndex1 = i;
+												lIndex1 = -1;
+											}
+										}
+									}
+
+									// Checks if moving someone to an open spot on the right side will be the best option
+									if(rResults.length < boatRows){
+										for(var i = 0; i < lResults.length; i++){
+											if(Math.abs(balanceWeight[boatNumber] - (lResults[i].get("Weight") * 2)) < closest ){
+												closest = Math.abs(balanceWeight[boatNumber] + (lResults[i].get("Weight") * 2));
+												lIndex1 = i;
+												rIndex1 = -1;
+											}
+										}
+									}
+
+									if(lIndex1 == -1 && rIndex1 != -1){
+										alert("Switch " + rResults[rIndex1].get("Name") + " to the left side.");
+									}
+									else if(rIndex1 == -1 && lIndex1 != -1){
+										alert("Switch " + lResults[lIndex1].get("Name") + " to the right side.");
+									}
+									else if(rIndex1 == -1 && lIndex1 == -1){
+										alert("Cannot be more balanced.");
+									}
+									else{
+										alert("Switch " + lResults[lIndex1].get("Name") + " and " + rResults[rIndex1].get("Name"));
+									}
+								}
+								else{
+									if(subRight){
+										alert("Best sub is " + dResults[dIndex].get("Name") + " for " + rResults[rIndex].get("Name"));
+									}
+									else if (subLeft) {
+
+										alert("Best sub is " + dResults[dIndex].get("Name") + " for " + lResults[lIndex].get("Name"));	
+									}
+								}
+							},
+							error: function(error){
+								alert("Error");
+							}
+						});
 					},
-					error: function(error){
+					error: function (error){
 						alert("Error");
 					}
+
 				});
 			},
-			error: function (error){
-				alert("Error");
-			}
+			error: function(error){
 
+			}
 		});
+
 
 	}
 
