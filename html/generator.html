@@ -519,12 +519,12 @@
 				
 				
 	
-				var boatRows = leftArray[boatNumber].length;
+				var boatRows = bTable.rows.length;
 				var boxRows;
 				var engineRows;
 				var rocketRows;
 				
-				if(boatRows = 10){
+				if(boatRows == 10){
 					boxRows = 3;
 					engineRows = 7;
 					rocketRows = 10;
@@ -537,13 +537,11 @@
 				// This loop finds box rows that have only one person 
 				// sitting in them already and fills 
 				// the empty spot with someone of similar weight
-				for(var i = 0; i < boatRows; i++){
+				for(var i = 0; i < 5; i++){
 					// For each row, find out if anyone is already filled in. 
 					// If so, check if they have a partner, and if not, find someone with the
 					// closest weight, and put them there
-
 					var row = bTable.rows[i].cells;
-
 
 					// If left side is empty
 					if(row[0].innerHTML == ""){
@@ -593,7 +591,7 @@
 							getBalance(boatNumber);	
 						}
 					}
-						
+
 				}
 
 				// Fills in the rest of the empty rows
