@@ -137,21 +137,46 @@
 	if(currentuser){
 		// Fills in the full roster;
 		var fullQuery = new Parse.Query(Paddler);	
-				fullQuery.equalTo("Owner", Parse.User.current().getUsername());
-				fullQuery.find({
-					success: function(results) {					
-						for(var i = 0; i < results.length; i++){
-							var table = document.getElementById("fullRosterBody");
-							var row = table.insertRow(-1);
-							var cell = row.insertCell(0).innerHTML = '<div id="'+ results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-							
+		fullQuery.equalTo("Owner", Parse.User.current().getUsername());
+		fullQuery.ascending("Name");
+		fullQuery.find({
+			success: function(results) {
+			var leftCount = 0;
+			var rightCount = 0;					
+				for(var i = 0; i < results.length; i++){
+					var table = document.getElementById("fullRosterBody");
+					
+					// Builds the roster table with both left and right sides
+					if(results[i].get("Side") == "Left"){
+						if(leftCount == table.rows.length){
+							table.insertRow(-1);
+							var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
 						}
-						REDIPS.drag.init();
-					},
-					error: function(error) {
-						alert("error");
+						else{
+							var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+						}
+						
+						leftCount++;
 					}
-				});
+					else{
+						if(rightCount == table.rows.length){
+							table.insertRow(-1);
+							table.rows[rightCount].insertCell(0);
+							var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+						}
+						else{
+							var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
+						}					
+						rightCount++;
+					}
+					
+				}
+				REDIPS.drag.init();
+			},
+			error: function(error) {
+				alert("error");
+			}
+		});
 
 
 
@@ -283,12 +308,28 @@
 							if(position[2] == 0){
 								leftArray[boatNumber][position[1]] = weight;
 								leftWeight[boatNumber] += weight;
+								if(results[0].get("Side") == "Right"){
+									document.getElementById("boatBody" + boatNumber).rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+								}
 							}
 							// Otherwise dropped into right side
 							else{
 								rightArray[boatNumber][position[1]] = weight;
 								rightWeight[boatNumber] += weight;
+								if(results[0].get("Side") == "Left"){
+									document.getElementById("boatBody" + boatNumber).rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+								}
 							}
+
+
+							// Resets color of source cell
+							if(position[3] == 0){
+								document.getElementById("rosterBody").rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+							}
+							else if(position[3] == tableCount){
+								document.getElementById("fullRosterBody").rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+							}
+
 							getBalance(boatNumber);
 							return;
 						}
@@ -505,8 +546,11 @@
 			if(rTable.rows[i].cells[0].innerText.slice(0, -1) != ""){
 				nameArray.push(rTable.rows[i].cells[0].innerText.slice(0, -1));
 			}
+			if(rTable.rows[i].cells[1].innerText.slice(0,-1) != ""){
+				nameArray.push(rTable.rows[i].cells[1].innerText.slice(0, -1));	
+			}
 		}
-
+alert(nameArray.toString());
 		
 		var query = new Parse.Query(Paddler);
 
@@ -623,6 +667,7 @@
 
 				// Fills in any remaining rows with leftover paddlers
 				for(var j = 0; j < boatRows; j++){
+
 					var row = bTable.rows[j].cells;
 					if(bTable.rows[j].cells[0].innerHTML == "" && bTable.rows[j].cells[1].innerHTML == ""){
 						var emptyL = [];
@@ -803,17 +848,25 @@
 				for(var s = 0; s < results.length; s++){
 					names.push(results[s].get("Name"));
 				}
+
+				alert(names.toString());
 				if(names.length == 0){
 					for(var r = 0; r < rTable.rows.length; r++){
 						rTable.rows[r].cells[0].innerHTML = "";
+						rTable.rows[r].cells[1].innerHTML = "";
 					}
 				}
 				else{
 				// Removes people from roster if they were put in the boat
 					for(var s = 0; s < names.length; s++){
 						for(var r = 0; r < rTable.rows.length; r++){
+
 							if(names.indexOf(rTable.rows[r].cells[0].innerText.slice(0,-1)) == -1){
+
 								rTable.rows[r].cells[0].innerHTML = "";
+							}
+							if(names.indexOf(rTable.rows[r].cells[1].innerText.slice(0,-1)) == -1){
+								rTable.rows[r].cells[1].innerHTML = "";
 							}
 						}
 					}
@@ -850,6 +903,7 @@
 				for(var i = 0; i < dTable.rows.length; i++){
 					if(dTable.rows[i].cells[0].innerText != ""){
 						dNames.push(dTable.rows[i].cells[0].innerText.slice(0, -1));
+						dNames.push(dTable.rows[i].cells[1].innerText.slice(0, -1));
 					}
 				}
 
@@ -944,17 +998,18 @@
 												}
 											}
 											for(var i = 0; i < dTable.rows.length; i++){
-												row = dTable.rows[i].cells[0];
+												row = dTable.rows[i];
 
-												if(row.innerText.slice(0,-1) == dResults[dIndex].get("Name")){
-													row.innerHTML = '<div id="' + rResults[rIndex].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + rResults[rIndex].get("Name") + '</div>';
-
+												if(row.cells[0].innerText.slice(0,-1) == dResults[dIndex].get("Name")){
+													row.cells[0].innerHTML = '<div id="' + rResults[rIndex].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + rResults[rIndex].get("Name") + '</div>';
 												}
-											}
+												if(row.cells[1].innerText.slice(0,-1) == dResults[dIndex].get("Name")){
+													row.cells[1].innerHTML = '<div id="' + rResults[rIndex].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + rResults[rIndex].get("Name") + '</div>';
+												}											}
 										}
 										else if (subLeft) {
 											for(var i = 0; i < boatRows; i++){
-												row = bTable.rows[i].cells[1];
+												row = bTable.rows[i].cells[0];
 
 												if(row.innerText.slice(0,-1) == lResults[lIndex].get("Name")){
 													row.innerHTML = '<div id="' + dResults[dIndex].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + dResults[dIndex].get("Name") + '</div>';
@@ -964,10 +1019,14 @@
 												}
 											}
 											for(var i = 0; i < dTable.rows.length; i++){
-												row = dTable.rows[i].cells[0];
+												row = dTable.rows[i];
 
-												if(row.innerText.slice(0,-1) == dResults[dIndex].get("Name")){
-													row.innerHTML = '<div id="' + lResults[lIndex].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + lResults[lIndex].get("Name") + '</div>';
+												if(row.cells[0].innerText.slice(0,-1) == dResults[dIndex].get("Name")){
+													row.cells[0].innerHTML = '<div id="' + lResults[lIndex].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + lResults[lIndex].get("Name") + '</div>';
+
+												}
+												if(row.cells[1].innerText.slice(0,-1) == dResults[dIndex].get("Name")){
+													row.cells[1].innerHTML = '<div id="' + lResults[lIndex].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + lResults[lIndex].get("Name") + '</div>';
 
 												}
 											}

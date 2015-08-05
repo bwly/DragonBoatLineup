@@ -12,6 +12,7 @@ function clearBoat(boatNumber){
 
 	for(var i = 0; i < fTable.rows.length; i++){
 		fullRosterNames.push(fTable.rows[i].cells[0].innerText);
+		fullRosterNames.push(fTable.rows[i].cells[1].innerText);
 	}
 
 	for(var i = 0; i < boatRows; i++){
@@ -24,20 +25,45 @@ function clearBoat(boatNumber){
 			if(fullRosterNames.indexOf(bTable.rows[i].cells[j].innerText) != -1) {
 				// Returning person to daily roster
 				var rTable = document.getElementById("rosterBody");
-				for(var k = 0; k < rTable.rows.length; k++){
-					if(rTable.rows[k].cells[0].innerText == ""){
-						rTable.rows[k].cells[0].innerHTML = bTable.rows[i].cells[j].innerHTML;
-						bTable.rows[i].cells[j].innerHTML = "";
+				if(bTable.rows[i].cells[j].style.backgroundColor == "red"){
+					for(var k = 0; k < rTable.rows.length; k++){
+						if(rTable.rows[k].cells[Math.abs(j - 1)].innerText == ""){
+							rTable.rows[k].cells[Math.abs(j-1)].innerHTML = bTable.rows[i].cells[j].innerHTML;
+							bTable.rows[i].cells[j].innerHTML = "";
+							break;
+						}
 					}
 				}
-				
+				else{
+					for(var k = 0; k < rTable.rows.length; k++){
+						if(rTable.rows[k].cells[j].innerText == ""){
+							rTable.rows[k].cells[j].innerHTML = bTable.rows[i].cells[j].innerHTML;
+							bTable.rows[i].cells[j].innerHTML = "";
+						}
+					}
+				}
 			}
 			else{
 				// Returning person to full roster
-				fTable.rows[fullRosterNames.indexOf("")].cells[0].innerHTML = bTable.rows[i].cells[j].innerHTML;
-				fullRosterNames[fullRosterNames.indexOf("")] = bTable.rows[i].cells[j].innerText;
-				bTable.rows[i].cells[j].innerHTML = "";
+				if(bTable.rows[i].cells[j].style.backgroundColor == "red"){
+					for(var k = 0; k < fTable.rows.length; k++){
+						if(fTable.rows[k].cells[Math.abs(j - 1)].innerText == ""){
+							fTable.rows[k].cells[Math.abs(j-1)].innerHTML = bTable.rows[i].cells[j].innerHTML;
+							bTable.rows[i].cells[j].innerHTML = "";
+							break;
+						}
+					}
+				}
+				else{
+					for(var k = 0; k < fTable.rows.length; k++){
+						if(fTable.rows[k].cells[j].innerText == ""){
+							fTable.rows[k].cells[j].innerHTML = bTable.rows[i].cells[j].innerHTML;
+							bTable.rows[i].cells[j].innerHTML = "";
+						}
+					}
+				}
 			}
+			bTable.rows[i].cells[j].style.backgroundColor = "#eee";
 		}
 	}
 
@@ -201,12 +227,36 @@ function friday(drag) {
 	query.find({
 		success: function(results) {
 			document.getElementById("rosterTitle").innerHTML = "Friday Roster";
+			var rightCount = 0;
+			var leftCount = 0;
 			for(var i = 0; i < results.length; i++){
 				tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
-
 				var table = document.getElementById("rosterBody");
-				var row = table.insertRow(-1);
-				var cell = row.insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+
+
+				// Builds the roster table with both left and right sides
+				if(results[i].get("Side") == "Left"){
+					if(leftCount == table.rows.length){
+						table.insertRow(-1);
+						var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+					}
+					else{
+						var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+					}
+					
+					leftCount++;
+				}
+				else{
+					if(rightCount == table.rows.length){
+						table.insertRow(-1);
+						table.rows[rightCount].insertCell(0);
+						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+					}
+					else{
+						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
+					}					
+					rightCount++;
+				}
 				
 			}
 			
@@ -241,13 +291,35 @@ function saturday(drag) {
 	query.find({
 		success: function(results) {
 			document.getElementById("rosterTitle").innerHTML = "Saturday Roster";
+			var rightCount = 0;
+			var leftCount = 0;
+
 			for(var i = 0; i < results.length; i++){
 				tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
-
 				var table = document.getElementById("rosterBody");
-				var row = table.insertRow(-1);
-				var cell = row.insertCell(0).innerHTML = '<div id="' + results[i].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-				
+					// Builds the roster table with both left and right sides
+				if(results[i].get("Side") == "Left"){
+					if(leftCount == table.rows.length){
+						table.insertRow(-1);
+						var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+					}
+					else{
+						var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+					}
+					
+					leftCount++;
+				}
+				else{
+					if(rightCount == table.rows.length){
+						table.insertRow(-1);
+						table.rows[rightCount].insertCell(0);
+						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+					}
+					else{
+						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
+					}					
+					rightCount++;
+				}
 			}
 			
 			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
@@ -280,13 +352,34 @@ function sunday(drag) {
 	query.find({
 		success: function(results) {
 			document.getElementById("rosterTitle").innerHTML = "Sunday Roster";
+			var rightCount = 0;
+			var leftCount = 0;
 			for(var i = 0; i < results.length; i++){
 				tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
-
 				var table = document.getElementById("rosterBody");
-				var row = table.insertRow(-1);
-				var cell = row.insertCell(0).innerHTML = '<div id="' + results[i].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-				
+					// Builds the roster table with both left and right sides
+				if(results[i].get("Side") == "Left"){
+					if(leftCount == table.rows.length){
+						table.insertRow(-1);
+						var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+					}
+					else{
+						var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+					}
+					
+					leftCount++;
+				}
+				else{
+					if(rightCount == table.rows.length){
+						table.insertRow(-1);
+						table.rows[rightCount].insertCell(0);
+						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+					}
+					else{
+						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
+					}					
+					rightCount++;
+				}
 			}
 			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
 			document.getElementById("step2").style.display = "none";
@@ -316,8 +409,17 @@ function dailyDrop(result, weight, position, rightArray, rightWeight, leftArray,
 		}
 	}
 	var sourceBoat = position[3] - 1;
+	var bTable = document.getElementById("boatBody" + sourceBoat);
 	
-	if(position[3] != 0 && position[3] != tableCount){
+	if(position[3] == 0){
+		rTable.rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+	}
+	else if(position[3] == tableCount){
+		document.getElementById("fullRosterBody").rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+	}
+
+	else if(position[3] != 0 && position[3] != tableCount){
+		// Person was removed from a boat
 		if(position[5] == 0){
 			leftWeight[sourceBoat] -= weight;
 			leftArray[sourceBoat][position[4]] = 0;
@@ -326,10 +428,20 @@ function dailyDrop(result, weight, position, rightArray, rightWeight, leftArray,
 			rightWeight[sourceBoat] -= weight;
 			rightArray[sourceBoat][position[4]] = 0;
 		}
-
+		bTable.rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
 		getBalance(sourceBoat);
 	}
 
+	if(result.get("Side") == "Left"){
+		if(position[2] != 0){
+			rTable.rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+		}
+	}
+	else{
+		if(position[2] != 1){
+			rTable.rows[position[1]].cells[position[2]].style.backgroundColor = "red";	
+		}
+	}
 }
 
 // Calculates balance weight when a paddler is moved within a boat
@@ -338,16 +450,30 @@ function sameBoatDrop(result, weight, position, rightArray, rightWeight, leftArr
 	if(position[2] != position[5]){
 		// Dragged into different column
 		if(position[2] == 0){
+			// Dragged to left side
 			leftArray[boatNumber][position[1]] = weight;
 			rightArray[boatNumber][position[4]] = 0;
 			leftWeight[boatNumber] += weight;
 			rightWeight[boatNumber] -= weight;
+			if(result.get("Side") == "Right"){
+				document.getElementById("boatBody" + boatNumber).rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+			}
+			else{
+				document.getElementById("boatBody" + boatNumber).rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+			}
 		}
 		else{
+			// Dragged to right side
 			rightArray[boatNumber][position[1]] = weight;
 			leftArray[boatNumber][position[4]] = 0;
 			rightWeight[boatNumber] += weight;
 			leftWeight[boatNumber] -= weight; 
+			if(result.get("Side") == "Left"){
+				document.getElementById("boatBody" + boatNumber).rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+			}
+			else{
+				document.getElementById("boatBody" + boatNumber).rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+			}
 		}
 	}
 	else{
@@ -355,10 +481,20 @@ function sameBoatDrop(result, weight, position, rightArray, rightWeight, leftArr
 		if(position[2] == 0){
 			leftArray[boatNumber][position[1]] = weight;
 			leftArray[boatNumber][position[4]] = 0;
+
+			if(result.get("Side") == "Right"){
+				document.getElementById("boatBody" + boatNumber).rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+				document.getElementById("boatBody" + boatNumber).rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+			}
+
 		}
 		else{
 			rightArray[boatNumber][position[1]] = weight;
 			rightArray[boatNumber][position[4]] = 0;
+			if(result.get("Side") == "Left"){
+				document.getElementById("boatBody" + boatNumber).rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+				document.getElementById("boatBody" + boatNumber).rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+			}
 		}
 	}
 	
@@ -384,12 +520,18 @@ function boatToBoat(result, weight, position, rightArray, rightWeight, leftArray
 	if(position[2] == 0){
 		leftWeight[targetBoat] += weight;
 		leftArray[targetBoat][position[1]] = weight;
+		if(result.get("Side") == "Right"){
+			document.getElementById("boatBody" + targetBoat).rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+		}
 	}
 	else{
 		rightWeight[targetBoat] += weight;
 		rightArray[targetBoat][position[1]] = weight;
+		if(result.get("Side") == "Left"){
+			document.getElementById("boatBody" + targetBoat).rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+		}
 	}
-
+	document.getElementById("boatBody" + sourceBoat).rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
 	getBalance(targetBoat);
 	getBalance(sourceBoat);
 
@@ -410,7 +552,14 @@ function fullDrop(result, weight, position, rightArray, rightWeight, leftArray, 
 		}
 	}
 	var sourceBoat = position[3] - 1;
-	
+	var bTable = document.getElementById("boatBody" + sourceBoat);
+
+	if(position[3] == 0){
+		document.getElementById("rosterBody").rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+	}
+	else if(position[3] == tableCount){
+		fTable.rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
+	}
 	if(position[3] != 0 && position[3] != tableCount){
 		if(position[5] == 0){
 			leftWeight[sourceBoat] -= weight;
@@ -420,8 +569,19 @@ function fullDrop(result, weight, position, rightArray, rightWeight, leftArray, 
 			rightWeight[sourceBoat] -= weight;
 			rightArray[sourceBoat][position[4]] = 0;
 		}
-
+		bTable.rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
 		getBalance(sourceBoat);
+	}
+
+	if(result.get("Side") == "Left"){
+		if(position[2] != 0){
+			fTable.rows[position[1]].cells[position[2]].style.backgroundColor = "red";
+		}
+	}
+	else{
+		if(position[2] != 1){
+			fTable.rows[position[1]].cells[position[2]].style.backgroundColor = "red";	
+		}
 	}
 }
 
