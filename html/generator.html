@@ -550,7 +550,7 @@
 				nameArray.push(rTable.rows[i].cells[1].innerText.slice(0, -1));	
 			}
 		}
-alert(nameArray.toString());
+
 		
 		var query = new Parse.Query(Paddler);
 
@@ -1029,6 +1029,12 @@ alert(nameArray.toString());
 													row.cells[1].innerHTML = '<div id="' + lResults[lIndex].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + lResults[lIndex].get("Name") + '</div>';
 
 												}
+											}
+										}
+
+										for(var i = 0; i < dTable.rows.length; i++){
+											for(var j = 0; j < dTable.rows[i].cells.length; j++){
+												dTable.rows[i].cells[j].style.backgroundColor = "#eee";
 											}
 										}
 										getBalance(boatNumber);
