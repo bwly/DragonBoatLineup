@@ -73,6 +73,10 @@
 
 	<button id = "tenButton" onclick="addTenMan()">Add 10Man</button>
 	<button id = "twentyButton" onclick="addTwentyMan()">Add 20Man</button>
+	<br>
+	<select id = "loadChoice"></select>
+	<button id = "loadButton" onclick="loadBoat(document.getElementById('loadChoice').value, numBoats)">Load Boat</button>
+	
 </div>
 
 
@@ -178,7 +182,20 @@
 			}
 		});
 
-
+		var Boat = Parse.Object.extend("Boat");
+		var boatQuery = new Parse.Query(Boat);	
+		
+		boatQuery.equalTo("Owner", Parse.User.current().getUsername());
+		boatQuery.find({
+			success: function(results){
+				for(var i = 0; i < results.length; i++){
+					document.getElementById("loadChoice").innerHTML += "<option value='" + results[i].get('Name') + "'>" + results[i].get('Name') + "</option>"
+				}
+			},
+			error: function(error){
+				alert("Error");
+			}
+		});
 
 		var ep = new ExcelPlus();
 		ep.openLocal({

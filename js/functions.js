@@ -131,6 +131,9 @@ function addTwentyMan(){
 		+'	<button id = "clear' + numBoats + '" onclick="clearBoat(' + numBoats + ')">Clear</button>'
 		+'	<button id = "help' + numBoats + '" onclick="getSuggestion(' + numBoats + ')">Get suggestions</button>'
 		+'  <button id = "fill' + numBoats + '" onclick="autofill(' + numBoats + ')">Autofill</button>'
+		+'  <br>'
+		+'  <input id = "name' + numBoats + '" type="text" name="" placeHolder = "Boat Name">'
+		+'  <button id = "save' + numBoats + '" onclick="saveBoat(' + numBoats +  ",document.getElementById('name" + numBoats + "'" + ').value)">Save Boat</button>'
 		+'  <div id = "balance' + numBoats + '">Weight is: Balanced</div>'
 		+'</div>';
 		
@@ -179,9 +182,11 @@ function addTenMan(){
 		+'	<button id = "clear' + numBoats + '" onclick="clearBoat(' + numBoats + ')">Clear</button>'
 		+'	<button id = "help' + numBoats + '" onclick="getSuggestion(' + numBoats + ')">Get suggestions</button>'
 		+'  <button id = "fill' + numBoats + '" onclick="autofill(' + numBoats + ')">Autofill</button>'
+		+'  <br>'
+		+'  <input id = "name' + numBoats + '" type="text" name="" placeHolder = "Boat Name">'
+		+'  <button id = "save' + numBoats + '" onclick="saveBoat(' + numBoats +  ",document.getElementById('name" + numBoats + "'" + ').value)">Save Boat</button>'
 		+'  <div id = "balance' + numBoats + '">Weight is: Balanced</div>'
 		+'</div>';
-		
 
 	leftWeight[numBoats] = 0;
 	rightWeight[numBoats] = 0;
@@ -207,6 +212,68 @@ function getBalance(boatNumber){
 	}
 }
 
+
+function saveBoat(boatNumber, name){
+	var Boat = Parse.Object.extend("Boat");
+	var boat = new Boat();
+	boat.set("Owner", Parse.User.current().getUsername());
+	boat.set("Code", document.getElementById("boat" + boatNumber).innerHTML);
+	boat.set("Name", name);
+	boat.set("LeftArray", leftArray[boatNumber]);
+	boat.set("LeftWeight", leftWeight[boatNumber]);
+	boat.set("RightArray", rightArray[boatNumber]);
+	boat.set("RightWeight", rightWeight[boatNumber]);
+	boat.save(null, {
+		success: function(results) {
+			alert("Saved boat " + boatNumber)
+		},
+		error: function(results, error) {
+			alert(error.message);
+		}
+	});
+}
+
+function loadBoat(name){
+	alert("Loading boat number " + numBoats);
+	var Boat = Parse.Object.extend("Boat");
+	var query = new Parse.Query(Boat);
+	query.equalTo("Owner", Parse.User.current().getUsername());
+	query.equalTo("Name", name);
+	query.find({
+		success: function(results){
+			document.getElementById("boatDiv").innerHTML += 
+				'<div style="float:left; padding-left:100px;">'
+				+'	<h1>' + name + '</h1>'
+				+'	<table id="boat' + numBoats + '">'
+				+	results[0].get("Code")	
+				+'	</table>'
+				+'	<button id = "clear' + numBoats + '" onclick="clearBoat(' + numBoats + ')">Clear</button>'
+				+'	<button id = "help' + numBoats + '" onclick="getSuggestion(' + numBoats + ')">Get suggestions</button>'
+				+'  <button id = "fill' + numBoats + '" onclick="autofill(' + numBoats + ')">Autofill</button>'
+				+'  <br>'
+				+'  <input id = "name' + numBoats + '" type="text" name="" placeHolder = "Boat Name">'
+				+'  <button id = "save' + numBoats + '" onclick="saveBoat(' + numBoats +  ",document.getElementById('name" + numBoats + "'" + ').value)">Save Boat</button>'
+				+'  <div id = "balance' + numBoats + '">Weight is: Balanced</div>'
+				+'</div>';
+
+				leftWeight[numBoats] = results[0].get("LeftWeight");
+				rightWeight[numBoats] = results[0].get("RightWeight");
+				leftArray[numBoats] = results[0].get("LeftArray");
+				rightArray[numBoats] = results[0].get("RightArray");
+				getBalance(numBoats);
+				numBoats++;
+				tableCount++;
+	
+				
+				REDIPS.drag.init();
+
+			
+		},
+		error: function(error){
+			alert("Error");
+		}
+	});
+}
 
 // Loads the roster table for friday
 function friday(drag) {
