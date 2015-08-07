@@ -1,6 +1,6 @@
 // Removes all of the paddlers from a boat and returns them to the roster from which they came
 function clearBoat(boatNumber){
-	var boatRows = 10;
+	
 	var bTable = document.getElementById("boatBody" + boatNumber);
 	var fTable = document.getElementById("fullRosterBody");
 	// For each row
@@ -8,6 +8,8 @@ function clearBoat(boatNumber){
 	//    if FULL roster contains name in cell, add cell to daily roster
 	//    else clear cell
 
+	var boatRows = bTable.rows.length;
+	alert(boatRows);
 	var fullRosterNames = [];
 
 	for(var i = 0; i < fTable.rows.length; i++){
@@ -68,9 +70,16 @@ function clearBoat(boatNumber){
 	}
 
 	leftWeight[boatNumber] = 0;
-	leftArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
 	rightWeight[boatNumber] = 0;
-	leftArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
+
+	if(boatRows == 10){
+		leftArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
+		rightArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
+	}
+	else{
+		leftArray[boatNumber] = [0,0,0,0,0];
+		rightArray[boatNumber] = [0,0,0,0,0];	
+	}
 	document.getElementById("balance" + boatNumber).innerHTML = "Weight is: Balanced";	
 	balanceWeight[boatNumber] = 0;
 	REDIPS.drag.init();
