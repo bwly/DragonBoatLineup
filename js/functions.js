@@ -241,11 +241,17 @@ function loadBoat(name){
 	query.equalTo("Name", name);
 	query.find({
 		success: function(results){
+			// Edits the table's old code to have the correct boat number
+			var code = results[0].get("Code");
+			var chunk0 = code.split("<tbody id=")[0];
+			var chunk1 = code.split("<tbody id=")[1].substr(10, (code.split("<tbody id=")[1].length));
+			var edited = chunk0 + '<tbody id="boatBody' + numBoats + chunk1;
+
 			document.getElementById("boatDiv").innerHTML += 
 				'<div style="float:left; padding-left:100px;">'
 				+'	<h1>' + name + '</h1>'
 				+'	<table id="boat' + numBoats + '">'
-				+	results[0].get("Code")	
+				+	edited
 				+'	</table>'
 				+'	<button id = "clear' + numBoats + '" onclick="clearBoat(' + numBoats + ')">Clear</button>'
 				+'	<button id = "help' + numBoats + '" onclick="getSuggestion(' + numBoats + ')">Get suggestions</button>'
