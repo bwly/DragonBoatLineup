@@ -204,52 +204,69 @@
 		},function() {
 			// format of a = [row][column]
 			var a = ep.selectSheet(1).readAll();
-			
-
-
-			var nameCol = 0;
+			var nameCol = -1;
 			for (var row = 0; row < a.length; row++) {
 				for(var col = 0; col < a[row].length; col++){
-					if(a[row][col] == "Your name (including last initial):"){
+					if(a[row][col].toLowerCase().indexOf("name") > -1){
 						nameCol = col;
 					}
+					if(nameCol != -1){
+						break;
+					}
+				}
+				if(nameCol != -1){
+					break;
+				}
+			}
 
 
-					if(a[row][col] == "Will you be attending Friday's practice?"){
-						
+			for (var row = 0; row < a.length; row++) {
+				for(var col = 0; col < a[row].length; col++){
+					if(a[row][col] == null){
+						continue;
+					}
+
+					if(a[row][col].toLowerCase().indexOf("friday") > -1){
 						var fridayRow = 1;
-						
-						for(var fridayRow = 1; fridayRow < a.length; fridayRow++){
-							if(a[fridayRow][col] == "Yes!" || a[fridayRow][col] == "Yes, and I can drive!"){
-								fridayOutput += (a[fridayRow][nameCol] + ", ");
-								fridayArray.push(a[fridayRow][nameCol]);
+						while(a[fridayRow]){
+							if(a[fridayRow][col]){
+								if(a[fridayRow][col].toLowerCase().indexOf("yes") > -1){
+									fridayOutput += (a[fridayRow][nameCol] + ", ");
+									fridayArray.push(a[fridayRow][nameCol]);
+								}
 							}
+							fridayRow++;
 						}
-
 						// The slice removes the comma and space after the last name
 						document.getElementById("result").innerHTML += fridayOutput.slice(0,fridayOutput.length-2) + "<br>";
 
 					}
-					else if(a[row][col] == "Will you be attending Saturday's practice?"){
-						for(var saturdayRow = 1; saturdayRow < a.length; saturdayRow++){
-							if(a[saturdayRow][col] == "Yes!" || a[saturdayRow][col] == "Yes, and I can drive!"){
-								saturdayOutput += (a[saturdayRow][nameCol] + ", ");
-								saturdayArray.push(a[saturdayRow][nameCol]);
+					else if(a[row][col].toLowerCase().indexOf("saturday") > -1){
+						var saturdayRow = 1;
+						while(a[saturdayRow]){
+							if(a[saturdayRow][col]){
+								if(a[saturdayRow][col].toLowerCase().indexOf("yes") > -1){
+									saturdayOutput += (a[saturdayRow][nameCol] + ", ");
+									saturdayArray.push(a[saturdayRow][nameCol]);
+								}
 							}
+							saturdayRow++;
 						}
-
 						// The slice removes the comma and space after the last name
 						document.getElementById("result").innerHTML += saturdayOutput.slice(0,saturdayOutput.length-2) + "<br>";
 
 					}
-					else if(a[row][col] == "Will you be attending Sunday's practice?"){
-						for(var sundayRow = 1; sundayRow < a.length; sundayRow++){
-							if(a[sundayRow][col] == "Yes!" || a[sundayRow][col] == "Yes, and I can drive!"){
-								sundayOutput += (a[sundayRow][nameCol] + ", ");
-								sundayArray.push(a[sundayRow][nameCol]);
+					else if(a[row][col].toLowerCase().indexOf("sunday") > -1){
+						var sundayRow = 1;
+						while(a[sundayRow]){
+							if(a[sundayRow][col]){
+								if(a[sundayRow][col].toLowerCase().indexOf("yes") > -1){
+									sundayOutput += (a[sundayRow][nameCol] + ", ");
+									sundayArray.push(a[sundayRow][nameCol]);
+								}
 							}
+							sundayRow++;
 						}
-
 						// The slice removes the comma and space after the last name
 						document.getElementById("result").innerHTML += sundayOutput.slice(0,sundayOutput.length-2) + "<br>";
 
@@ -257,7 +274,6 @@
 
 				}
 			}
-
 			// Shows step 2 and hides step 1 material
 			document.getElementById("step2").style.display = "block";
 			document.getElementById("step1").style.display = "none";	
@@ -866,7 +882,6 @@
 					names.push(results[s].get("Name"));
 				}
 
-				alert(names.toString());
 				if(names.length == 0){
 					for(var r = 0; r < rTable.rows.length; r++){
 						rTable.rows[r].cells[0].innerHTML = "";
