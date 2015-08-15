@@ -3,20 +3,46 @@ function clearBoat(boatNumber){
 	
 	var bTable = document.getElementById("boatBody" + boatNumber);
 	var fTable = document.getElementById("fullRosterBody");
+	var dTable = document.getElementById("rosterBody");
 	// For each row
 	//	for each column
 	//    if FULL roster contains name in cell, add cell to daily roster
 	//    else clear cell
 
 	var boatRows = bTable.rows.length;
-	alert(boatRows);
+	
 	var fullRosterNames = [];
 
 	for(var i = 0; i < fTable.rows.length; i++){
-		fullRosterNames.push(fTable.rows[i].cells[0].innerText);
-		fullRosterNames.push(fTable.rows[i].cells[1].innerText);
+		if(fTable.rows[i].cells[0]){
+			fullRosterNames.push(fTable.rows[i].cells[0].innerText);
+		}
+		if(fTable.rows[i].cells[1]){
+			fullRosterNames.push(fTable.rows[i].cells[1].innerText);
+		}
 	}
 
+	var dailyRosterNames = [];
+	var dailySpots = 0;
+	for(var i = 0; i < dTable.rows.length; i++){
+		if(dTable.rows[i].cells[0]){
+			if(dTable.rows[i].cells[0].innerText == ""){
+				dailySpots++;
+			}
+			else{
+				dailyRosterNames.push(dTable.rows[i].cells[0].innerText);
+			}
+		}
+		if(dTable.rows[i].cells[1]){
+			if(dTable.rows[i].cells[1].innerText == ""){
+				dailySpots++;
+			}
+			else{
+				dailyRosterNames.push(dTable.rows[i].cells[1].innerText);
+			}
+		}
+	}
+alert(dailySpots);
 	for(var i = 0; i < boatRows; i++){
 		for(var j = 0; j < 2; j++){
 			if(bTable.rows[i].cells[j].innerText == ""){
@@ -25,23 +51,32 @@ function clearBoat(boatNumber){
 			}
 
 			if(fullRosterNames.indexOf(bTable.rows[i].cells[j].innerText) != -1) {
-				// Returning person to daily roster
-				var rTable = document.getElementById("rosterBody");
-				if(bTable.rows[i].cells[j].style.backgroundColor == "red"){
-					for(var k = 0; k < rTable.rows.length; k++){
-						if(rTable.rows[k].cells[Math.abs(j - 1)].innerText == ""){
-							rTable.rows[k].cells[Math.abs(j-1)].innerHTML = bTable.rows[i].cells[j].innerHTML;
-							bTable.rows[i].cells[j].innerHTML = "";
-							break;
-						}
-					}
+				if(dailySpots == 0){
+					// An extra copy of this person exists, so remove the person from the boat
+					bTable.rows[i].cells[j].innerHTML = "";
 				}
 				else{
-					for(var k = 0; k < rTable.rows.length; k++){
-						if(rTable.rows[k].cells[j].innerText == ""){
-							rTable.rows[k].cells[j].innerHTML = bTable.rows[i].cells[j].innerHTML;
-							bTable.rows[i].cells[j].innerHTML = "";
+					// Returning person to daily roster
+					var rTable = document.getElementById("rosterBody");
+					if(bTable.rows[i].cells[j].style.backgroundColor == "red"){
+						for(var k = 0; k < rTable.rows.length; k++){
+							if(rTable.rows[k].cells[Math.abs(j - 1)].innerText == ""){
+								rTable.rows[k].cells[Math.abs(j-1)].innerHTML = bTable.rows[i].cells[j].innerHTML;
+								bTable.rows[i].cells[j].innerHTML = "";
+								break;
+							}
 						}
+					}
+					else{
+						for(var k = 0; k < rTable.rows.length; k++){
+							if(rTable.rows[k].cells[j].innerText == ""){
+								rTable.rows[k].cells[j].innerHTML = bTable.rows[i].cells[j].innerHTML;
+								bTable.rows[i].cells[j].innerHTML = "";
+								break;
+							}
+						}
+						
+
 					}
 				}
 			}
@@ -50,6 +85,7 @@ function clearBoat(boatNumber){
 				if(bTable.rows[i].cells[j].style.backgroundColor == "red"){
 					for(var k = 0; k < fTable.rows.length; k++){
 						if(fTable.rows[k].cells[Math.abs(j - 1)].innerText == ""){
+							fullRosterNames.push(bTable.rows[i].cells[j].innerText);
 							fTable.rows[k].cells[Math.abs(j-1)].innerHTML = bTable.rows[i].cells[j].innerHTML;
 							bTable.rows[i].cells[j].innerHTML = "";
 							break;
@@ -59,11 +95,15 @@ function clearBoat(boatNumber){
 				else{
 					for(var k = 0; k < fTable.rows.length; k++){
 						if(fTable.rows[k].cells[j].innerText == ""){
+							fullRosterNames.push(bTable.rows[i].cells[j].innerText);
 							fTable.rows[k].cells[j].innerHTML = bTable.rows[i].cells[j].innerHTML;
 							bTable.rows[i].cells[j].innerHTML = "";
+							break;
 						}
 					}
 				}
+
+
 			}
 			bTable.rows[i].cells[j].style.backgroundColor = "#eee";
 		}
@@ -88,7 +128,7 @@ function clearBoat(boatNumber){
 function addTwentyMan(){
 	document.getElementById("boatDiv").innerHTML += 
 		'<div style="float:left; padding-left:100px;">'
-		+'	<h1>Boat ' + numBoats + '</h1>'
+		+'	<h1 id="title' + numBoats +'">Boat ' + numBoats + '</h1>'
 		+'	<table id="boat' + numBoats + '">'
 		+'		<colgroup>'
 		+'			<col width="100"/>'
@@ -151,7 +191,9 @@ function addTwentyMan(){
 	rightWeight[numBoats] = 0;
 	leftArray[numBoats] = [0,0,0,0,0,0,0,0,0,0];
 	rightArray[numBoats] = [0,0,0,0,0,0,0,0,0,0];
+	boatArray[numBoats] = 1;
 	numBoats++;
+	num20++;
 	tableCount++;
 	REDIPS.drag.init();
 }
@@ -159,7 +201,7 @@ function addTwentyMan(){
 function addTenMan(){
 	document.getElementById("boatDiv").innerHTML += 
 		'<div style="float:left; padding-left:100px;">'
-		+'	<h1>Boat ' + numBoats + '</h1>'
+		+'	<h1 id="title' + numBoats +'">Boat ' + numBoats + '</h1>'
 		+'	<table id="boat' + numBoats + '">'
 		+'		<colgroup>'
 		+'			<col width="100"/>'
@@ -201,7 +243,9 @@ function addTenMan(){
 	rightWeight[numBoats] = 0;
 	leftArray[numBoats] = [0,0,0,0,0];
 	rightArray[numBoats] = [0,0,0,0,0];
+	boatArray[numBoats] = 0;
 	numBoats++;
+	num10++;
 	tableCount++;
 	REDIPS.drag.init();
 }
@@ -210,6 +254,7 @@ function addTenMan(){
 // Adjusts the text underneath a boat table that says whether the boat is right heavy, left heavy, or balanced
 function getBalance(boatNumber){
 	balanceWeight[boatNumber] = leftWeight[boatNumber] - rightWeight[boatNumber];
+
 	if(balanceWeight[boatNumber] > 0){
 		document.getElementById("balance" + boatNumber).innerHTML = "Weight is: " + (balanceWeight[boatNumber]) + " lbs left-heavy";
 	}
@@ -234,7 +279,8 @@ function saveBoat(boatNumber, name){
 	boat.set("RightWeight", rightWeight[boatNumber]);
 	boat.save(null, {
 		success: function(results) {
-			alert("Saved boat " + boatNumber)
+			document.getElementById("title" + boatNumber).innerText = name;
+			alert(name + " saved!");
 		},
 		error: function(results, error) {
 			alert(error.message);

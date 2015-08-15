@@ -41,6 +41,7 @@
 					<th>Weight</th>
 					<th>Side</th>
 					<th>Section</th>
+					<th>Boat</th>
 				</tr>
 			</table>
 		</div>
@@ -64,6 +65,7 @@
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
 			query.equalTo("Owner", Parse.User.current().getUsername());
+			query.ascending("Name");
 			query.find({
 				success: function(results) {
 					var myTable = document.getElementById("paddlers");
@@ -80,15 +82,17 @@
 						var cell3 = row.insertCell(2);
 						var cell4 = row.insertCell(3);
 						var cell5 = row.insertCell(4);
+						var cell6 = row.insertCell(5);
 
 						cell1.innerHTML = object.get('Name');	
 						cell1.id = object.id;	
 						cell2.innerHTML = object.get('Weight');
 						cell3.innerHTML = object.get('Side');
 						cell4.innerHTML = object.get('Section');
+						cell5.innerHTML = object.get('Boat');
 
 						// Delete button
-						cell5.innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+						cell6.innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 						
 					}
 					
@@ -100,13 +104,15 @@
 					var cell3 = row.insertCell(2);
 					var cell4 = row.insertCell(3);
 					var cell5 = row.insertCell(4);
+					var cell6 = row.insertCell(5);
 			
 					// Fills the new row with values
 					cell1.innerHTML = "<input type='text' id='nameEntry' placeholder='Name'>";
 					cell2.innerHTML = "<input type='text' id='weightEntry' placeholder='Weight'>";
 					cell3.innerHTML = "<select id='sideEntry'><option value='Left'>Left</option><option value='Right'>Right</option></select>";
 					cell4.innerHTML = "<select id='sectionEntry'><option value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
-					cell5.innerHTML = "<button onclick='addPaddler()'>Add</button>";
+					cell5.innerHTML = "<select id='boatEntry'><option value='White'>White</option><option value='Blue'>Blue</option></select>";
+					cell6.innerHTML = "<button onclick='addPaddler()'>Add</button>";
 				},
 				error: function(error){
 					alert("Error");
@@ -143,6 +149,7 @@
 			paddler.set("Weight", parseInt(document.getElementById("weightEntry").value));
 			paddler.set("Side", document.getElementById("sideEntry").value);
 			paddler.set("Section", document.getElementById("sectionEntry").value);
+			paddler.set("Boat", document.getElementById("boatEntry").value);
 			paddler.set("Owner", Parse.User.current().getUsername());
 			
 			paddler.save(null, {
@@ -155,7 +162,8 @@
 					myTable.rows[myTable.rows.length-1].cells[1].innerHTML = parseInt(document.getElementById("weightEntry").value);
 					myTable.rows[myTable.rows.length-1].cells[2].innerHTML = document.getElementById("sideEntry").value;
 					myTable.rows[myTable.rows.length-1].cells[3].innerHTML = document.getElementById("sectionEntry").value;
-					myTable.rows[myTable.rows.length-1].cells[4].innerHTML = "<button id='" + paddler.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + paddler.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+					myTable.rows[myTable.rows.length-1].cells[4].innerHTML = document.getElementById("boatEntry").value;
+					myTable.rows[myTable.rows.length-1].cells[5].innerHTML = "<button id='" + paddler.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + paddler.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 					
 					// Creates a new row for adding paddlers
 					var row = myTable.insertRow(-1);
@@ -164,13 +172,15 @@
 					var cell3 = row.insertCell(2);
 					var cell4 = row.insertCell(3);
 					var cell5 = row.insertCell(4);
+					var cell6 = row.insertCell(5);
 
 					// Gives values to the new row
 					cell1.innerHTML = "<input type='text' id='nameEntry' placeholder='Name'>";
 					cell2.innerHTML = "<input type='text' id='weightEntry' placeholder='Weight'>";
 					cell3.innerHTML = "<select id='sideEntry'><option value='Left'>Left</option><option value='Right'>Right</option></select>";
 					cell4.innerHTML = "<select id='sectionEntry'><option value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket<Rocket</option></select>";
-					cell5.innerHTML = "<button onclick='addPaddler()'>Add</button>";
+					cell5.innerHTML = "<select id='boatEntry'><option value='White'>White</option><option value='Blue'>Blue</option></select>";
+					cell6.innerHTML = "<button onclick='addPaddler()'>Add</button>";
 				},
 				error: function(results, error) {
 					alert(error.message);
@@ -226,8 +236,15 @@
 						else {
 							myTable.rows[rowNumber].cells[3].innerHTML = "<select id='sectionEdit'><option value='Box'>Box</option><option value='Engine'>Engine</option><option selected value='Rocket'>Rocket</option></select>";
 						}
+
+						if(myTable.rows[rowNumber].cells[4].innerHTML == "White"){
+							myTable.rows[rowNumber].cells[4].innerHTML = "<select id='boatEdit'><option selected value='White'>White</option><option value='Blue'>Blue</option></select>";
+						}
+						else {
+							myTable.rows[rowNumber].cells[4].innerHTML = "<select id='boatEdit'><option value='White'>White</option><option selected value='Blue'>Blue</option></select>";
+						}
 						
-						myTable.rows[rowNumber].cells[4].innerHTML = "<button id='" + results[0].id + "' onclick='updatePaddler(this.id)'>Done</button> <button id='" + results[0].id + "' onclick='undoEdit(this.id)'>Cancel</button>";
+						myTable.rows[rowNumber].cells[5].innerHTML = "<button id='" + results[0].id + "' onclick='updatePaddler(this.id)'>Done</button> <button id='" + results[0].id + "' onclick='undoEdit(this.id)'>Cancel</button>";
 						
 						
 						break;
@@ -262,6 +279,7 @@
 						results[0].set("Weight", parseInt(document.getElementById("weightEdit").value));
 						results[0].set("Side", document.getElementById("sideEdit").value);
 						results[0].set("Section", document.getElementById("sectionEdit").value);
+						results[0].set("Boat", document.getElementById("boatEdit").value);
 						
 						results[0].save(null, {
 							success: function(results2) {
@@ -271,7 +289,8 @@
 								myTable.rows[rowNumber].cells[1].innerHTML = parseInt(document.getElementById("weightEdit").value);
 								myTable.rows[rowNumber].cells[2].innerHTML = document.getElementById("sideEdit").value;
 								myTable.rows[rowNumber].cells[3].innerHTML = document.getElementById("sectionEdit").value;
-								myTable.rows[rowNumber].cells[4].innerHTML = "<button id='" + results[0].id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + results[0].id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+								myTable.rows[rowNumber].cells[4].innerHTML = document.getElementById("boatEdit").value;
+								myTable.rows[rowNumber].cells[5].innerHTML = "<button id='" + results[0].id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + results[0].id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 							},
 							error: function(results2, error) {
 								alert(error.message);
@@ -311,9 +330,10 @@
 							myTable.rows[rowNumber].cells[1].innerHTML = object.get('Weight');
 							myTable.rows[rowNumber].cells[2].innerHTML  = object.get('Side');
 							myTable.rows[rowNumber].cells[3].innerHTML  = object.get('Section');
+							myTable.rows[rowNumber].cells[4].innerHTML  = object.get('Boat');
 
 							// Edit and Delete buttons
-							myTable.rows[rowNumber].cells[4].innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+							myTable.rows[rowNumber].cells[5].innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 							break;
 						}
 						rowNumber++;
