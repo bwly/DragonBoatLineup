@@ -42,7 +42,7 @@ function clearBoat(boatNumber){
 			}
 		}
 	}
-alert(dailySpots);
+
 	for(var i = 0; i < boatRows; i++){
 		for(var j = 0; j < 2; j++){
 			if(bTable.rows[i].cells[j].innerText == ""){
@@ -179,7 +179,8 @@ function addTwentyMan(){
 		+'	</table>'
 		+'	<button id = "clear' + numBoats + '" onclick="clearBoat(' + numBoats + ')">Clear</button>'
 		+'	<button id = "help' + numBoats + '" onclick="getSuggestion(' + numBoats + ')">Get suggestions</button>'
-		+'  <button id = "fill' + numBoats + '" onclick="autofill(' + numBoats + ')">Autofill</button>'
+		+'  <button id = "fill' + numBoats + '" onclick="autofill2(' + numBoats + ')">Autofill</button>'
+		+'  <select id = "color' + numBoats + '"><option value = "Any">Any</option><option value = "White">White</option><option value="Blue">Blue</option></select>'
 		+'  <br>'
 		+'  <input id = "name' + numBoats + '" type="text" name="" placeHolder = "Boat Name">'
 		+'  <button id = "save' + numBoats + '" onclick="saveBoat(' + numBoats +  ",document.getElementById('name" + numBoats + "'" + ').value)">Save Boat</button>'
@@ -232,7 +233,8 @@ function addTenMan(){
 		+'	</table>'
 		+'	<button id = "clear' + numBoats + '" onclick="clearBoat(' + numBoats + ')">Clear</button>'
 		+'	<button id = "help' + numBoats + '" onclick="getSuggestion(' + numBoats + ')">Get suggestions</button>'
-		+'  <button id = "fill' + numBoats + '" onclick="autofill(' + numBoats + ')">Autofill</button>'
+		+'  <button id = "fill' + numBoats + '" onclick="autofill2(' + numBoats + ')">Autofill</button>'
+		+'  <select id = "color' + numBoats + '"><option value = "Any">Any</option><option value = "White">White</option><option value="Blue">Blue</option></select>'
 		+'  <br>'
 		+'  <input id = "name' + numBoats + '" type="text" name="" placeHolder = "Boat Name">'
 		+'  <button id = "save' + numBoats + '" onclick="saveBoat(' + numBoats +  ",document.getElementById('name" + numBoats + "'" + ').value)">Save Boat</button>'
@@ -773,4 +775,36 @@ function fillSection(section, results, rowIndex, leftArray, leftWeight, rightArr
 			}
 		}
 	}
+}
+
+function getDailyNames(){
+	var rTable = document.getElementById("rosterBody");
+	var nameArray = [];
+	for(var i = 0; i < rTable.rows.length; i++){
+		// Slice removes a newline at the end of the name
+		if(rTable.rows[i].cells[left] && rTable.rows[i].cells[left].innerText.slice(0, -1) != ""){
+			nameArray.push(rTable.rows[i].cells[left].innerText.slice(0, -1));
+		}
+		if(rTable.rows[i].cells[right] && rTable.rows[i].cells[right].innerText.slice(0,-1) != ""){
+			nameArray.push(rTable.rows[i].cells[right].innerText.slice(0, -1));	
+		}
+	}
+
+	return nameArray;
+}
+
+function getBoatNames(boatNumber){
+	var bTable = document.getElementById("boatBody"+boatNumber);
+	var nameArray = [];
+	for(var i = 0; i < bTable.rows.length; i++){
+		// Slice removes a newline at the end of the name
+		if(bTable.rows[i].cells[left] && bTable.rows[i].cells[left].innerText.slice(0, -1) != ""){
+			nameArray.push(bTable.rows[i].cells[left].innerText.slice(0, -1));
+		}
+		if(bTable.rows[i].cells[right] && bTable.rows[i].cells[right].innerText.slice(0,-1) != ""){
+			nameArray.push(bTable.rows[i].cells[right].innerText.slice(0, -1));	
+		}
+	}
+
+	return nameArray;
 }

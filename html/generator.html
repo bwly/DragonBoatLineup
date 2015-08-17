@@ -161,6 +161,10 @@
 	// 0 = 10 man, 1 = 20 man
 	var boatArray = [];
 
+	// Constants that define which columns in all tables refer to the left and right rows
+	var left = 0;
+	var right = 1;
+
 	if(currentuser){
 		// Fills in the full roster;
 		var fullQuery = new Parse.Query(Paddler);	
@@ -177,10 +181,10 @@
 					if(results[i].get("Side") == "Left"){
 						if(leftCount == table.rows.length){
 							table.insertRow(-1);
-							var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+							var cell = table.rows[leftCount].insertCell(left).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
 						}
 						else{
-							var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+							var cell = table.rows[leftCount].cells[left].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
 						}
 						
 						leftCount++;
@@ -188,11 +192,14 @@
 					else{
 						if(rightCount == table.rows.length){
 							table.insertRow(-1);
-							table.rows[rightCount].insertCell(0);
-							var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+
+							// Inserts an extra placeholder cell on the left side so that we can have a right side cell
+							table.rows[rightCount].insertCell(left);
+							
+							var cell = table.rows[rightCount].insertCell(right).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
 						}
 						else{
-							var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
+							var cell = table.rows[rightCount].insertCell(right).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
 						}					
 						rightCount++;
 					}
@@ -370,7 +377,7 @@
 							// From full roster or daily roster to boat
 
 							// Adds right or left weight depending on drop position
-							if(position[2] == 0){
+							if(position[2] == left){
 								leftArray[boatNumber][position[1]] = weight;
 								leftWeight[boatNumber] += weight;
 								if(results[0].get("Side") == "Right"){
@@ -389,9 +396,11 @@
 
 							// Resets color of source cell
 							if(position[3] == 0){
+								// Source cell was in daily roster
 								document.getElementById("rosterBody").rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
 							}
 							else if(position[3] == tableCount){
+								// Source cell was in full roster
 								document.getElementById("fullRosterBody").rows[position[4]].cells[position[5]].style.backgroundColor = "#eee";
 							}
 
@@ -428,20 +437,24 @@
 
 		for(var i = 0; i < boatRows; i++){
 			// Fills arrays with names of people in the boat
-			if(bTable.rows[i].cells[0].innerText.slice(0, -1) != ""){
-				lNames.push(bTable.rows[i].cells[0].innerText.slice(0, -1));
+			if(bTable.rows[i].cells[left].innerText.slice(0, -1) != ""){
+				lNames.push(bTable.rows[i].cells[left].innerText.slice(0, -1));
 			}
 
-			if(bTable.rows[i].cells[1].innerText.slice(0, -1) != ""){
-				rNames.push(bTable.rows[i].cells[1].innerText.slice(0, -1));
+			if(bTable.rows[i].cells[right].innerText.slice(0, -1) != ""){
+				rNames.push(bTable.rows[i].cells[right].innerText.slice(0, -1));
 			}
 		}
 		
 		var dNames = [];
 		var dTable = document.getElementById("rosterBody");
 		for(var i = 0; i < dTable.rows.length; i++){
-			if(dTable.rows[i].cells[0].innerText != ""){
-				dNames.push(dTable.rows[i].cells[0].innerText.slice(0, -1));
+			if(dTable.rows[i].cells[left] && dTable.rows[i].cells[left].innerText != ""){
+				dNames.push(dTable.rows[i].cells[left].innerText.slice(0, -1));
+			}
+
+			if(dTable.rows[i].cells[right] && dTable.rows[i].cells[right].innerText != ""){
+				dNames.push(dTable.rows[i].cells[right].innerText.slice(0, -1));	
 			}
 		}
 
@@ -478,11 +491,6 @@
 								}
 
 								
-
-						
-
-
-
 								var lIndex1 = -1;
 								var rIndex1 = -1;
 								var closest = Math.abs(balanceWeight[boatNumber]);
@@ -603,42 +611,67 @@
 
 	// Using only the daily roster, determines a good number of boats and fills them
 	function generate(){
+		alert("Generating");
 		var rTable = document.getElementById("rosterBody");
 		var nameArray = [];
 
 		for(var i = 0; i < rTable.rows.length; i++){
 			// Slice removes a newline at the end of the name
-			if(rTable.rows[i].cells[0] && rTable.rows[i].cells[0].innerText.slice(0, -1) != ""){
-				nameArray.push(rTable.rows[i].cells[0].innerText.slice(0, -1));
+			if(rTable.rows[i].cells[left] && rTable.rows[i].cells[left].innerText.slice(0, -1) != ""){
+				nameArray.push(rTable.rows[i].cells[left].innerText.slice(0, -1));
 			}
-			if(rTable.rows[i].cells[1] && rTable.rows[i].cells[1].innerText.slice(0,-1) != ""){
-				nameArray.push(rTable.rows[i].cells[1].innerText.slice(0, -1));	
+			if(rTable.rows[i].cells[right] && rTable.rows[i].cells[right].innerText.slice(0,-1) != ""){
+				nameArray.push(rTable.rows[i].cells[right].innerText.slice(0, -1));	
 			}
 		}
 
 		// Determines how many boats to add and adds them
 		var numPeople = nameArray.length;
-		while(numPeople > 0){
-			if(numPeople > 10){
-				boatArray[numBoats] = 1;
-				addTwentyMan();
-				numPeople -= 20;
-
-			}
-			else{
-				boatArray[numBoats] = 0;
-				addTenMan();
-				numPeople -= 10;
-			}
-		}
 
 		// If there is only one boat, just use autofill
 		if(numBoats == 1){
-			autofill(0);
+			var query = new Parse.Query(Paddler);
+			query.equalTo("Owner", Parse.User.current().getUsername());
+			query.containedIn("Name", nameArray);		
+			query.find().then(
+				function (results){
+					autofill2(0);
+				},
+				function(error){
+					alert("Error");
+				}
+			);	
+
 			return;
 		}
+		var nameArray = getDailyNames();
+		var query = new Parse.Query(Paddler);
+		query.equalTo("Owner", Parse.User.current().getUsername());
+		query.containedIn("Name", nameArray);
+		for(var i = 0; i < numBoats; i++){
+			if(document.getElementById("color" + i).value == "White"){
+				// White boat table number found
+				alert("White boat is " + i);
+				var tmp = i;
+				query.equalTo("Boat", "White");
+				query.find().then(
+					function (results){
+						// results = all white boat paddlers
+						alert("got " + results.length + " results");
+						alert("autofilling with boat number " + tmp);
+						autofill(tmp, results);
+					},
+					function (error){
+						alert("Error");
+					}
+				);
+			}
+		}
 
-		// TODO: Add "white boat" property to roster (checkbox)
+		// Count boats, find size of boats, determine number of people to put in ten man and twenties
+	// Things to consider: White / blue, number of people, number of boats, size of boats
+		// option 2: make all boats even with white / blue distribution
+
 		// If number of boats > 1
 			// find all white boat people
 				// put them in the same boat
@@ -653,20 +686,337 @@
 	}
 
 
-	function autofill(boatNumber){
+	function autofill(boatNumber, results){
 		var rTable = document.getElementById("rosterBody");
 		var bTable = document.getElementById("boatBody" + boatNumber);
-		var nameArray = [];
+		var nameArray = getDailyNames();
+		
 
-		for(var i = 0; i < rTable.rows.length; i++){
-			// Slice removes a newline at the end of the name
-			if(rTable.rows[i].cells[0] && rTable.rows[i].cells[0].innerText.slice(0, -1) != ""){
-				nameArray.push(rTable.rows[i].cells[0].innerText.slice(0, -1));
+		// results is the list of paddlers that were in the roster
+		
+	
+
+		var boatRows = bTable.rows.length;
+		var boxRows;
+		var engineRows;
+		var rocketRows;
+		
+		if(boatRows == 10){
+			boxRows = 3;
+			engineRows = 7;
+			rocketRows = 10;
+		}
+		else {
+			boxRows = 2;
+			engineRows = 3;
+			rocketRows = 5;
+		}
+		// This loop finds box rows that have only one person 
+		// sitting in them already and fills 
+		// the empty spot with someone of similar weight
+		for(var i = 0; i < boatRows; i++){
+			// For each row, find out if anyone is already filled in. 
+			// If so, check if they have a partner, and if not, find someone with the
+			// closest weight, and put them there
+			var row = bTable.rows[i].cells;
+
+			// If left side is empty
+			if(row[left].innerHTML == ""){
+				// If right side is not empty
+				if(row[right].innerHTML != ""){
+					// Match weight of other person in row
+					// The default weight difference is 30.
+					var closest = 200;
+					var index = -1;
+					for(var j = 0; j < results.length; j++){
+						if(Math.abs(rightArray[boatNumber][i] - results[j].get("Weight")) < closest){
+							if(results[j].get("Side") == "Left"){
+								closest = Math.abs(rightArray[boatNumber][i] - results[j].get("Weight"));
+								index = j;
+							}
+						}
+					}
+					bTable.rows[i].cells[left].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
+
+					leftWeight[boatNumber] += results[index].get("Weight");
+					leftArray[boatNumber][i] = results[index].get("Weight");
+				
+					results.splice(index, 1);
+				
+					getBalance(boatNumber);
+				}
 			}
-			if(rTable.rows[i].cells[1] && rTable.rows[i].cells[1].innerText.slice(0,-1) != ""){
-				nameArray.push(rTable.rows[i].cells[1].innerText.slice(0, -1));	
+			else{
+				if(row[1].innerHTML == ""){
+					var closest = 200;
+					var index = -1;
+					for(var j = 0; j < results.length; j++){
+						if(Math.abs(leftArray[boatNumber][i] - results[j].get("Weight")) < closest){
+							if(results[j].get("Side") == "Right"){
+								closest = Math.abs(leftArray[boatNumber][i] - results[j].get("Weight"));
+								index = j;
+							}
+						}
+					}
+					bTable.rows[i].cells[right].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
+
+					rightWeight[boatNumber] += results[index].get("Weight");
+					rightArray[boatNumber][i] = results[index].get("Weight");
+				
+					results.splice(index, 1);
+					// Match weight of other person in row
+					getBalance(boatNumber);	
+				}
+			}
+
+		}
+
+		// Fills in the rest of the empty rows
+		for(var j = 0; j < boatRows; j++){
+
+			var row = bTable.rows[j].cells;
+			
+			// Checks that row is empty
+			if(row[left].innerHTML == "" && row[right].innerHTML == ""){
+				
+				// Fills box rows with box paddlers if true
+				if(j < boxRows){
+					//alert(j);
+					fillSection("Box", results, j, leftArray, leftWeight, rightArray, rightWeight, boatNumber);
+				}
+
+				// Fills engine rows with engine paddlers if true
+				else if(j < engineRows){
+					fillSection("Engine", results, j, leftArray, leftWeight, rightArray, rightWeight, boatNumber);
+				}
+
+				// Fills rocket rows with rocket paddlers if true
+				else if(j < rocketRows){
+					fillSection("Rocket", results, j, leftArray, leftWeight, rightArray, rightWeight, boatNumber);
+				}
 			}
 		}
+
+
+		// Fills in any remaining rows with leftover paddlers
+		for(var j = 0; j < boatRows; j++){
+			var row = bTable.rows[j].cells;
+			if(bTable.rows[j].cells[left].innerHTML == "" && bTable.rows[j].cells[right].innerHTML == ""){
+				var emptyL = [];
+				var emptyR = [];
+				for(var k = 0; k < results.length; k++){
+					if(results[k].get("Side") == "Left"){
+						emptyL.push(results[k]);
+					}
+					else{
+						emptyR.push(results[k]);
+					}
+				}
+
+				var closest = 200;
+				var indexL = -1;
+				var indexR = -1;
+
+				// flag: 0 = left side has no paddlers, 1 = right side has no paddlers, 2 = both sides have paddlers
+				// 3 = left side has only one paddler, 4 = right side has only one paddler,  -1 = out of paddlers
+				var flag = -1;
+				if(emptyL.length == 0){
+					
+					if(emptyR.length == 0){
+						//alert("Out of paddlers");
+					}
+					else if (emptyR.length == 1){
+						flag = 4;
+					}
+					else{
+						// left side has no paddlers
+						for(var k = 0; k < emptyR.length; k++){
+							for(var l = k+1; l < emptyR.length; l++){
+								if(Math.abs(emptyR[k].get("Weight") - emptyR[l].get("Weight")) < closest){
+									closest = Math.abs(emptyR[k].get("Weight") - emptyR[l].get("Weight"));
+									indexL = k;
+									indexR = l;
+									flag = 0;
+								}
+							}
+						}
+
+						// handle having only one more paddler
+					}	
+				}
+				else if(emptyR.length == 0){
+					// Right side has no paddlers
+					if(emptyL.length == 1){
+						flag = 3;
+					}
+					else{
+						for(var k = 0; k < emptyL.length; k++){
+							for(var l = k+1; l < emptyL.length; l++){
+								if(Math.abs(emptyL[k].get("Weight") - emptyL[l].get("Weight")) < closest){
+									closest = Math.abs(emptyL[k].get("Weight") - emptyL[l].get("Weight"));
+									indexL = k;
+									indexR = l;
+									flag = 1;
+								}
+							}
+						}
+					}
+				}
+				else{
+					// both sides have paddlers available
+					for(var k = 0; k < emptyL.length; k++){
+						for(var l = 0; l < emptyR.length; l++){
+							if(Math.abs(emptyL[k].get("Weight") - emptyR[l].get("Weight")) < closest){
+								closest = Math.abs(emptyL[k].get("Weight") - emptyR[l].get("Weight"));
+								indexL = k;
+								indexR = l;
+								flag = 2;
+							}
+						}
+					}
+				}
+
+				if(flag == -1){
+				//	alert("Out of paddlers to put into boat");
+				}
+				else if(flag == 0){
+					row[left].innerHTML = '<div id="' + emptyR[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexL].get("Name") + '</div>';
+					
+					leftWeight[boatNumber] += emptyR[indexL].get("Weight");
+					leftArray[boatNumber][j] = emptyR[indexL].get("Weight");
+					
+					row[right].innerHTML = '<div id="' + emptyR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexR].get("Name") + '</div>';
+					
+					rightWeight[boatNumber] += emptyR[indexR].get("Weight");
+					rightArray[boatNumber][j] = emptyR[indexR].get("Weight");
+			
+					for(var r = 0; r < results.length; r++){
+						if(emptyR[indexL].get("Name") == results[r].get("Name") || emptyR[indexR].get("Name") == results[r].get("Name")){
+							results.splice(r, 1);		
+							r--;
+						}
+					}
+
+				}
+				else if(flag == 1){
+					row[left].innerHTML = '<div id="' + emptyL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexL].get("Name") + '</div>';
+					
+					leftWeight[boatNumber] += emptyL[indexL].get("Weight");
+					leftArray[boatNumber][j] = emptyL[indexL].get("Weight");
+					
+					row[right].innerHTML = '<div id="' + emptyL[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexR].get("Name") + '</div>';
+					
+					rightWeight[boatNumber] += emptyL[indexR].get("Weight");
+					rightArray[boatNumber][j] = emptyL[indexR].get("Weight");
+			
+					for(var r = 0; r < results.length; r++){
+						if(emptyL[indexL].get("Name") == results[r].get("Name") || emptyL[indexR].get("Name") == results[r].get("Name")){
+							results.splice(r, 1);		
+							r--;
+						}
+					}
+
+				}
+				else if(flag == 2){
+					row[left].innerHTML = '<div id="' + emptyL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexL].get("Name") + '</div>';
+				
+					leftWeight[boatNumber] += emptyL[indexL].get("Weight");
+					leftArray[boatNumber][j] = emptyL[indexL].get("Weight");
+											
+
+
+					for(var r = 0; r < results.length; r++){
+						if(emptyL[indexL].get("Name") == results[r].get("Name")){
+							results.splice(r, 1);		
+						}
+					}
+					
+				
+
+
+					row[right].innerHTML = '<div id="' + emptyR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexR].get("Name") + '</div>';	
+
+					rightWeight[boatNumber] += emptyR[indexR].get("Weight");
+					rightArray[boatNumber][j] = emptyR[indexR].get("Weight");
+					
+					for(var r = 0; r < results.length; r++){
+						if(emptyR[indexR].get("Name") == results[r].get("Name")){
+							results.splice(r, 1);	
+						}
+					}
+					
+				}
+				else if (flag == 3){
+					row[left].innerHTML = '<div id="' + emptyL[0].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[0].get("Name") + '</div>';
+					
+					leftWeight[boatNumber] += emptyL[0].get("Weight");
+					leftArray[boatNumber][j] = emptyL[0].get("Weight");
+
+					for(var r = 0; r < results.length; r++){
+						if(emptyL[0].get("Name") == results[r].get("Name")){
+							results.splice(r, 1);	
+						}
+					}
+
+				}
+				else if (flag == 4){
+					row[right].innerHTML = '<div id="' + emptyR[0].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[0].get("Name") + '</div>';
+					
+					rightWeight[boatNumber] += emptyR[0].get("Weight");
+					rightArray[boatNumber][j] = emptyR[0].get("Weight");
+
+					for(var r = 0; r < results.length; r++){
+						if(emptyR[0].get("Name") == results[r].get("Name")){
+							results.splice(r, 1);	
+						}
+					}
+
+				}
+			}
+		}
+
+		var names = getBoatNames(boatNumber);
+
+		if(names.length == 0){
+			for(var r = 0; r < rTable.rows.length; r++){
+				if(rTable.rows[r].cells[left]){
+					rTable.rows[r].cells[left].innerHTML = "";
+				}
+				if(rTable.rows[r].cells[right]){
+					rTable.rows[r].cells[right].innerHTML = "";
+				}
+			}
+		}
+		else{
+		// Removes people from roster if they were put in the boat
+			for(var s = 0; s < names.length; s++){
+				alert("Looking for " + names[s]);
+				for(var r = 0; r < rTable.rows.length; r++){
+					if(rTable.rows[r].cells[left]){
+						if(names.indexOf(rTable.rows[r].cells[left].innerText.slice(0,-1)) != -1){
+							rTable.rows[r].cells[left].innerHTML = "";
+						}
+					}
+					if(rTable.rows[r].cells[right]){
+						if(names.indexOf(rTable.rows[r].cells[right].innerText.slice(0,-1)) != -1){
+							rTable.rows[r].cells[right].innerHTML = "";
+						}
+					}
+				}
+			}
+		}
+
+
+		getBalance(boatNumber);
+		REDIPS.drag.init();
+		
+
+	}
+
+function autofill2(boatNumber){
+		var rTable = document.getElementById("rosterBody");
+		var bTable = document.getElementById("boatBody" + boatNumber);
+		var nameArray = getDailyNames();
 
 		
 		var query = new Parse.Query(Paddler);
@@ -705,9 +1055,9 @@
 					var row = bTable.rows[i].cells;
 
 					// If left side is empty
-					if(row[0].innerHTML == ""){
+					if(row[left].innerHTML == ""){
 						// If right side is not empty
-						if(row[1].innerHTML != ""){
+						if(row[right].innerHTML != ""){
 							// Match weight of other person in row
 							// The default weight difference is 30.
 							var closest = 200;
@@ -720,7 +1070,7 @@
 									}
 								}
 							}
-							bTable.rows[i].cells[0].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
+							bTable.rows[i].cells[left].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
 
 							leftWeight[boatNumber] += results[index].get("Weight");
 							leftArray[boatNumber][i] = results[index].get("Weight");
@@ -742,7 +1092,7 @@
 									}
 								}
 							}
-							bTable.rows[i].cells[1].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
+							bTable.rows[i].cells[right].innerHTML = '<div id="' + results[index].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + results[index].get("Name") + '</div>';
 
 							rightWeight[boatNumber] += results[index].get("Weight");
 							rightArray[boatNumber][i] = results[index].get("Weight");
@@ -761,7 +1111,7 @@
 					var row = bTable.rows[j].cells;
 					
 					// Checks that row is empty
-					if(row[0].innerHTML == "" && row[1].innerHTML == ""){
+					if(row[left].innerHTML == "" && row[right].innerHTML == ""){
 						
 						// Fills box rows with box paddlers if true
 						if(j < boxRows){
@@ -786,7 +1136,7 @@
 				for(var j = 0; j < boatRows; j++){
 
 					var row = bTable.rows[j].cells;
-					if(bTable.rows[j].cells[0].innerHTML == "" && bTable.rows[j].cells[1].innerHTML == ""){
+					if(bTable.rows[j].cells[left].innerHTML == "" && bTable.rows[j].cells[right].innerHTML == ""){
 						var emptyL = [];
 						var emptyR = [];
 						for(var k = 0; k < results.length; k++){
@@ -865,12 +1215,13 @@
 						//	alert("Out of paddlers to put into boat");
 						}
 						else if(flag == 0){
-							row[0].innerHTML = '<div id="' + emptyR[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexL].get("Name") + '</div>';
-							
+							alert("0");
+							row[left].innerHTML = '<div id="' + emptyR[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexL].get("Name") + '</div>';
+							row[left].style.backgroundColor = "red";
 							leftWeight[boatNumber] += emptyR[indexL].get("Weight");
 							leftArray[boatNumber][j] = emptyR[indexL].get("Weight");
 							
-							row[1].innerHTML = '<div id="' + emptyR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexR].get("Name") + '</div>';
+							row[right].innerHTML = '<div id="' + emptyR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexR].get("Name") + '</div>';
 							
 							rightWeight[boatNumber] += emptyR[indexR].get("Weight");
 							rightArray[boatNumber][j] = emptyR[indexR].get("Weight");
@@ -878,32 +1229,36 @@
 							for(var r = 0; r < results.length; r++){
 								if(emptyR[indexL].get("Name") == results[r].get("Name") || emptyR[indexR].get("Name") == results[r].get("Name")){
 									results.splice(r, 1);		
+									r--;
 								}
 							}
 
 						}
 						else if(flag == 1){
-							row[0].innerHTML = '<div id="' + emptyL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexL].get("Name") + '</div>';
+							alert("1");
+							row[left].innerHTML = '<div id="' + emptyL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexL].get("Name") + '</div>';
 							
 							leftWeight[boatNumber] += emptyL[indexL].get("Weight");
 							leftArray[boatNumber][j] = emptyL[indexL].get("Weight");
 							
-							row[1].innerHTML = '<div id="' + emptyL[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexR].get("Name") + '</div>';
-							
+							row[right].innerHTML = '<div id="' + emptyL[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexR].get("Name") + '</div>';
+							row[right].style.backgroundColor = "red";
+
 							rightWeight[boatNumber] += emptyL[indexR].get("Weight");
 							rightArray[boatNumber][j] = emptyL[indexR].get("Weight");
 					
 							for(var r = 0; r < results.length; r++){
 								if(emptyL[indexL].get("Name") == results[r].get("Name") || emptyL[indexR].get("Name") == results[r].get("Name")){
-									results.splice(r, 1);		
+									results.splice(r, 1);	
+									r--;	
 								}
 							}
 
 						}
 						else if(flag == 2){
+alert("2");
 
-
-								row[0].innerHTML = '<div id="' + emptyL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexL].get("Name") + '</div>';
+								row[left].innerHTML = '<div id="' + emptyL[indexL].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[indexL].get("Name") + '</div>';
 							
 								leftWeight[boatNumber] += emptyL[indexL].get("Weight");
 								leftArray[boatNumber][j] = emptyL[indexL].get("Weight");
@@ -919,7 +1274,7 @@
 							
 
 			
-								row[1].innerHTML = '<div id="' + emptyR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexR].get("Name") + '</div>';	
+								row[right].innerHTML = '<div id="' + emptyR[indexR].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[indexR].get("Name") + '</div>';	
 
 								rightWeight[boatNumber] += emptyR[indexR].get("Weight");
 								rightArray[boatNumber][j] = emptyR[indexR].get("Weight");
@@ -932,7 +1287,8 @@
 							
 						}
 						else if (flag == 3){
-							row[0].innerHTML = '<div id="' + emptyL[0].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[0].get("Name") + '</div>';
+							alert("3");
+							row[left].innerHTML = '<div id="' + emptyL[0].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyL[0].get("Name") + '</div>';
 							
 							leftWeight[boatNumber] += emptyL[0].get("Weight");
 							leftArray[boatNumber][j] = emptyL[0].get("Weight");
@@ -945,8 +1301,8 @@
 
 						}
 						else if (flag == 4){
-
-							row[1].innerHTML = '<div id="' + emptyR[0].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[0].get("Name") + '</div>';
+alert("4");
+							row[right].innerHTML = '<div id="' + emptyR[0].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + emptyR[0].get("Name") + '</div>';
 							
 							rightWeight[boatNumber] += emptyR[0].get("Weight");
 							rightArray[boatNumber][j] = emptyR[0].get("Weight");
@@ -968,11 +1324,11 @@
 
 				if(names.length == 0){
 					for(var r = 0; r < rTable.rows.length; r++){
-						if(rTable.rows[r].cells[0]){
-							rTable.rows[r].cells[0].innerHTML = "";
+						if(rTable.rows[r].cells[left]){
+							rTable.rows[r].cells[left].innerHTML = "";
 						}
-						if(rTable.rows[r].cells[1]){
-							rTable.rows[r].cells[1].innerHTML = "";
+						if(rTable.rows[r].cells[right]){
+							rTable.rows[r].cells[right].innerHTML = "";
 						}
 					}
 				}
@@ -980,14 +1336,14 @@
 				// Removes people from roster if they were put in the boat
 					for(var s = 0; s < names.length; s++){
 						for(var r = 0; r < rTable.rows.length; r++){
-							if(rTable.rows[r].cells[0]){
-								if(names.indexOf(rTable.rows[r].cells[0].innerText.slice(0,-1)) == -1){
-									rTable.rows[r].cells[0].innerHTML = "";
+							if(rTable.rows[r].cells[left]){
+								if(names.indexOf(rTable.rows[r].cells[left].innerText.slice(0,-1)) == -1){
+									rTable.rows[r].cells[left].innerHTML = "";
 								}
 							}
-							if(rTable.rows[r].cells[1]){
-								if(names.indexOf(rTable.rows[r].cells[1].innerText.slice(0,-1)) == -1){
-									rTable.rows[r].cells[1].innerHTML = "";
+							if(rTable.rows[r].cells[right]){
+								if(names.indexOf(rTable.rows[r].cells[right].innerText.slice(0,-1)) == -1){
+									rTable.rows[r].cells[right].innerHTML = "";
 								}
 							}
 						}
@@ -1003,9 +1359,7 @@
 				alert("Error");
 			}
 		);
-	}
-
-	
+	}	
 
 
 	
