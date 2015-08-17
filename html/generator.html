@@ -235,15 +235,9 @@
 			// format of a = [row][column]
 			var a = ep.selectSheet(1).readAll();
 			var nameCol = -1;
-			
-			var youFound = false;
-			var friFound = false;
-			var satFound = false;
-			var sunFound = false;
-
 			for (var row = 0; row < a.length; row++) {
 				for(var col = 0; col < a[row].length; col++){
-					if(a[row][col].toLowerCase().indexOf("you") > -1){
+					if(a[row][col].toLowerCase().indexOf("name") > -1){
 						nameCol = col;
 					}
 					if(nameCol != -1){
@@ -262,8 +256,7 @@
 						continue;
 					}
 
-					if(a[row][col].toLowerCase().indexOf("friday") > -1 && !friFound){
-						friFound = true;
+					if(a[row][col].toLowerCase().indexOf("friday") > -1){
 						var fridayRow = 1;
 						while(a[fridayRow]){
 							if(a[fridayRow][col]){
@@ -278,8 +271,7 @@
 						document.getElementById("result").innerHTML += fridayOutput.slice(0,fridayOutput.length-2) + "<br>";
 
 					}
-					else if(a[row][col].toLowerCase().indexOf("saturday") > -1 && !satFound){
-						satFound = true;
+					else if(a[row][col].toLowerCase().indexOf("saturday") > -1){
 						var saturdayRow = 1;
 						while(a[saturdayRow]){
 							if(a[saturdayRow][col]){
@@ -294,8 +286,7 @@
 						document.getElementById("result").innerHTML += saturdayOutput.slice(0,saturdayOutput.length-2) + "<br>";
 
 					}
-					else if(a[row][col].toLowerCase().indexOf("sunday") > -1 && !sunFound){
-						sunFound = true;
+					else if(a[row][col].toLowerCase().indexOf("sunday") > -1){
 						var sundayRow = 1;
 						while(a[sundayRow]){
 							if(a[sundayRow][col]){
@@ -628,8 +619,8 @@
 		// Determines how many boats to add and adds them
 		var numPeople = nameArray.length;
 
-		// If there is only one boat, just use autofill
 		if(numBoats == 1){
+<<<<<<< HEAD
 			var query = new Parse.Query(Paddler);
 			query.equalTo("Owner", Parse.User.current().getUsername());
 			query.containedIn("Name", nameArray);		
@@ -672,15 +663,21 @@
 	// Things to consider: White / blue, number of people, number of boats, size of boats
 		// option 2: make all boats even with white / blue distribution
 
+=======
+			autofill(0);
+		}
+>>>>>>> parent of fc93441... Fixed bug where fridayOuput / sat / sun would show up more than once
 		// If number of boats > 1
 			// find all white boat people
 				// put them in the same boat
 					// Case: more than 20 white boaters, go for best balance
 					// Case: less than 20 white boaters, put them all in
-						// Fill in spots aiming for best balance
+						// Fill in spots for balance
 
+		// Else put everyone in same boat (maybe just use autofill)
 
 		// Find out how many people go into each boat
+		// Start with 10 man boats since they are less stable
 		
 
 	}
