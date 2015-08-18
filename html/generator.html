@@ -611,22 +611,7 @@
 
 	// Using only the daily roster, determines a good number of boats and fills them
 	function generate(){
-		alert("Generating");
-		var rTable = document.getElementById("rosterBody");
-		var nameArray = [];
-
-		for(var i = 0; i < rTable.rows.length; i++){
-			// Slice removes a newline at the end of the name
-			if(rTable.rows[i].cells[left] && rTable.rows[i].cells[left].innerText.slice(0, -1) != ""){
-				nameArray.push(rTable.rows[i].cells[left].innerText.slice(0, -1));
-			}
-			if(rTable.rows[i].cells[right] && rTable.rows[i].cells[right].innerText.slice(0,-1) != ""){
-				nameArray.push(rTable.rows[i].cells[right].innerText.slice(0, -1));	
-			}
-		}
-
-		// Determines how many boats to add and adds them
-		var numPeople = nameArray.length;
+		var nameArray = getDailyNames();
 
 		// If there is only one boat, just use autofill
 		if(numBoats == 1){
@@ -644,29 +629,183 @@
 
 			return;
 		}
-		var nameArray = getDailyNames();
+
+
+		// Calculate how to spread people throughout the boats evenly
+
+		var numPeople = nameArray.length;
+		var numGroups = num10 + (2*num20);
+		var peoplePerGroup = parseInt(numPeople / numGroups);
+		var blues = [];
+		var whites = [];
+
 		var query = new Parse.Query(Paddler);
 		query.equalTo("Owner", Parse.User.current().getUsername());
 		query.containedIn("Name", nameArray);
-		for(var i = 0; i < numBoats; i++){
-			if(document.getElementById("color" + i).value == "White"){
-				// White boat table number found
-				alert("White boat is " + i);
-				var tmp = i;
-				query.equalTo("Boat", "White");
-				query.find().then(
-					function (results){
-						// results = all white boat paddlers
-						alert("got " + results.length + " results");
-						alert("autofilling with boat number " + tmp);
-						autofill(tmp, results);
-					},
-					function (error){
-						alert("Error");
+		query.ascending("Weight");
+		query.find().then(
+			function(results){
+				// This adds the white and blue boat paddlers to their respective arrays
+				for(var i = 0; i < results.length; i++){
+					if(results[i].get("Boat") == "Blue"){
+						blues.push(results[i]);
 					}
-				);
+					else{
+						whites.push(results[i]);
+					}
+				}
+				return results;
+		}).then(
+			function(results){
+				//if white boat found {}
+				//else{
+
+
+
+				// groups contains numGroups sets of peoplePerGroup people 
+				var groups = [];
+
+
+				// Total weights of both sides
+				var lTotal = 0;
+				var rTotal = 0;
+				var lefties = [];
+				var righties = [];
+				for(var i = 0; i < results.length; i++){
+					if(results[i].get("Side") == "Left"){
+						lTotal += results[i].get("Weight");
+						lefties.push(results[i]);
+					}
+					else{
+						rTotal += results[i].get("Weight");
+						righties.push(results[i]);
+					}
+				}
+
+				// goal is the ideal weight balance after all weight has been distributed
+				var goal = (rTotal - lTotal) / numGroups;
+				alert("Goal is " + goal);
+
+	/*			var groupStart = 0;
+				// Before assembling all of the boats, checks if there are an uneven number of people and assigns them to boat 0
+				if(lefties.length > righties.length){
+					groups.push([]);
+					while(lefties.length > righties.length){
+						groups[0].push(lefties[0]);
+						groups[0].push(lefties[1]);
+						groups[0].push(righties[righties.length - 1]);
+						alert("Added "  + lefties[0].get("Name") + " " + lefties[1].get("Name") + righties[righties.length-1].get("Name"));
+						lefties.splice(0, 2);
+						righties.splice(righties.length - 1, 1);
+					}
+					groupStart = 1;
+				}
+				else if(lefties.length < righties.length){
+					groups.push([]);
+					while(lefties.length < righties.length){
+						groups[0].push(righties[0]);
+						groups[0].push(righties[1]);
+						groups[0].push(lefties[lefties.length - 1]);
+						alert("Added "  + righties[0].get("Name") + " " + righties[1].get("Name") + lefties[lefties.length-1].get("Name"));
+						righties.splice(0, 2);
+						lefties.splice(lefties.length - 1, 1);
+					}
+					groupStart = 1;
+				}
+*/
+				for(var i = 0; i < numGroups; i++){
+					groups.push([]);
+//					alert("Making group " + i);
+					
+					// Determines whether to start taking paddlers from the left side or the right side in case of uneven numbers
+					// 0 = left, 1 = right
+					var start = 0;
+					if(lefties.length < righties.length){
+						start = 1;
+					}
+
+
+					
+					// Negative = left heavy, positive = right heavy
+					var gWeight = 0;
+
+//					alert("Starting at " + start);
+//Sort by weight, alternate from front and back
+					for(var j = 0; j < peoplePerGroup; j++){
+						if(start == 0){
+							if(gWeight <= goal){
+								alert("Adding " + lefties[0].get("Name"));
+								groups[i].push(lefties[0]);
+								gWeight -= lefties[0].get("Weight");
+								lefties.splice(0, 1);
+							}
+							else{
+								alert("Adding " + lefties[lefties.length - 1].get("Name"));
+								groups[i].push(lefties[lefties.length - 1]);
+								gWeight -= lefties[lefties.length - 1].get("Weight");
+								lefties.splice(lefties.length - 1, 1);
+							}
+
+							if(righties.length > 0){
+								start = 1;
+							}
+//							alert("Done adding from left");
+						}
+						else{
+							if(gWeight >= goal){
+								alert("Adding " + righties[0].get("Name"));
+								groups[i].push(righties[0]);
+								gweight += righties[0].get("Weight");
+								righties.splice(0, 1);
+							}
+							else{
+								alert("Adding " + righties[righties.length - 1].get("Name"));
+								groups[i].push(righties[righties.length - 1]);
+								gWeight += righties[righties.length - 1].get("Weight");
+								righties.splice(righties.length - 1, 1);
+							}
+
+
+							if(lefties.length > 0){
+								start = 0;
+							}
+//							alert("Done adding from right");
+						}
+					}
+				}
+
+				while(lefties.length > 0){
+					groups[0].push(lefties[0]);
+					lefties.splice(0, 1);
+					alert("adding " + lefties[i] + " to boat 0");
+				}
+				
+				while(righties.length > 0){
+					groups[0].push(righties[0]);
+					righties.splice(0, 1);
+					alert("adding " + righties[i] + " to boat 0");
+				}
+
+
+				for(var i = 0; i < groups.length; i++){
+					var groupWeight = 0;
+					for(var j = 0; j < groups[i].length; j++){
+						if(groups[i][j].get("Side") == "Left"){
+							groupWeight -= groups[i][j].get("Weight");
+						}
+						else{
+							groupWeight += groups[i][j].get("Weight");	
+						}
+					}
+
+					alert("weight for group " + i + " is " + groupWeight);
+				}
 			}
-		}
+		);
+
+
+
+
 
 		// Count boats, find size of boats, determine number of people to put in ten man and twenties
 	// Things to consider: White / blue, number of people, number of boats, size of boats
@@ -711,7 +850,7 @@
 			engineRows = 3;
 			rocketRows = 5;
 		}
-		// This loop finds box rows that have only one person 
+		// This loop finds rows that have only one person 
 		// sitting in them already and fills 
 		// the empty spot with someone of similar weight
 		for(var i = 0; i < boatRows; i++){
@@ -797,7 +936,7 @@
 			}
 		}
 
-
+/*
 		// Fills in any remaining rows with leftover paddlers
 		for(var j = 0; j < boatRows; j++){
 			var row = bTable.rows[j].cells;
@@ -974,7 +1113,7 @@
 				}
 			}
 		}
-
+*/
 		var names = getBoatNames(boatNumber);
 
 		if(names.length == 0){
