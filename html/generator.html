@@ -714,8 +714,9 @@
 				}
 */
 				for(var i = 0; i < numGroups; i++){
-					groups.push([]);
-//					alert("Making group " + i);
+					// Adds a boat with a left and right array
+					groups.push([ [],[] ]);
+					alert("Making group " + i);
 					
 					// Determines whether to start taking paddlers from the left side or the right side in case of uneven numbers
 					// 0 = left, 1 = right
@@ -734,16 +735,18 @@
 					for(var j = 0; j < peoplePerGroup; j++){
 						if(start == 0){
 							if(gWeight <= goal){
-								alert("Adding " + lefties[0].get("Name"));
-								groups[i].push(lefties[0]);
+				//				alert("Adding " + lefties[0].get("Name"));
+								groups[i][0].push(lefties[0]);
 								gWeight -= lefties[0].get("Weight");
 								lefties.splice(0, 1);
+	//							alert("Done adding left");
 							}
 							else{
-								alert("Adding " + lefties[lefties.length - 1].get("Name"));
-								groups[i].push(lefties[lefties.length - 1]);
+				//				alert("Adding " + lefties[lefties.length - 1].get("Name"));
+								groups[i][0].push(lefties[lefties.length - 1]);
 								gWeight -= lefties[lefties.length - 1].get("Weight");
 								lefties.splice(lefties.length - 1, 1);
+//								alert("Done adding left");
 							}
 
 							if(righties.length > 0){
@@ -753,16 +756,18 @@
 						}
 						else{
 							if(gWeight >= goal){
-								alert("Adding " + righties[0].get("Name"));
-								groups[i].push(righties[0]);
-								gweight += righties[0].get("Weight");
+				//				alert("Adding " + righties[0].get("Name"));
+								groups[i][1].push(righties[0]);
+								gWeight += righties[0].get("Weight");
 								righties.splice(0, 1);
+//								alert("Done adding right");
 							}
 							else{
-								alert("Adding " + righties[righties.length - 1].get("Name"));
-								groups[i].push(righties[righties.length - 1]);
+				//				alert("Adding " + righties[righties.length - 1].get("Name"));
+								groups[i][1].push(righties[righties.length - 1]);
 								gWeight += righties[righties.length - 1].get("Weight");
 								righties.splice(righties.length - 1, 1);
+	//							alert("Done adding right");
 							}
 
 
@@ -775,30 +780,102 @@
 				}
 
 				while(lefties.length > 0){
-					groups[0].push(lefties[0]);
+					groups[0][0].push(lefties[0]);
 					lefties.splice(0, 1);
-					alert("adding " + lefties[i] + " to boat 0");
+		//			alert("adding " + lefties[i] + " to boat 0");
 				}
 				
 				while(righties.length > 0){
-					groups[0].push(righties[0]);
+					groups[0][1].push(righties[0]);
 					righties.splice(0, 1);
-					alert("adding " + righties[i] + " to boat 0");
+		//			alert("adding " + righties[i] + " to boat 0");
+				}
+
+				var groupWeight = [];
+
+				for(var i = 0; i < groups.length; i++){
+					groupWeight.push([]);
+					for(var j = 0; j < groups[i][0].length; j++){
+						groupWeight[i] -= groups[i][0][j].get("Weight");
+					}
+
+					for(var j = 0; j < groups[i][1].length; j++){
+						groupWeight[i] += groups[i][1][j].get("Weight");
+					}
+					
+
+					alert("weight for group " + i + " is " + groupWeight[i]);
 				}
 
 
+				// Finds which boats are the farthest away from each other in terms of balance
+				var rightIndex = -1;
+				var leftIndex = -1;
+				
+			 
+				var rightVal = 0;
+				var leftVal = 0;
+
 				for(var i = 0; i < groups.length; i++){
-					var groupWeight = 0;
-					for(var j = 0; j < groups[i].length; j++){
-						if(groups[i][j].get("Side") == "Left"){
-							groupWeight -= groups[i][j].get("Weight");
-						}
-						else{
-							groupWeight += groups[i][j].get("Weight");	
-						}
+					if(Math.abs(groupWeight[i] - goal) == 0){
+						alert("Group " + i + " has the goal weight balance");
 					}
 
-					alert("weight for group " + i + " is " + groupWeight);
+					if(groupWeight[i] - goal > rightVal){
+						rightVal = groupWeight[i] - goal;
+						rightIndex = i;
+					}
+					
+					if(groupWeight[i] - goal < leftVal){
+						leftVal = groupWeight[i] - goal;
+						leftIndex = i;
+					}
+				}
+
+		//		alert("leftIndex is " + leftIndex);
+		//		alert("rightindex is " + rightIndex);
+
+				
+				var closestToGoal;
+				if(Math.abs(groupWeight[leftIndex] - goal) < Math.abs(groupWeight[rightIndex] - goal)){
+					closestToGoal = groupWeight[leftIndex];
+				}
+				else{
+					closestToGoal = groupWeight[rightIndex];
+				}
+
+				alert("Closest to goal is " + closestToGoal);
+
+				// Indexes of the best paddlers to switch
+				var bestLeft = -1;
+				var bestRight = -1;
+				var bestWeight = Math.abs(goal - closestToGoal);
+				// Find the best people to switch
+				if(rightIndex != -1 && leftIndex != -1){
+					// We know that at least two boats could possibly benefit from a switch
+					alert("Looking for same-side paddlers from different boats whose weight difference is closest to " + Math.abs(goal - closestToGoal));
+					// Compares all left paddlers from both boats
+					for(var i = 0; i < groups[leftIndex][0].length; i++){
+						for(var j = 0; j < groups[rightIndex][0].length; j++){
+							//alert("Comparing " +  groups[leftIndex][0][i].get("Name") + " and " + groups[rightIndex][0][j].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][0][i].get("Weight") - groups[rightIndex][0][j].get("Weight"))));
+							
+
+
+							if(Math.abs((groups[leftIndex][0][i].get("Weight") - groups[rightIndex][0][j].get("Weight")) - Math.abs(goal - closestToGoal)) < bestWeight){
+								bestWeight = Math.abs(Math.abs((groups[leftIndex][0][i].get("Weight") - groups[rightIndex][0][j].get("Weight"))) - Math.abs(goal - closestToGoal));
+								bestLeft = i;
+								bestRight = j;
+							}
+						}
+					}
+					alert("Should switch " + groups[leftIndex][0][bestLeft].get("Name") + " and " + groups[rightIndex][0][bestRight].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][0][bestLeft].get("Weight") - groups[rightIndex][0][bestRight].get("Weight"))));
+
+					//Switches them
+					alert("Before switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
+					var tmp = groups[leftIndex][0][bestLeft];
+					groups[leftIndex][0][bestLeft] = groups[rightIndex][0][bestRight];
+					groups[rightIndex][0][bestRight] = tmp;
+					alert("After switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
 				}
 			}
 		);
