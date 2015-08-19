@@ -877,6 +877,22 @@
 					groups[rightIndex][0][bestRight] = tmp;
 					alert("After switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
 				}
+
+				var groupWeight = [];
+
+				for(var i = 0; i < groups.length; i++){
+					groupWeight.push([]);
+					for(var j = 0; j < groups[i][0].length; j++){
+						groupWeight[i] -= groups[i][0][j].get("Weight");
+					}
+
+					for(var j = 0; j < groups[i][1].length; j++){
+						groupWeight[i] += groups[i][1][j].get("Weight");
+					}
+					
+
+					alert("weight for group " + i + " is " + groupWeight[i]);
+				}
 			}
 		);
 
