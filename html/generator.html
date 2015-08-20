@@ -987,6 +987,9 @@
 
 				for(var i = 0; i < finalBoats.length; i++){
 					var output = "Members of boat " + i + ": ";
+					var bTable = document.getElementById("boatBody" + i);
+					var leftSpot = 0;
+					var rightSpot = 0;
 
 					// Each element is a boat
 					for(var j = 0; j < finalBoats[i].length; j++){
@@ -995,7 +998,14 @@
 							// Each element is a side
 							for(var l = 0; l < finalBoats[i][j][k].length; l++){
 								// Each element is a paddler object
-								output += finalBoats[i][j][k][l].get("Name") + ", " ;
+								if(finalBoats[i][j][k][l].get("Side") == "Left"){
+									bTable.rows[leftSpot].cells[left].innerHTML = '<div id="' + finalBoats[i][j][k][l].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + finalBoats[i][j][k][l].get("Name") + '</div>';
+									leftSpot++;
+								}
+								else{
+									bTable.rows[rightSpot].cells[right].innerHTML = '<div id="' + finalBoats[i][j][k][l].id + '" class="redips-drag" style="border-style: solid; cursor: move;">' + finalBoats[i][j][k][l].get("Name") + '</div>';
+									rightSpot++;
+								}
 							}
 						}
 					}
