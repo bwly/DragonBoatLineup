@@ -850,15 +850,17 @@
 					var bestLeft = -1;
 					var bestRight = -1;
 					var bestWeight = Math.abs(goal - closestToGoal);
+
+					// 0 = left, 1 = right
+					var whichSide = -1;
 					// Find the best people to switch
 					if(rightIndex != -1 && leftIndex != -1){
 						// We know that at least two boats could possibly benefit from a switch
 						alert("Looking for same-side paddlers from different boats whose weight difference is closest to " + Math.abs(goal - closestToGoal));
 						// Compares all left paddlers from both boats
 						for(var i = 0; i < groups[leftIndex][0].length; i++){
-							alert(i);
 							for(var j = 0; j < groups[rightIndex][0].length; j++){
-								//alert("Comparing " +  groups[leftIndex][0][i].get("Name") + " and " + groups[rightIndex][0][j].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][0][i].get("Weight") - groups[rightIndex][0][j].get("Weight"))));
+								alert("Comparing " +  groups[leftIndex][0][i].get("Name") + " and " + groups[rightIndex][0][j].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][0][i].get("Weight") - groups[rightIndex][0][j].get("Weight"))));
 								
 
 
@@ -866,23 +868,56 @@
 									bestWeight = Math.abs(Math.abs((groups[leftIndex][0][i].get("Weight") - groups[rightIndex][0][j].get("Weight"))) - Math.abs(goal - closestToGoal));
 									bestLeft = i;
 									bestRight = j;
-									alert("Found match");
+									alert("Found match left");
 									canBalance = true;
+									whichSide = 0;
 								}
 							}
 						}
-						if(canBalance){
-							alert("Should switch " + groups[leftIndex][0][bestLeft].get("Name") + " and " + groups[rightIndex][0][bestRight].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][0][bestLeft].get("Weight") - groups[rightIndex][0][bestRight].get("Weight"))));
 
-							//Switches them
-							alert("Before switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
-							var tmp = groups[leftIndex][0][bestLeft];
-							groups[leftIndex][0][bestLeft] = groups[rightIndex][0][bestRight];
-							groups[rightIndex][0][bestRight] = tmp;
-							alert("After switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
+						// Compares all right paddlers from both boats
+						for(var i = 0; i < groups[leftIndex][1].length; i++){
+							for(var j = 0; j < groups[rightIndex][1].length; j++){
+								alert("Comparing " +  groups[leftIndex][1][i].get("Name") + " and " + groups[rightIndex][1][j].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][1][i].get("Weight") - groups[rightIndex][1][j].get("Weight"))));
+								
+
+
+								if(Math.abs((groups[leftIndex][1][i].get("Weight") - groups[rightIndex][1][j].get("Weight")) - Math.abs(goal - closestToGoal)) < bestWeight){
+									bestWeight = Math.abs(Math.abs((groups[leftIndex][1][i].get("Weight") - groups[rightIndex][1][j].get("Weight"))) - Math.abs(goal - closestToGoal));
+									bestLeft = i;
+									bestRight = j;
+									alert("Found match right");
+									canBalance = true;
+									whichSide = 1;
+								}
+							}
+						}
+
+						if(canBalance){
+							if(whichSide == 0){
+								alert("Should switch " + groups[leftIndex][0][bestLeft].get("Name") + " and " + groups[rightIndex][0][bestRight].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][0][bestLeft].get("Weight") - groups[rightIndex][0][bestRight].get("Weight"))));
+
+								//Switches them
+								alert("Before switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
+								var tmp = groups[leftIndex][0][bestLeft];
+								groups[leftIndex][0][bestLeft] = groups[rightIndex][0][bestRight];
+								groups[rightIndex][0][bestRight] = tmp;
+								alert("After switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
+							}
+							else if(whichSide == 1){
+								alert("Should switch " + groups[leftIndex][1][bestLeft].get("Name") + " and " + groups[rightIndex][1][bestRight].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][1][bestLeft].get("Weight") - groups[rightIndex][1][bestRight].get("Weight"))));
+
+								//Switches them
+								alert("Before switch: 1. " + groups[leftIndex][1][bestLeft].get("Name") + ", 2. " + groups[rightIndex][1][bestRight].get("Name"));
+								var tmp = groups[leftIndex][1][bestLeft];
+								groups[leftIndex][1][bestLeft] = groups[rightIndex][1][bestRight];
+								groups[rightIndex][1][bestRight] = tmp;
+								alert("After switch: 1. " + groups[leftIndex][1][bestLeft].get("Name") + ", 2. " + groups[rightIndex][1][bestRight].get("Name"));
+							}
 						}
 					}
 				}
+
 				alert("Done balancing");
 				var groupWeight = [];
 
@@ -898,6 +933,73 @@
 					
 
 					alert("weight for group " + i + " is " + groupWeight[i]);
+				}
+
+
+				// Determine how to place this groups into 10 or 20 man boats
+				// Probably put most balanced groups into 10 mans
+				var finalBoats = [];
+				for(var i = 0; i < boatArray.length; i++){
+					finalBoats.push([]);
+
+					if(boatArray[i] == 1){
+						var best1 = -1;
+						var best2 = -1;
+						var difference = 200;
+						// Found twenty man, find two groups whose average weights are closest to the goal
+						for(var j = 0; j < groupWeight.length; j++){
+							for(var k = j + 1; k < groupWeight.length; k++){
+								if(Math.abs(((groupWeight[j] + groupWeight[k]) / 2) - goal) < difference){
+									best1 = j;
+									best2 = k;
+									difference = Math.abs(((groupWeight[j] + groupWeight[k]) / 2) - goal);
+								}
+							}
+						}
+
+
+						alert("Fill twenty man " + i + " with groups of weights" + groupWeight[best1] + " and " + groupWeight[best2] + " whose average weight is " + difference);
+						groupWeight.splice(best2, 1);
+						groupWeight.splice(best1, 1);
+						finalBoats[i] = [groups[best1], groups[best2]];
+						groups.splice(best2, 1);
+						groups.splice(best1, 1);						
+					}
+					else if(boatArray[i] == 0){
+						// Found ten man, find group whose weight is closest to the goal
+						var best = -1;
+						var difference = 200;
+
+						for(var j = 0; j < groupWeight.length; j++){
+							if(Math.abs(groupWeight[j] - goal) < difference){
+								best = j;
+								difference = Math.abs(groupWeight.length - goal);
+							} 
+						}
+
+						alert("Fill ten man " + i + " with group of weight " + groupWeight[best]);
+						groupWeight.splice(best, 1);
+						finalBoats[i] = [groups[best]];
+						groups.splice(best, 1);
+					}
+				}
+				alert("Final boats arranged");
+
+				for(var i = 0; i < finalBoats.length; i++){
+					var output = "Members of boat " + i + ": ";
+
+					// Each element is a boat
+					for(var j = 0; j < finalBoats[i].length; j++){
+						// Each element is a group
+						for(var k = 0; k < finalBoats[i][j].length; k++){
+							// Each element is a side
+							for(var l = 0; l < finalBoats[i][j][k].length; l++){
+								// Each element is a paddler object
+								output += finalBoats[i][j][k][l].get("Name") + ", " ;
+							}
+						}
+					}
+					alert(output);
 				}
 			}
 		);
