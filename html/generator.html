@@ -105,6 +105,7 @@
 
 
 
+
 		<!-- Full roster table -->
 		<div style="float:left; padding-left:100px;">
 			<h1>Full Roster</h1>
@@ -116,6 +117,8 @@
 				<tbody id="fullRosterBody"></tbody>
 			</table>
 		</div>
+
+		
 
 
 	</div>
@@ -611,6 +614,7 @@
 
 	// Using only the daily roster, determines a good number of boats and fills them
 	function generate(){
+
 		var nameArray = getDailyNames();
 
 		// If there is only one boat, just use autofill
@@ -712,8 +716,7 @@
 					}
 					groupStart = 1;
 				}
-*/
-				for(var i = 0; i < numGroups; i++){
+*/				for(var i = 0; i < numGroups; i++){
 					// Adds a boat with a left and right array
 					groups.push([ [],[] ]);
 	//				alert("Making group " + i);
@@ -778,7 +781,6 @@
 						}
 					}
 				}
-
 				
 				while(lefties.length > 0){
 					var maxPeople = 5;
@@ -807,6 +809,8 @@
 				}
 
 				var canBalance = true;
+				var lastLeft = "";
+				var lastRight = "";
 				while(canBalance){
 					canBalance = false;
 					// Finds the weight balance of each boat
@@ -965,7 +969,7 @@
 					// Find the best people to switch
 					if(rightIndex != -1 && leftIndex != -1){
 						// We know that at least two boats could possibly benefit from a switch
-		//				alert("Looking for same-side paddlers from different boats whose weight difference is closest to " + Math.abs(goal - closestToGoal));
+						//alert("Looking for same-side paddlers from different boats whose weight difference is closest to " + Math.abs(goal - closestToGoal));
 						
 
 
@@ -1037,33 +1041,51 @@
 
 						if(canBalance){
 							if(whichSide == 0){
-		//						alert("Should switch " + groups[leftIndex][0][bestLeft].get("Name") + " and " + groups[rightIndex][0][bestRight].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][0][bestLeft].get("Weight") - groups[rightIndex][0][bestRight].get("Weight"))));
-
-								//Switches them
-		//						alert("Before switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
-								var tmp = groups[leftIndex][0][bestLeft];
-								groups[leftIndex][0][bestLeft] = groups[rightIndex][0][bestRight];
-								groups[rightIndex][0][bestRight] = tmp;
-		//						alert("After switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
+							//alert("Should switch " + groups[leftIndex][0][bestLeft].get("Name") + " and " + groups[rightIndex][0][bestRight].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][0][bestLeft].get("Weight") - groups[rightIndex][0][bestRight].get("Weight"))));
+							//alert("1 About to compare lastleft: " + lastLeft + " with " + groups[rightIndex][0][bestRight].get("Name") + " and lastright: " + lastRight + " with " + groups[leftIndex][0][bestLeft].get("Name"));
+								// Makes sure that the same two people can't switch twice in a row
+								if(lastRight == groups[rightIndex][0][bestRight].get("Name") 
+								&& lastLeft == groups[leftIndex][0][bestLeft].get("Name")){
+									//alert("Same two people switched.  Ending loop.");
+									canBalance = false;
+								}
+								else{
+									//Switches them
+		//							alert("Before switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
+									var tmp = groups[leftIndex][0][bestLeft];
+									lastLeft = tmp.get("Name");
+									lastRight = groups[rightIndex][0][bestRight].get("Name");
+									groups[leftIndex][0][bestLeft] = groups[rightIndex][0][bestRight];
+									groups[rightIndex][0][bestRight] = tmp;
+		//							alert("After switch: 1. " + groups[leftIndex][0][bestLeft].get("Name") + ", 2. " + groups[rightIndex][0][bestRight].get("Name"));
+								}
 							}
 							else if(whichSide == 1){
-		//						alert("Should switch " + groups[leftIndex][1][bestLeft].get("Name") + " and " + groups[rightIndex][1][bestRight].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][1][bestLeft].get("Weight") - groups[rightIndex][1][bestRight].get("Weight"))));
-
-								//Switches them
-		//						alert("Before switch: 1. " + groups[leftIndex][1][bestLeft].get("Name") + ", 2. " + groups[rightIndex][1][bestRight].get("Name"));
-								var tmp = groups[leftIndex][1][bestLeft];
-								groups[leftIndex][1][bestLeft] = groups[rightIndex][1][bestRight];
-								groups[rightIndex][1][bestRight] = tmp;
-		//						alert("After switch: 1. " + groups[leftIndex][1][bestLeft].get("Name") + ", 2. " + groups[rightIndex][1][bestRight].get("Name"));
+								//alert("Should switch " + groups[leftIndex][1][bestLeft].get("Name") + " and " + groups[rightIndex][1][bestRight].get("Name") + " whose difference is " + Math.abs((groups[leftIndex][1][bestLeft].get("Weight") - groups[rightIndex][1][bestRight].get("Weight"))));
+								//alert("2 About to compare lastleft: " + lastLeft + " with " + groups[rightIndex][1][bestRight].get("Name") + " and lastright: " + lastRight + " with " + groups[leftIndex][1][bestLeft].get("Name"));
+								if(lastRight == groups[rightIndex][1][bestRight].get("Name") 
+								&& lastLeft == groups[leftIndex][1][bestLeft].get("Name")){
+									//alert("Same two people switched.  Ending loop.");
+									canbalance = false;
+								}
+								else{
+									//Switches them
+		//							alert("Before switch: 1. " + groups[leftIndex][1][bestLeft].get("Name") + ", 2. " + groups[rightIndex][1][bestRight].get("Name"));
+									var tmp = groups[leftIndex][1][bestLeft];
+									lastLeft = tmp.get("Name");
+									lastRight = groups[rightIndex][1][bestRight].get("Name");
+									groups[leftIndex][1][bestLeft] = groups[rightIndex][1][bestRight];
+									groups[rightIndex][1][bestRight] = tmp;
+		//							alert("After switch: 1. " + groups[leftIndex][1][bestLeft].get("Name") + ", 2. " + groups[rightIndex][1][bestRight].get("Name"));
+								}
 							}
 						}
 						else{
-		//					alert("Cant balance");
+							//alert("Cant balance");
 						}
 					}
 				}
 
-		//		alert("Done balancing");
 				var groupWeight = [];
 
 				for(var i = 0; i < groups.length; i++){
@@ -1159,9 +1181,19 @@
 							}
 						}
 					}
+
 					getBalance(i);
 					REDIPS.drag.init();
 					//alert(output);
+				}
+				var rTable = document.getElementById("rosterBody");
+				for(var r = 0; r < rTable.rows.length; r++){
+					if(rTable.rows[r].cells[left]){
+						rTable.rows[r].cells[left].innerHTML = "";
+					}
+					if(rTable.rows[r].cells[right]){
+						rTable.rows[r].cells[right].innerHTML = "";
+					}
 				}
 			}
 		);
