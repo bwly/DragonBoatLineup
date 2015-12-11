@@ -112,6 +112,7 @@ function clearBoat(boatNumber){
 	leftWeight[boatNumber] = 0;
 	rightWeight[boatNumber] = 0;
 
+	// Resets the weight array for the boats based on the boat length
 	if(boatRows == 10){
 		leftArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
 		rightArray[boatNumber] = [0,0,0,0,0,0,0,0,0,0];
@@ -125,6 +126,8 @@ function clearBoat(boatNumber){
 	REDIPS.drag.init();
 }
 
+
+// Inserts an interactive 2x10 grid to represent a 20-man boat
 function addTwentyMan(){
 	document.getElementById("boatDiv").innerHTML += 
 		'<div style="float:left; padding-left:100px;">'
@@ -188,6 +191,7 @@ function addTwentyMan(){
 		+'</div>';
 		
 
+	// Initializes all variables for the new boat
 	leftWeight[numBoats] = 0;
 	rightWeight[numBoats] = 0;
 	leftArray[numBoats] = [0,0,0,0,0,0,0,0,0,0];
@@ -199,6 +203,8 @@ function addTwentyMan(){
 	REDIPS.drag.init();
 }
 
+
+// Inserts an interactive 2x5 grid to represent a 10-man boat
 function addTenMan(){
 	document.getElementById("boatDiv").innerHTML += 
 		'<div style="float:left; padding-left:100px;">'
@@ -241,6 +247,8 @@ function addTenMan(){
 		+'  <div id = "balance' + numBoats + '">Weight is: Balanced</div>'
 		+'</div>';
 
+
+	// Initializes all variables for the new boat
 	leftWeight[numBoats] = 0;
 	rightWeight[numBoats] = 0;
 	leftArray[numBoats] = [0,0,0,0,0];
@@ -253,7 +261,7 @@ function addTenMan(){
 }
 
 
-// Adjusts the text underneath a boat table that says whether the boat is right heavy, left heavy, or balanced
+// Adjusts the text underneath a boat table that says whether the boat is right-heavy, left-heavy, or balanced
 function getBalance(boatNumber){
 	balanceWeight[boatNumber] = leftWeight[boatNumber] - rightWeight[boatNumber];
 
@@ -269,6 +277,7 @@ function getBalance(boatNumber){
 }
 
 
+// Saves the information of a boat into the parse database
 function saveBoat(boatNumber, name){
 	var Boat = Parse.Object.extend("Boat");
 	var boat = new Boat();
@@ -290,6 +299,8 @@ function saveBoat(boatNumber, name){
 	});
 }
 
+
+// Loads the information of a boat from the parse database
 function loadBoat(name){
 	alert("Loading boat number " + numBoats);
 	var Boat = Parse.Object.extend("Boat");
@@ -300,6 +311,8 @@ function loadBoat(name){
 		success: function(results){
 			// Edits the table's old code to have the correct boat number
 			var code = results[0].get("Code");
+
+
 			var chunk0 = code.split("<tbody id=")[0];
 			var chunk1 = code.split("<tbody id=")[1].substr(10, (code.split("<tbody id=")[1].length));
 			var edited = chunk0 + '<tbody id="boatBody' + numBoats + chunk1;
@@ -491,10 +504,12 @@ function sunday(drag) {
 				if(results[i].get("Side") == "Left"){
 					if(leftCount == table.rows.length){
 						table.insertRow(-1);
-						var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
+						var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + 
+							'"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
 					}
 					else{
-						var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+						var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + 
+							'"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
 					}
 					
 					leftCount++;
@@ -503,15 +518,18 @@ function sunday(drag) {
 					if(rightCount == table.rows.length){
 						table.insertRow(-1);
 						table.rows[rightCount].insertCell(0);
-						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
+						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + 
+							'"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
 					}
 					else{
-						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
+						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + 
+							'"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
 					}					
 					rightCount++;
 				}
 			}
-			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
+			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " 
+															+ tmp.toString() + "</p>";
 			document.getElementById("step2").style.display = "none";
 			document.getElementById("step3").style.display = "block";
 			drag.init();
@@ -776,6 +794,7 @@ function fillSection(section, results, rowIndex, leftArray, leftWeight, rightArr
 		}
 	}
 }
+
 
 function getDailyNames(){
 	var rTable = document.getElementById("rosterBody");
