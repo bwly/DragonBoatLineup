@@ -1,3 +1,15 @@
+/*
+	Author: Ted Ochiai
+	
+	Content: Functions written for Ted's Dragon Boat Lineup Builder user interface.  These functions are used in a larger program, but to avoid clutter, I have 
+		moved them to this file.  
+
+	About: In the sport of Dragon Boat, it is important that people are arranged within the boat such that their weight is evenly distributed throughout the boat.  
+		This prevents the boat from leaning to one side or tipping over.  The Lineup Builder allows the user to quickly determine where to place people in the boat
+		based on their weight and which side they prefer to paddle on by providing a graphical interface that calculates and displays the boat's current balance.  
+*/
+
+
 // Removes all of the paddlers from a boat and returns them to the roster from which they came
 function clearBoat(boatNumber){
 	
@@ -105,6 +117,8 @@ function clearBoat(boatNumber){
 
 
 			}
+
+			//Resets background color
 			bTable.rows[i].cells[j].style.backgroundColor = "#eee";
 		}
 	}
@@ -302,7 +316,8 @@ function saveBoat(boatNumber, name){
 
 // Loads the information of a boat from the parse database
 function loadBoat(name){
-	alert("Loading boat number " + numBoats);
+	//	alert("Loading boat number " + numBoats);
+	
 	var Boat = Parse.Object.extend("Boat");
 	var query = new Parse.Query(Boat);
 	query.equalTo("Owner", Parse.User.current().getUsername());
@@ -342,8 +357,6 @@ function loadBoat(name){
 	
 				
 				REDIPS.drag.init();
-
-			
 		},
 		error: function(error){
 			alert("Error");
@@ -351,156 +364,31 @@ function loadBoat(name){
 	});
 }
 
-// Loads the roster table for friday
-function friday(drag) {
+
+function loadDayRoster(drag, arr){
 	// Clears roster if day is switched
 	document.getElementById("rosterBody").innerHTML = "";
-	
 
 	var query = new Parse.Query(Paddler);	
-	
-	// Copies friday array into tmp
 	var tmp = [];
-	for(var a = 0; a < fridayArray.length; a++){
-		tmp[a] = fridayArray[a];
+	
+	for(var a = 0; a < arr.length; a++){
+		tmp[a] = arr[a];
 	}
 
+	// Gets the specific user's roster from the Parse database
 	query.containedIn("Name", tmp);
 	query.equalTo("Owner", Parse.User.current().getUsername());
 	query.find({
 		success: function(results) {
-			document.getElementById("rosterTitle").innerHTML = "Friday Roster";
+			document.getElementById("rosterTitle").innerHTML = "Roster";
 			var rightCount = 0;
 			var leftCount = 0;
+
 			for(var i = 0; i < results.length; i++){
 				tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
 				var table = document.getElementById("rosterBody");
-
-
 				// Builds the roster table with both left and right sides
-				if(results[i].get("Side") == "Left"){
-					if(leftCount == table.rows.length){
-						table.insertRow(-1);
-						var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-					}
-					else{
-						var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
-					}
-					
-					leftCount++;
-				}
-				else{
-					if(rightCount == table.rows.length){
-						table.insertRow(-1);
-						table.rows[rightCount].insertCell(0);
-						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
-					}
-					else{
-						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
-					}					
-					rightCount++;
-				}
-				
-			}
-			
-
-			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
-			document.getElementById("step2").style.display = "none";
-			document.getElementById("step3").style.display = "block";
-			drag.init();
-		},
-		error: function(error) {
-			alert("error");
-		}
-	});
-
-}
-
-// Loads the roster table for saturday
-function saturday(drag) {
-	// Clears roster if day is switched
-	document.getElementById("rosterBody").innerHTML = "";
-
-	var query = new Parse.Query(Paddler);	
-	
-	// Copies friday array into tmp
-	var tmp = [];
-	for(var a = 0; a < saturdayArray.length; a++){
-		tmp[a] = saturdayArray[a];
-	}
-
-	query.containedIn("Name", tmp);
-	query.equalTo("Owner", Parse.User.current().getUsername());
-	query.find({
-		success: function(results) {
-			document.getElementById("rosterTitle").innerHTML = "Saturday Roster";
-			var rightCount = 0;
-			var leftCount = 0;
-
-			for(var i = 0; i < results.length; i++){
-				tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
-				var table = document.getElementById("rosterBody");
-					// Builds the roster table with both left and right sides
-				if(results[i].get("Side") == "Left"){
-					if(leftCount == table.rows.length){
-						table.insertRow(-1);
-						var cell = table.rows[leftCount].insertCell(0).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';
-					}
-					else{
-						var cell = table.rows[leftCount].cells[0].innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
-					}
-					
-					leftCount++;
-				}
-				else{
-					if(rightCount == table.rows.length){
-						table.insertRow(-1);
-						table.rows[rightCount].insertCell(0);
-						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';	
-					}
-					else{
-						var cell = table.rows[rightCount].insertCell(1).innerHTML = '<div id="' + results[i].id + '"class="redips-drag" style="border-style: solid; cursor: move;">' + results[i].get("Name") + '</div>';		
-					}					
-					rightCount++;
-				}
-			}
-			
-			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " + tmp.toString() + "</p>";
-			document.getElementById("step2").style.display = "none";
-			document.getElementById("step3").style.display = "block";
-			drag.init();
-
-		},
-		error: function(error) {
-			alert("error");
-		}
-	});
-}
-
-// Loads the roster table for Sunday
-function sunday(drag) {
-	// Clears roster if day is switched
-	document.getElementById("rosterBody").innerHTML = "";
-
-	var query = new Parse.Query(Paddler);	
-	
-	// Copies friday array into tmp
-	var tmp = [];
-	for(var a = 0; a < sundayArray.length; a++){
-		tmp[a] = sundayArray[a];
-	}
-
-	query.containedIn("Name", tmp);
-	query.equalTo("Owner", Parse.User.current().getUsername());
-	query.find({
-		success: function(results) {
-			document.getElementById("rosterTitle").innerHTML = "Sunday Roster";
-			var rightCount = 0;
-			var leftCount = 0;
-			for(var i = 0; i < results.length; i++){
-				tmp.splice(tmp.indexOf(results[i].get("Name")), 1);
-				var table = document.getElementById("rosterBody");
-					// Builds the roster table with both left and right sides
 				if(results[i].get("Side") == "Left"){
 					if(leftCount == table.rows.length){
 						table.insertRow(-1);
@@ -527,7 +415,10 @@ function sunday(drag) {
 					}					
 					rightCount++;
 				}
+				
 			}
+			
+
 			document.getElementById("unknown").innerHTML = "<br><p style='background-color:#FF6666'>Paddlers not found in team roster: " 
 															+ tmp.toString() + "</p>";
 			document.getElementById("step2").style.display = "none";
@@ -538,6 +429,22 @@ function sunday(drag) {
 			alert("error");
 		}
 	});
+
+}
+
+// Loads the roster table for friday
+function friday(drag) {
+	loadDayRoster(drag, fridayArray);	
+}
+
+// Loads the roster table for saturday
+function saturday(drag) {
+	loadDayRoster(drag, saturdayArray);
+}
+
+// Loads the roster table for Sunday
+function sunday(drag) {
+	loadDayRoster(drag, sundayArray);
 }
 
 
@@ -685,6 +592,7 @@ function boatToBoat(result, weight, position, rightArray, rightWeight, leftArray
 
 }
 
+// Handles a drag/drop into the full roster
 function fullDrop(result, weight, position, rightArray, rightWeight, leftArray, leftWeight){
 	var fTable = document.getElementById("fullRosterBody");
 	var count = 0;
@@ -795,7 +703,7 @@ function fillSection(section, results, rowIndex, leftArray, leftWeight, rightArr
 	}
 }
 
-
+// Gets all of the names from the daily roster and puts them into an array
 function getDailyNames(){
 	var rTable = document.getElementById("rosterBody");
 	var nameArray = [];
@@ -812,6 +720,8 @@ function getDailyNames(){
 	return nameArray;
 }
 
+
+// Gets all of the names in a specific boat
 function getBoatNames(boatNumber){
 	var bTable = document.getElementById("boatBody"+boatNumber);
 	var nameArray = [];

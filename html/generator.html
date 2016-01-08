@@ -863,100 +863,6 @@
 						closestToGoal = groupWeight[rightIndex];
 					}
 
-
-
-
-
-
-					if(rightIndex != -1 && leftIndex != -1){
-						var worstCase =  Math.abs(groupWeight[leftIndex] - groupWeight[rightIndex]);
-						var source = -1;
-						var sourceIndex = -1;
-						var newSide = -1;
-						var oldSide = -1;
-
-						for(var i = 0; i < groups[leftIndex][0].length; i++){
-							// If switching this person would result in a better balance"
-							if(groups[leftIndex][0][i].get("Weight")<  Math.abs(groupWeight[rightIndex] - groupWeight[leftIndex])
-							&& worstCase > Math.abs((groupWeight[leftIndex] + groups[leftIndex][0][i].get("Weight")) - 
-								(groupWeight[rightIndex] - groups[leftIndex][0][i].get("Weight")))
-							&& groups[rightIndex][0].length < 5){
-								//alert(groups[leftIndex][0][i].get("Name") + " can switch alone resulting in a change from " + (groupWeight[leftIndex] + ", " + groupWeight[rightIndex]) + " to " + (groupWeight[leftIndex] + groups[leftIndex][0][i].get("Weight")) + ", " + (groupWeight[rightIndex] - groups[leftIndex][0][i].get("Weight")));
-								worstCase = Math.abs((groupWeight[leftIndex] + groups[leftIndex][0][i].get("Weight")) - 
-								(groupWeight[rightIndex] - groups[leftIndex][0][i].get("Weight")));
-								source = 0;
-								sourceIndex = i;
-								oldSide = leftIndex;
-								newSide = rightIndex;
-
-
-
-							}
-
-							for(var j = 0; j < groups[rightIndex][0].length; j++){
-								if(groups[rightIndex][0][j].get("Weight")<  Math.abs(groupWeight[rightIndex] - groupWeight[leftIndex])
-								&& worstCase > Math.abs((groupWeight[leftIndex]-groups[rightIndex][0][j].get("Weight")) - 
-								(groupWeight[rightIndex] + groups[rightIndex][0][j].get("Weight")))
-								&& groups[leftIndex][0].length < 5){
-									//alert(groups[rightIndex][0][j].get("Name") + " can switch alone resulting in a change from " + groupWeight[leftIndex] + ", " + groupWeight[rightIndex] + " to " + (groupWeight[leftIndex] - groups[rightIndex][0][j].get("Weight")) + ", " + (groupWeight[rightIndex] + groups[rightIndex][0][j].get("Weight")));
-
-									worstCase = Math.abs((groupWeight[leftIndex]-groups[rightIndex][0][j].get("Weight")) - 
-									(groupWeight[rightIndex] + groups[rightIndex][0][j].get("Weight")));
-									source = 0;
-									sourceIndex = j;
-									oldSide = rightIndex;
-									newSide = leftIndex;
-								}
-
-							}
-						}
-
-						for(var i = 0; i < groups[leftIndex][1].length; i++){
-							if(groups[leftIndex][1][i].get("Weight") <  Math.abs(groupWeight[rightIndex] - groupWeight[leftIndex]) 
-							&& worstCase > Math.abs((groupWeight[leftIndex] + groups[leftIndex][1][i].get("Weight")) - 
-								(groupWeight[rightIndex] - groups[leftIndex][1][i].get("Weight")))
-							&& groups[rightIndex][1].length < 5){
-
-								//alert(groups[leftIndex][1][i].get("Name") + " can switch alone resulting in a change from " + groupWeight[leftIndex] + ", " + groupWeight[rightIndex] + " to " + (groupWeight[leftIndex] + groups[leftIndex][1][i].get("Weight")) + ", " + (groupWeight[rightIndex] - groups[leftIndex][1][i].get("Weight")));
-								worstCase = Math.abs((groupWeight[leftIndex] + groups[leftIndex][1][i].get("Weight")) - 
-								(groupWeight[rightIndex] - groups[leftIndex][1][i].get("Weight")));
-								source = 1;
-								sourceIndex = i;
-								oldSide = leftIndex;
-								newSide = rightIndex;
-							}
-
-							for(var j = 0; j < groups[rightIndex][1].length; j++){
-								if(groups[rightIndex][1][j].get("Weight")<  Math.abs(groupWeight[rightIndex] - groupWeight[leftIndex])
-
-								&& worstCase > Math.abs((groupWeight[leftIndex]-groups[rightIndex][1][j].get("Weight")) - 
-								(groupWeight[rightIndex] + groups[rightIndex][1][j].get("Weight")))
-								&& groups[leftIndex][1].length < 5){
-									
-									//alert(groups[rightIndex][1][j].get("Name") + " can switch alone resulting in a change from " + groupWeight[leftIndex] + ", " + groupWeight[rightIndex] + " to " + (groupWeight[leftIndex] - groups[rightIndex][1][j].get("Weight")) + ", " + (groupWeight[rightIndex] + groups[rightIndex][1][j].get("Weight")));
-									worstCase = Math.abs((groupWeight[leftIndex]-groups[rightIndex][1][j].get("Weight")) - 
-								(groupWeight[rightIndex] + groups[rightIndex][1][j].get("Weight")));
-									source = 1;
-									sourceIndex = j;
-									oldSide = rightIndex;
-									newSide = leftIndex;
-								}
-							}
-						}
-
-						if(source != -1){
-						//	alert("Best switch is " + groups[oldSide][source][sourceIndex].get("Name"));
-							groups[newSide][source].push(groups[oldSide][source][sourceIndex]);
-							groups[oldSide][source].splice(sourceIndex, 1);
-						//	alert("Paddler switched");
-						}
-					}
-
-
-
-
-
-
 		//			alert("Closest to goal is " + closestToGoal);
 
 					// Indexes of the best paddlers to switch
@@ -969,19 +875,20 @@
 					// Find the best people to switch
 					if(rightIndex != -1 && leftIndex != -1){
 						// We know that at least two boats could possibly benefit from a switch
+<<<<<<< HEAD
 						//alert("Looking for same-side paddlers from different boats whose weight difference is closest to " + Math.abs(goal - closestToGoal));
 						
 
 
+=======
+		//				alert("Looking for same-side paddlers from different boats whose weight difference is closest to " + Math.abs(goal - closestToGoal));
+>>>>>>> parent of ff051f7... Generator improved
 						// Compares all left paddlers from both boats
 						for(var i = 0; i < groups[leftIndex][0].length; i++){
-							// If switching this person would result in a better balance"
-							
-
-
-							
-
 							for(var j = 0; j < groups[rightIndex][0].length; j++){
+								
+								
+
 								if( ((groupWeight[leftIndex] > groupWeight[rightIndex]) && groups[leftIndex][0][i].get("Weight") < groups[rightIndex][0][j].get("Weight")) 
 								||  ((groupWeight[leftIndex] < groupWeight[rightIndex]) && groups[leftIndex][0][i].get("Weight") > groups[rightIndex][0][j].get("Weight"))){
 									//alert("left groupweight is " + groupWeight[leftIndex] + " and right groupweight is " + groupWeight[rightIndex] + " so switching " + groups[leftIndex][0][i].get("Name") + " from the left and " + groups[rightIndex][0][j].get("Name") + " from the right could be a good idea.");
@@ -1005,7 +912,10 @@
 						
 						// Compares all right paddlers from both boats
 						for(var i = 0; i < groups[leftIndex][1].length; i++){
-							for(var j = 0; j < groups[rightIndex][1].length; j++){								
+							for(var j = 0; j < groups[rightIndex][1].length; j++){
+								
+								
+
 								if( ((groupWeight[leftIndex] > groupWeight[rightIndex]) && groups[leftIndex][1][i].get("Weight") > groups[rightIndex][1][j].get("Weight")) 
 								||  ((groupWeight[leftIndex] < groupWeight[rightIndex]) && groups[leftIndex][1][i].get("Weight") < groups[rightIndex][1][j].get("Weight"))){
 									
