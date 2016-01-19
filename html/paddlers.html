@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
 
-
   <link rel="stylesheet" href="http://s3.amazonaws.com/codecademy-content/courses/ltp/css/bootstrap.css">
   <link rel="stylesheet" href="../css/main.css">  
 
@@ -16,7 +15,7 @@
 </head>
 
 <body>
-
+	<!-- Navigation Links -->
 	<div class="nav2">
       <div class="container2">
         <ul class="pull-left">
@@ -28,12 +27,11 @@
     </div>
 
   
+ <!-- Roster Table -->
 <div id="roster_wrapper">
-
   <div id="main">
-
 		<h1>Roster Editor</h1>
-		<h3>Edit your roster. Once you're finished here, press build to view a graphical representation.</h3>
+		<h3>Edit your roster here.  Once you're finished, use the lineup builder!</h3>
 		<div id="info">
 			<table id="paddlers" style="width:50%">
 				<tr>
@@ -42,26 +40,27 @@
 					<th>Side</th>
 					<th>Section</th>
 					<th>Boat</th>
+					<th>Options</th>
 				</tr>
 			</table>
 		</div>
-		
   </div>
 
+  <!-- Message that shows if the user has not logged in -->
   <div id="logInFirst">
   	<h1>Sign up or log in to use the roster editor.</h1>
   </div>
   
 
   <script type="text/javascript">
-	Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
-
+		Parse.initialize("Ir9YzTyozWr3zBMzUq8MsOs9toJyWO1E33jGjFni", "NEpob0acvjC8kZo8y8LxX4QQsyPewCmZ4fOfjSY0");
 		var currentUser = Parse.User.current();
-
 		
-
+		//If the user is logged in, display the user's roster 
 		if (currentUser) {
 			document.getElementById("logInFirst").style.display = "none";
+			
+			// This query finds the user's roster members from the Parse database
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
 			query.equalTo("Owner", Parse.User.current().getUsername());
@@ -70,13 +69,14 @@
 				success: function(results) {
 					var myTable = document.getElementById("paddlers");
 					
-					// Adds paddlers to the table 
+					// Adds all paddlers to the table 
 					for (var i = 0; i < results.length; i++) {
+						// Adds a new row
 						var row = myTable.insertRow(-1);
-						
 						
 						var object = results[i];
 						
+						// Inserts cells into the new row
 						var cell1 = row.insertCell(0);
 						var cell2 = row.insertCell(1);
 						var cell3 = row.insertCell(2);
@@ -84,20 +84,22 @@
 						var cell5 = row.insertCell(4);
 						var cell6 = row.insertCell(5);
 
-						cell1.innerHTML = object.get('Name');	
+						// Fills each cell with that person's information
 						cell1.id = object.id;	
+						cell1.innerHTML = object.get('Name');	
 						cell2.innerHTML = object.get('Weight');
 						cell3.innerHTML = object.get('Side');
 						cell4.innerHTML = object.get('Section');
 						cell5.innerHTML = object.get('Boat');
 
 						// Delete button
-						cell6.innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
-						
+						cell6.innerHTML = "<button id='" + object.id 
+							+ "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" 
+							+ object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 					}
 					
 					
-					// Creates a row for adding paddlers
+					// Creates a blank row for adding paddlers
 					var row = myTable.insertRow(-1);
 					var cell1 = row.insertCell(0);
 					var cell2 = row.insertCell(1);
@@ -106,45 +108,69 @@
 					var cell5 = row.insertCell(4);
 					var cell6 = row.insertCell(5);
 			
-					// Fills the new row with values
+					// Fills the blank row with placeholder values
 					cell1.innerHTML = "<input type='text' id='nameEntry' placeholder='Name'>";
 					cell2.innerHTML = "<input type='text' id='weightEntry' placeholder='Weight'>";
-					cell3.innerHTML = "<select id='sideEntry'><option value='Left'>Left</option><option value='Right'>Right</option></select>";
-					cell4.innerHTML = "<select id='sectionEntry'><option value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
-					cell5.innerHTML = "<select id='boatEntry'><option value='White'>White</option><option value='Blue'>Blue</option></select>";
+					
+					// Left or Right side
+					cell3.innerHTML = "<select id='sideEntry'><option value='Left'>Left</option>"
+										+"<option value='Right'>Right</option></select>";
+								
+					// Box, Engine, or Rocket
+					cell4.innerHTML = "<select id='sectionEntry'><option value='Box'>Box</option>"
+										+"<option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+								
+					// White or Blue 
+					cell5.innerHTML = "<select id='boatEntry'><option value='White'>White</option>"
+										+"<option value='Blue'>Blue</option></select>";
+										
+					// Button for adding paddler to the database
 					cell6.innerHTML = "<button onclick='addPaddler()'>Add</button>";
 				},
 				error: function(error){
-					alert("Error");
+					alert("Error loading paddlers from database.");
 				}
 			});
 		}
 		else{
+			//User is not logged in, display the login message
 			document.getElementById("main").style.display = "none";
-			
-
 		}
+		
+		// Set to true if the user is editing a roster member
+		var editing = false;
+		
+
+		
+		<!--             FUNCTIONS            -->
+		
 		// Function from http://stackoverflow.com/questions/3885817/how-to-check-that-a-number-is-float-or-integer
 		function isInt(value) {
 			var er = /^-?[0-9]+$/;
 			return er.test(value);
 		}
 		
-		// Handles adding a paddler to the roster
+		// Handles clicking the "add" button in the roster editor
 		function addPaddler(){
+		
+			// Checks that the paddler has a name
 			if(document.getElementById("nameEntry").value == ""){
 				alert("Add a name for this entry!");
 				return;
 			}
 			
-			if(!isInt(document.getElementById("weightEntry").value) || document.getElementById("weightEntry").value <= 0){
+			// Checks that the user has entered a valid weight for the paddler
+			if(!isInt(document.getElementById("weightEntry").value) 
+				|| document.getElementById("weightEntry").value <= 0){
 				alert("Enter a positive integer for the weight field!");
 				return;
 			}
 			
+			// Creates a new paddler object based on the user's input
 			var Paddler = Parse.Object.extend("Paddler");
 			var paddler = new Paddler();
 			
+			// Saves the paddler's information
 			paddler.set("Name", document.getElementById("nameEntry").value);
 			paddler.set("Weight", parseInt(document.getElementById("weightEntry").value));
 			paddler.set("Side", document.getElementById("sideEntry").value);
@@ -152,18 +178,22 @@
 			paddler.set("Boat", document.getElementById("boatEntry").value);
 			paddler.set("Owner", Parse.User.current().getUsername());
 			
+			// Saves info to database
 			paddler.save(null, {
 				success: function(results) {
 				
-					// Changes the table to contain the new information
+					// Adjusts the table to contain the newly added information
 					var myTable = document.getElementById("paddlers");
-					myTable.rows[myTable.rows.length-1].cells[0].innerHTML = document.getElementById("nameEntry").value;
-					myTable.rows[myTable.rows.length-1].cells[0].id = paddler.id;
-					myTable.rows[myTable.rows.length-1].cells[1].innerHTML = parseInt(document.getElementById("weightEntry").value);
-					myTable.rows[myTable.rows.length-1].cells[2].innerHTML = document.getElementById("sideEntry").value;
-					myTable.rows[myTable.rows.length-1].cells[3].innerHTML = document.getElementById("sectionEntry").value;
-					myTable.rows[myTable.rows.length-1].cells[4].innerHTML = document.getElementById("boatEntry").value;
-					myTable.rows[myTable.rows.length-1].cells[5].innerHTML = "<button id='" + paddler.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + paddler.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+					var lastRow = myTable.rows[myTable.rows.length-1];
+					lastRow.cells[0].id = paddler.id;
+					lastRow.cells[0].innerHTML = document.getElementById("nameEntry").value;
+					lastRow.cells[1].innerHTML = parseInt(document.getElementById("weightEntry").value);
+					lastRow.cells[2].innerHTML = document.getElementById("sideEntry").value;
+					lastRow.cells[3].innerHTML = document.getElementById("sectionEntry").value;
+					lastRow.cells[4].innerHTML = document.getElementById("boatEntry").value;
+					lastRow.cells[5].innerHTML = "<button id='" + paddler.id 
+												+ "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" 
+												+ paddler.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 					
 					// Creates a new row for adding paddlers
 					var row = myTable.insertRow(-1);
@@ -178,22 +208,23 @@
 					cell1.innerHTML = "<input type='text' id='nameEntry' placeholder='Name'>";
 					cell2.innerHTML = "<input type='text' id='weightEntry' placeholder='Weight'>";
 					cell3.innerHTML = "<select id='sideEntry'><option value='Left'>Left</option><option value='Right'>Right</option></select>";
-					cell4.innerHTML = "<select id='sectionEntry'><option value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket<Rocket</option></select>";
+					cell4.innerHTML = "<select id='sectionEntry'><option value='Box'>Box</option>"
+									 +"<option value='Engine'>Engine</option><option value='Rocket'>Rocket<Rocket</option></select>";
 					cell5.innerHTML = "<select id='boatEntry'><option value='White'>White</option><option value='Blue'>Blue</option></select>";
 					cell6.innerHTML = "<button onclick='addPaddler()'>Add</button>";
 				},
 				error: function(results, error) {
-					alert(error.message);
+					alert("Did not save new paddler!");
 				}
 			});
-			
-				
 		}
     
 	
-		var editing = false;
-		// TODO: Handle multiple edits at once.  Currently probably cannot do that
+		
+		// TODO: Handle multiple edits at once 
+		// TODO: May be able to skip parse query in here by going through the HTML, would be faster
 		function editPaddler(event) {
+			// Checks if the user is already editing a row
 			if(editing){
 				alert("Finish up your other edit first!");
 				return;
@@ -201,79 +232,90 @@
 			else{
 				editing = true;
 			}
+			
+			// Gets the selected paddler's information from the database
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
 			query.equalTo("objectId", event);
-
 			query.find({
-			success: function(results) {
-
-				var myTable = document.getElementById("paddlers");
-	
-				var rowNumber = 0;
-				while(true){
-					if(myTable.rows[rowNumber].cells[0].id == results[0].id){
+				success: function(results) {
+					var myTable = document.getElementById("paddlers");
+					var rowNumber = 0;
 					
-						// Changes all of the row's information into input fields
-						myTable.rows[rowNumber].cells[0].innerHTML = "<input type='text' id='nameEdit' value='" + myTable.rows[rowNumber].cells[0].innerHTML + "'>";
-						myTable.rows[rowNumber].cells[1].innerHTML = "<input type='text' id='weightEdit' value='" + myTable.rows[rowNumber].cells[1].innerHTML + "'>";
-						
-						// if else statements are used to make sure that the old value shows up in the dropdown menu
-						if(myTable.rows[rowNumber].cells[2].innerHTML == "Left"){
-							myTable.rows[rowNumber].cells[2].innerHTML = "<select id='sideEdit'><option selected value='Left'>Left</option><option value='Right'>Right</option></select>";
-						}
-						else {
-							myTable.rows[rowNumber].cells[2].innerHTML = "<select id='sideEdit'><option value='Left'>Left</option><option selected value='Right'>Right</option></select>";
-						}
-						
+					// Searches through the roster until it finds the selected paddler
+					while(true){
+						var r = myTable.rows[rowNumber];
+						if(r.cells[0].id == results[0].id){
+							// Changes all of the row's information into input fields
+							r.cells[0].innerHTML = "<input type='text' id='nameEdit' value='" + r.cells[0].innerHTML + "'>";
+							r.cells[1].innerHTML = "<input type='text' id='weightEdit' value='" + r.cells[1].innerHTML + "'>";
+							
+							// if-else statements are used to make sure that the old value shows up in the drop-down menu
+							// Left or Right
+							if(r.cells[2].innerHTML == "Left"){
+								r.cells[2].innerHTML = "<select id='sideEdit'><option selected value='Left'>Left</option>"
+																			+"<option value='Right'>Right</option></select>";
+							}
+							else {
+								r.cells[2].innerHTML = "<select id='sideEdit'><option value='Left'>Left</option>"
+																			+"<option selected value='Right'>Right</option></select>";
+							}
+							
+							// Box, Engine or Rocket
+							if(r.cells[3].innerHTML == "Box"){
+								r.cells[3].innerHTML = "<select id='sectionEdit'><option selected value='Box'>Box</option>"
+																			+"<option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+							}
+							else if(r.cells[3].innerHTML == "Engine") {
+								r.cells[3].innerHTML = "<select id='sectionEdit'><option value='Box'>Box</option>"
+																			+"<option selected value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+							}
+							else {
+								r.cells[3].innerHTML = "<select id='sectionEdit'><option value='Box'>Box</option><option value='Engine'>Engine</option>"
+																			+"<option selected value='Rocket'>Rocket</option></select>";
+							}
 
-						if(myTable.rows[rowNumber].cells[3].innerHTML == "Box"){
-							myTable.rows[rowNumber].cells[3].innerHTML = "<select id='sectionEdit'><option selected value='Box'>Box</option><option value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
+							// White or Blue
+							if(r.cells[4].innerHTML == "White"){
+								r.cells[4].innerHTML = "<select id='boatEdit'><option selected value='White'>White</option>"
+																			+"<option value='Blue'>Blue</option></select>";
+							}
+							else {
+								r.cells[4].innerHTML = "<select id='boatEdit'><option value='White'>White</option>"
+																			+"<option selected value='Blue'>Blue</option></select>";
+							}
+							
+							// Adds a button to submit the edit
+							r.cells[5].innerHTML = "<button id='" + results[0].id + "' onclick='updatePaddler(this.id)'>Done</button> <button id='" 
+																		+ results[0].id + "' onclick='undoEdit(this.id)'>Cancel</button>";
+							
+							// Exits the loop
+							break;
 						}
-						else if(myTable.rows[rowNumber].cells[3].innerHTML == "Engine") {
-							myTable.rows[rowNumber].cells[3].innerHTML = "<select id='sectionEdit'><option value='Box'>Box</option><option selected value='Engine'>Engine</option><option value='Rocket'>Rocket</option></select>";
-						}
-						else {
-							myTable.rows[rowNumber].cells[3].innerHTML = "<select id='sectionEdit'><option value='Box'>Box</option><option value='Engine'>Engine</option><option selected value='Rocket'>Rocket</option></select>";
-						}
-
-						if(myTable.rows[rowNumber].cells[4].innerHTML == "White"){
-							myTable.rows[rowNumber].cells[4].innerHTML = "<select id='boatEdit'><option selected value='White'>White</option><option value='Blue'>Blue</option></select>";
-						}
-						else {
-							myTable.rows[rowNumber].cells[4].innerHTML = "<select id='boatEdit'><option value='White'>White</option><option selected value='Blue'>Blue</option></select>";
-						}
-						
-						myTable.rows[rowNumber].cells[5].innerHTML = "<button id='" + results[0].id + "' onclick='updatePaddler(this.id)'>Done</button> <button id='" + results[0].id + "' onclick='undoEdit(this.id)'>Cancel</button>";
-						
-						
-						break;
-					}
-					rowNumber++;
-				}				
-			},
-			error: function(error){
-				alert("Error");
-			}
-		});
+						rowNumber++;
+					}				
+				},
+				error: function(error){
+					alert("Selected paddler was not retrieved from the database!");
+				}
+			});
 		}
 	
+		<!-- Submits the user's changes to the database and updates the roster -->
 		function updatePaddler(event){
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
 			query.equalTo("objectId", event);
-
 			query.find({
 			success: function(results) {
-
 				var myTable = document.getElementById("paddlers");
 	
 				var rowNumber = 0;
 				
+				// This loop finds the edited paddler
 				while(true){
 					if(myTable.rows[rowNumber].cells[0].id == results[0].id){
 
-			
 						// Saves all information from the edit
 						results[0].set("Name", document.getElementById("nameEdit").value);
 						results[0].set("Weight", parseInt(document.getElementById("weightEdit").value));
@@ -283,14 +325,15 @@
 						
 						results[0].save(null, {
 							success: function(results2) {
-							
+								var r = myTable.rows[rowNumber];
 								// Changes the table to contain the new information
-								myTable.rows[rowNumber].cells[0].innerHTML = document.getElementById("nameEdit").value;
-								myTable.rows[rowNumber].cells[1].innerHTML = parseInt(document.getElementById("weightEdit").value);
-								myTable.rows[rowNumber].cells[2].innerHTML = document.getElementById("sideEdit").value;
-								myTable.rows[rowNumber].cells[3].innerHTML = document.getElementById("sectionEdit").value;
-								myTable.rows[rowNumber].cells[4].innerHTML = document.getElementById("boatEdit").value;
-								myTable.rows[rowNumber].cells[5].innerHTML = "<button id='" + results[0].id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + results[0].id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+								r.cells[0].innerHTML = document.getElementById("nameEdit").value;
+								r.cells[1].innerHTML = parseInt(document.getElementById("weightEdit").value);
+								r.cells[2].innerHTML = document.getElementById("sideEdit").value;
+								r.cells[3].innerHTML = document.getElementById("sectionEdit").value;
+								r.cells[4].innerHTML = document.getElementById("boatEdit").value;
+								r.cells[5].innerHTML = "<button id='" + results[0].id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" 
+													 + results[0].id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 							},
 							error: function(results2, error) {
 								alert(error.message);
@@ -302,13 +345,16 @@
 				}				
 			},
 			error: function(error){
-				alert("Error");
+				alert("Did not update paddler");
 			}
 		});
+		
+			// This variable keeps track of whether or not the user is editing a paddler already.
 			editing = false;
 		
 		}
 	
+		<!-- A cancel button for edits -->
 		function undoEdit(event){
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
@@ -317,33 +363,36 @@
 			query.find({
 				success: function(results) {
 					var myTable = document.getElementById("paddlers");
-					
-					// Adds paddlers to the table 	
 					var rowNumber = 0;
-					
+				
 					while(true){
+					
+						// Resets the paddler's values to those previously in the database
 						if(myTable.rows[rowNumber].cells[0].id == results[0].id){
-							
+							var r = myTable.rows[rowNumber];
+
 							var object = results[0];
 							
-							myTable.rows[rowNumber].cells[0].innerHTML = object.get('Name');	
-							myTable.rows[rowNumber].cells[1].innerHTML = object.get('Weight');
-							myTable.rows[rowNumber].cells[2].innerHTML  = object.get('Side');
-							myTable.rows[rowNumber].cells[3].innerHTML  = object.get('Section');
-							myTable.rows[rowNumber].cells[4].innerHTML  = object.get('Boat');
+							r.cells[0].innerHTML = object.get('Name');	
+							r.cells[1].innerHTML = object.get('Weight');
+							r.cells[2].innerHTML  = object.get('Side');
+							r.cells[3].innerHTML  = object.get('Section');
+							r.cells[4].innerHTML  = object.get('Boat');
 
 							// Edit and Delete buttons
-							myTable.rows[rowNumber].cells[5].innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
+							r.cells[5].innerHTML = "<button id='" + object.id + "' onclick='editPaddler(this.id);'>Edit</button>  <button id='" 
+												 + object.id + "' onclick='deletePaddler(this.id);'>Delete</button>";
 							break;
 						}
 						rowNumber++;
 					}		
 				},
 				error: function(error){
-					alert("Error");
+					alert("Could not be undone?");
 				}
 			});
 			
+			// This variable keeps track of whether or not the user is editing a paddler already.
 			editing = false;
 		}
 	
@@ -355,49 +404,43 @@
 				return;
 			}
 			
-			
 			var Paddler = Parse.Object.extend("Paddler");
 			var query = new Parse.Query(Paddler);
 			query.equalTo("objectId", event);
 
 			query.find({
-			success: function(results) {
+				success: function(results) {
 
-				var myTable = document.getElementById("paddlers");
-	
-				var rowNumber = 0;
-				while(true){
-					if(myTable.rows[rowNumber].cells[0].id == results[0].id){
-						myTable.deleteRow(rowNumber);
-						break;
+					var myTable = document.getElementById("paddlers");
+		
+					var rowNumber = 0;
+					while(true){
+						// Deletes the specified row
+						if(myTable.rows[rowNumber].cells[0].id == results[0].id){
+							myTable.deleteRow(rowNumber);
+							break;
+						}
+						rowNumber++;
 					}
-					rowNumber++;
+
+					// Removes the paddler from the database
+					results[0].destroy({
+						success: function(myObject) {
+							//alert("Deleted");
+						},
+						error: function(myObject, error) {
+							alert("Error!");
+						}
+					});
+					
+				},
+				error: function(error){
+					alert("Error");
 				}
-
-				results[0].destroy({
-					success: function(myObject) {
-						//alert("Deleted");
-					},
-					error: function(myObject, error) {
-						alert("Error!");
-					}
-				});
-				
-			},
-			error: function(error){
-				alert("Error");
-			}
-		});
-		
-
-			
-		
+			});
 		}
   </script>
-
 </div>
-
 <br>
 </body>
-
 </html>
