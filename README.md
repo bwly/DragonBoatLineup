@@ -1,6 +1,10 @@
 # DragonBoatLineup
 A tool to help you generate the lineup for a dragon boat event
 
+TO RUN:
+  Open any of the html files with a browser.  
+
+
 Stuff to work on: html, css, and js folders'
 
 html:
